@@ -15,7 +15,7 @@
     "symfony/symfony": "~2.3|~3.0",
     "doctrine/dbal": "~2.5",
     "doctrine/doctrine-bundle": "~1.4",
-    "phpunit/phpunit": "^6.0@dev"
+    "phpunit/phpunit": "^6.0"
   },
   "autoload": {
     "psr-4": {
@@ -29,7 +29,5 @@
     "branch-alias": {
       "dev-master": "2.1.x-dev"
     }
-  },
-  "minimum-stability": "dev",
-  "prefer-stable": true
+  }
 }
