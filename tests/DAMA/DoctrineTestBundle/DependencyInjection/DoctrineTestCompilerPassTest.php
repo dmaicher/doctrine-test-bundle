@@ -5,10 +5,11 @@ namespace tests\DAMA\DoctrineTestBundle\DependencyInjection;
 use DAMA\DoctrineTestBundle\DependencyInjection\DAMADoctrineTestExtension;
 use DAMA\DoctrineTestBundle\DependencyInjection\DoctrineTestCompilerPass;
 use DAMA\DoctrineTestBundle\Doctrine\Cache\StaticArrayCache;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 
-class DoctrineTestCompilerPassTest extends \PHPUnit_Framework_TestCase
+class DoctrineTestCompilerPassTest extends TestCase
 {
     /**
      * @dataProvider processDataProvider
@@ -17,7 +18,7 @@ class DoctrineTestCompilerPassTest extends \PHPUnit_Framework_TestCase
      */
     public function testProcess(array $processedConfig)
     {
-        $extension = $this->getMock(DAMADoctrineTestExtension::class);
+        $extension = $this->createMock(DAMADoctrineTestExtension::class);
         $extension
             ->expects($this->once())
             ->method('getProcessedConfig')

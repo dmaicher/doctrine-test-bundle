@@ -4,8 +4,9 @@ namespace Tests\DAMA\DoctrineTestBundle\Doctrine\DBAL;
 
 use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticConnection;
 use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticDriver;
+use PHPUnit\Framework\TestCase;
 
-class StaticDriverTest extends \PHPUnit_Framework_TestCase
+class StaticDriverTest extends TestCase
 {
     public function testConnect()
     {

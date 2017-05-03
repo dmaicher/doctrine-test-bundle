@@ -3,30 +3,33 @@
 namespace DAMA\DoctrineTestBundle\PHPUnit;
 
 use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticDriver;
+use PHPUnit\Framework\BaseTestListener;
+use PHPUnit\Framework\Test;
+use PHPUnit\Framework\TestSuite;
 
-class PHPUnitStaticDbConnectionListener extends \PHPUnit_Framework_BaseTestListener
+class PHPUnitStaticDbConnectionListener extends BaseTestListener
 {
     /**
-     * @param \PHPUnit_Framework_Test $test
+     * @param Test $test
      */
-    public function startTest(\PHPUnit_Framework_Test $test)
+    public function startTest(Test $test)
     {
         StaticDriver::beginTransaction();
     }
 
     /**
-     * @param \PHPUnit_Framework_Test $test
-     * @param $time
+     * @param Test $test
+     * @param int  $time
      */
-    public function endTest(\PHPUnit_Framework_Test $test, $time)
+    public function endTest(Test $test, $time)
     {
         StaticDriver::rollBack();
     }
 
     /**
-     * @param \PHPUnit_Framework_TestSuite $suite
+     * @param TestSuite $suite
      */
-    public function startTestSuite(\PHPUnit_Framework_TestSuite $suite)
+    public function startTestSuite(TestSuite $suite)
     {
         StaticDriver::setKeepStaticConnections(true);
     }

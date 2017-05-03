@@ -11,11 +11,11 @@
     }
   ],
   "require": {
-    "php": ">=5.5.0",
+    "php": "^7.0",
     "symfony/symfony": "~2.3|~3.0",
     "doctrine/dbal": "~2.5",
     "doctrine/doctrine-bundle": "~1.4",
-    "phpunit/phpunit": "~4.1|~5.0"
+    "phpunit/phpunit": "^6.0"
   },
   "autoload": {
     "psr-4": {
@@ -27,7 +27,7 @@
   },
   "extra": {
     "branch-alias": {
-      "dev-master": "1.1.x-dev"
+      "dev-master": "2.1.x-dev"
     }
   }
 }
