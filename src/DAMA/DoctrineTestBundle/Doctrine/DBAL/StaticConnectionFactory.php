@@ -5,6 +5,7 @@ namespace DAMA\DoctrineTestBundle\Doctrine\DBAL;
 use Doctrine\Bundle\DoctrineBundle\ConnectionFactory;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Configuration;
+use Doctrine\DBAL\Connection;
 
 class StaticConnectionFactory extends ConnectionFactory
 {
@@ -18,18 +19,19 @@ class StaticConnectionFactory extends ConnectionFactory
      */
     public function createConnection(array $params, Configuration $config = null, EventManager $eventManager = null, array $mappingTypes = array())
     {
-        if (isset($params['driverClass'])) {
-            $underlyingDriverClass = $params['driverClass'];
-        } else {
-            //there seems to be no other way to access the originally configured Driver class :(
-            $connectionOriginalDriver = parent::createConnection($params, $config, $eventManager, $mappingTypes);
-            $underlyingDriverClass = get_class($connectionOriginalDriver->getDriver());
-        }
+        // create the original connection to get the used wrapper class + driver
+        $connectionOriginalDriver = parent::createConnection($params, $config, $eventManager, $mappingTypes);
 
-        StaticDriver::setUnderlyingDriverClass($underlyingDriverClass);
+        // wrapper class can be overridden/customized in params (see Doctrine\DBAL\DriverManager)
+        $connectionWrapperClass = get_class($connectionOriginalDriver);
 
-        $params['driverClass'] = StaticDriver::class;
-        $connection = parent::createConnection($params, $config, $eventManager, $mappingTypes);
+        /** @var Connection $connection */
+        $connection = new $connectionWrapperClass(
+            $connectionOriginalDriver->getParams(),
+            new StaticDriver($connectionOriginalDriver->getDriver()),
+            $connectionOriginalDriver->getConfiguration(),
+            $connectionOriginalDriver->getEventManager()
+        );
 
         if (StaticDriver::isKeepStaticConnections()) {
             // The underlying connection already has a transaction started.

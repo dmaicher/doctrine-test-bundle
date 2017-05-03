@@ -21,22 +21,13 @@ class StaticDriver implements Driver, ExceptionConverterDriver, VersionAwarePlat
     private static $keepStaticConnections = false;
 
     /**
-     * @var string
-     */
-    private static $underlyingDriverClass;
-
-    /**
      * @var Driver
      */
     private $underlyingDriver;
 
-    public function __construct()
+    public function __construct(Driver $underlyingDriver)
     {
-        if (self::$underlyingDriverClass === null) {
-            throw new \Exception('Cannot instantiate without setting underlying Driver class');
-        }
-
-        $this->underlyingDriver = new self::$underlyingDriverClass();
+        $this->underlyingDriver = $underlyingDriver;
     }
 
     /**
@@ -128,14 +119,6 @@ class StaticDriver implements Driver, ExceptionConverterDriver, VersionAwarePlat
     public static function isKeepStaticConnections()
     {
         return self::$keepStaticConnections;
-    }
-
-    /**
-     * @param string $underlyingDriverClass
-     */
-    public static function setUnderlyingDriverClass($underlyingDriverClass)
-    {
-        self::$underlyingDriverClass = $underlyingDriverClass;
     }
 
     public static function beginTransaction()
