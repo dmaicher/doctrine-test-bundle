@@ -6,6 +6,7 @@ use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Driver\Connection;
 use Doctrine\DBAL\Driver\DriverException;
 use Doctrine\DBAL\Driver\ExceptionConverterDriver;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\VersionAwarePlatformDriver;
 
 class StaticDriver implements Driver, ExceptionConverterDriver, VersionAwarePlatformDriver
@@ -25,9 +26,15 @@ class StaticDriver implements Driver, ExceptionConverterDriver, VersionAwarePlat
      */
     private $underlyingDriver;
 
-    public function __construct(Driver $underlyingDriver)
+    /**
+     * @var AbstractPlatform
+     */
+    private $platform;
+
+    public function __construct(Driver $underlyingDriver, AbstractPlatform $platform)
     {
         $this->underlyingDriver = $underlyingDriver;
+        $this->platform = $platform;
     }
 
     /**
@@ -54,7 +61,7 @@ class StaticDriver implements Driver, ExceptionConverterDriver, VersionAwarePlat
      */
     public function getDatabasePlatform()
     {
-        return $this->underlyingDriver->getDatabasePlatform();
+        return $this->platform;
     }
 
     /**
@@ -98,11 +105,7 @@ class StaticDriver implements Driver, ExceptionConverterDriver, VersionAwarePlat
      */
     public function createDatabasePlatformForVersion($version)
     {
-        if ($this->underlyingDriver instanceof VersionAwarePlatformDriver) {
-            return $this->underlyingDriver->createDatabasePlatformForVersion($version);
-        }
-
-        return $this->getDatabasePlatform();
+        return $this->platform;
     }
 
     /**

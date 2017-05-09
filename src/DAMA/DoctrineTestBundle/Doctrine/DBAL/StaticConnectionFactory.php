@@ -28,7 +28,7 @@ class StaticConnectionFactory extends ConnectionFactory
         /** @var Connection $connection */
         $connection = new $connectionWrapperClass(
             $connectionOriginalDriver->getParams(),
-            new StaticDriver($connectionOriginalDriver->getDriver()),
+            new StaticDriver($connectionOriginalDriver->getDriver(), $connectionOriginalDriver->getDatabasePlatform()),
             $connectionOriginalDriver->getConfiguration(),
             $connectionOriginalDriver->getEventManager()
         );
