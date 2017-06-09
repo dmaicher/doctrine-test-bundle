@@ -6,9 +6,9 @@ php:
   - '7.0'
 
 env:
-  - SYMFONY_VERSION="2.3.*"
   - SYMFONY_VERSION="2.7.*"
   - SYMFONY_VERSION="3.0.*"
+  - SYMFONY_VERSION="3.3.*"
 
 install:
   - curl -s https://getcomposer.org/installer | php
