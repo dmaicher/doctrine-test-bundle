@@ -14,14 +14,8 @@ It also includes a `StaticArrayCache` that will be automatically configured as m
 
 1. install via composer
 
-    If you are using PHPUnit < 6:    
     ```sh
-    composer require --dev dama/doctrine-test-bundle "^1.0"
-    ```
-    
-    If you are using PHPUnit >= 6:
-     ```sh
-    composer require --dev dama/doctrine-test-bundle "^2.0"
+    composer require --dev dama/doctrine-test-bundle
     ```
     
 
