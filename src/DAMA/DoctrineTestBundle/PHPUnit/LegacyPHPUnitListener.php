@@ -4,7 +4,7 @@ namespace DAMA\DoctrineTestBundle\PHPUnit;
 
 use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticDriver;
 
-class PHPUnitStaticDbConnectionListener extends \PHPUnit_Framework_BaseTestListener
+class LegacyPHPUnitListener extends \PHPUnit_Framework_BaseTestListener
 {
     /**
      * @param \PHPUnit_Framework_Test $test
