@@ -15,7 +15,7 @@ class StaticDriverTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->platform = $this->getMock(AbstractPlatform::class);
+        $this->platform = $this->createMock(AbstractPlatform::class);
     }
 
     public function testReturnCorrectPlatform()

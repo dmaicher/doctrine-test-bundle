@@ -17,7 +17,7 @@ class DoctrineTestCompilerPassTest extends \PHPUnit_Framework_TestCase
      */
     public function testProcess(array $processedConfig)
     {
-        $extension = $this->getMock(DAMADoctrineTestExtension::class);
+        $extension = $this->createMock(DAMADoctrineTestExtension::class);
         $extension
             ->expects($this->once())
             ->method('getProcessedConfig')
