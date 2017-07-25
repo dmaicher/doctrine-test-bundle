@@ -1,6 +1,6 @@
 init_composer:
 	curl -s https://getcomposer.org/installer | php
-	php composer.phar install --prefer-dist -o
+	php composer.phar install --prefer-dist -o --dev
 
 test:
 	vendor/bin/phpunit -c tests/ tests/
