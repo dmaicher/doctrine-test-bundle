@@ -4,8 +4,9 @@ namespace Tests\DAMA\DoctrineTestBundle\Doctrine\DBAL;
 
 use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticConnectionFactory;
 use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticDriver;
+use PHPUnit\Framework\TestCase;
 
-class StaticConnectionFactoryTest extends \PHPUnit_Framework_TestCase
+class StaticConnectionFactoryTest extends TestCase
 {
     /**
      * @dataProvider createConnectionDataProvider

@@ -3,9 +3,10 @@
 namespace Tests\DAMA\DoctrineTestBundle\DependencyInjection;
 
 use DAMA\DoctrineTestBundle\DependencyInjection\DAMADoctrineTestExtension;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
-class DAMADoctrineTestExtensionTest extends \PHPUnit_Framework_TestCase
+class DAMADoctrineTestExtensionTest extends TestCase
 {
     /**
      * @dataProvider loadDataProvider
