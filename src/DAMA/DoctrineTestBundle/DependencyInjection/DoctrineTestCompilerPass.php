@@ -7,12 +7,10 @@ use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticConnectionFactory;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\DependencyInjection\Reference;
 
 class DoctrineTestCompilerPass implements CompilerPassInterface
 {
-    /**
-     * @param ContainerBuilder $container
-     */
     public function process(ContainerBuilder $container)
     {
         /** @var DAMADoctrineTestExtension $extension */
@@ -20,7 +18,11 @@ class DoctrineTestCompilerPass implements CompilerPassInterface
         $config = $extension->getProcessedConfig();
 
         if ($config[Configuration::ENABLE_STATIC_CONNECTION]) {
-            $container->getDefinition('doctrine.dbal.connection_factory')->setClass(StaticConnectionFactory::class);
+            $factoryDef = new Definition(StaticConnectionFactory::class);
+            $factoryDef
+                ->setDecoratedService('doctrine.dbal.connection_factory')
+                ->addArgument(new Reference('dama.doctrine.dbal.connection_factory.inner'));
+            $container->setDefinition('dama.doctrine.dbal.connection_factory', $factoryDef);
         }
 
         $cacheNames = [];

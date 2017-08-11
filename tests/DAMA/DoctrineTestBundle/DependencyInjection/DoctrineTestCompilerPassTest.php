@@ -5,24 +5,24 @@ namespace tests\DAMA\DoctrineTestBundle\DependencyInjection;
 use DAMA\DoctrineTestBundle\DependencyInjection\DAMADoctrineTestExtension;
 use DAMA\DoctrineTestBundle\DependencyInjection\DoctrineTestCompilerPass;
 use DAMA\DoctrineTestBundle\Doctrine\Cache\StaticArrayCache;
+use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticConnectionFactory;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 
 class DoctrineTestCompilerPassTest extends TestCase
 {
-    /**
-     * @dataProvider processDataProvider
-     *
-     * @param array $processedConfig
-     */
-    public function testProcess(array $processedConfig)
+    public function testProcess()
     {
         $extension = $this->createMock(DAMADoctrineTestExtension::class);
         $extension
             ->expects($this->once())
             ->method('getProcessedConfig')
-            ->willReturn($processedConfig)
+            ->willReturn([
+                'enable_static_connection' => true,
+                'enable_static_meta_data_cache' => true,
+                'enable_static_query_cache' => true,
+            ])
         ;
 
         $containerBuilder = $this
@@ -36,21 +36,6 @@ class DoctrineTestCompilerPassTest extends TestCase
             ->with('dama_doctrine_test')
             ->willReturn($extension)
         ;
-
-        if ($processedConfig['enable_static_connection']) {
-            $containerBuilder
-                ->expects($this->once())
-                ->method('getDefinition')
-                ->with('doctrine.dbal.connection_factory')
-                ->willReturn(new Definition())
-            ;
-        } else {
-            $containerBuilder
-                ->expects($this->never())
-                ->method('getDefinition')
-                ->with('doctrine.dbal.connection_factory')
-            ;
-        }
 
         $containerBuilder
             ->expects($this->once())
@@ -87,9 +72,15 @@ class DoctrineTestCompilerPassTest extends TestCase
         ;
 
         $containerBuilder
-            ->expects($this->exactly(6))
+            ->expects($this->exactly(7))
             ->method('setDefinition')
             ->withConsecutive(
+                [
+                    'dama.doctrine.dbal.connection_factory',
+                    (new Definition(StaticConnectionFactory::class))
+                        ->setDecoratedService('doctrine.dbal.connection_factory')
+                        ->addArgument('dama.doctrine.dbal.connection_factory.inner'),
+                ],
                 [
                     'doctrine.orm.a_metadata_cache',
                     (new Definition(StaticArrayCache::class))->addMethodCall('setNamespace', [sha1('doctrine.orm.a_metadata_cache')]),
@@ -118,23 +109,5 @@ class DoctrineTestCompilerPassTest extends TestCase
         ;
 
         (new DoctrineTestCompilerPass())->process($containerBuilder);
-    }
-
-    public function processDataProvider()
-    {
-        return [
-            [
-                [
-                    'enable_static_connection' => true,
-                    'enable_static_meta_data_cache' => true,
-                    'enable_static_query_cache' => true,
-                ],
-                [
-                    'enable_static_connection' => false,
-                    'enable_static_meta_data_cache' => true,
-                    'enable_static_query_cache' => true,
-                ],
-            ],
-        ];
     }
 }

@@ -4,6 +4,7 @@ namespace Tests\DAMA\DoctrineTestBundle\Doctrine\DBAL;
 
 use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticConnectionFactory;
 use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticDriver;
+use Doctrine\Bundle\DoctrineBundle\ConnectionFactory;
 use PHPUnit\Framework\TestCase;
 
 class StaticConnectionFactoryTest extends TestCase
@@ -16,7 +17,7 @@ class StaticConnectionFactoryTest extends TestCase
      */
     public function testCreateConnection($keepStaticConnections, $expectedNestingLevel)
     {
-        $factory = new StaticConnectionFactory([]);
+        $factory = new StaticConnectionFactory(new ConnectionFactory([]));
 
         StaticDriver::setKeepStaticConnections($keepStaticConnections);
 

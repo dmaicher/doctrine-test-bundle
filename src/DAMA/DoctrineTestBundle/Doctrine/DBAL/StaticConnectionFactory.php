@@ -10,6 +10,17 @@ use Doctrine\DBAL\Connection;
 class StaticConnectionFactory extends ConnectionFactory
 {
     /**
+     * @var ConnectionFactory
+     */
+    private $decoratedFactory;
+
+    public function __construct(ConnectionFactory $decoratedFactory)
+    {
+        parent::__construct([]);
+        $this->decoratedFactory = $decoratedFactory;
+    }
+
+    /**
      * @param array         $params
      * @param Configuration $config
      * @param EventManager  $eventManager
@@ -20,7 +31,7 @@ class StaticConnectionFactory extends ConnectionFactory
     public function createConnection(array $params, Configuration $config = null, EventManager $eventManager = null, array $mappingTypes = array())
     {
         // create the original connection to get the used wrapper class + driver
-        $connectionOriginalDriver = parent::createConnection($params, $config, $eventManager, $mappingTypes);
+        $connectionOriginalDriver = $this->decoratedFactory->createConnection($params, $config, $eventManager, $mappingTypes);
 
         // wrapper class can be overridden/customized in params (see Doctrine\DBAL\DriverManager)
         $connectionWrapperClass = get_class($connectionOriginalDriver);
