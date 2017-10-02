@@ -1,6 +1,9 @@
+[![PHP Version](https://img.shields.io/badge/php-%5E5.5-blue.svg)](https://img.shields.io/badge/php-%5E5.5-blue.svg)
+[![Stable release][Last stable image]][Packagist link]
+[![Unstable release][Last unstable image]][Packagist link]
+[![Build status][Master build image]][Master build link]
 
-
-### What is it? ![build image](https://travis-ci.org/dmaicher/doctrine-test-bundle.svg?branch=master)
+### What is it? 
 
 This bundle provides features that help you run your Symfony-framework-based App's testsuite more efficiently with isolated tests.
 
@@ -66,3 +69,9 @@ dama_doctrine_test:
   enable_static_query_cache: true
 ```
     
+[Last stable image]: https://poser.pugx.org/dama/doctrine-test-bundle/version.svg
+[Last unstable image]: https://poser.pugx.org/dama/doctrine-test-bundle/v/unstable.svg
+[Master build image]: https://travis-ci.org/dmaicher/doctrine-test-bundle.svg
+
+[Packagist link]: https://packagist.org/packages/dama/doctrine-test-bundle
+[Master build link]: https://travis-ci.org/dmaicher/doctrine-test-bundle
