@@ -17,15 +17,12 @@ matrix:
   include:
     - php: 7.1
       env: 
-      - TEST_COVERAGE=true
-      - SYMFONY_VERSION="3.3.*"
-   - php: 7.2
-      env: 
-      - SYMFONY_VERSION="3.3.*"
+        - TEST_COVERAGE=true
+    - php: 7.2
 
 install:
   - phpenv config-rm xdebug.ini || echo "xDebug not disabled"
-  - composer require symfony/symfony:${SYMFONY_VERSION}
+  - composer require symfony/symfony:${SYMFONY_VERSION:-"3.3.*"}
 
 script: 
   - if [[ $TEST_COVERAGE ]]; then phpdbg -qrr vendor/bin/phpunit -c tests/ tests/ --coverage-clover ./build/logs/clover.xml; else vendor/bin/phpunit -c tests/ tests/; fi
