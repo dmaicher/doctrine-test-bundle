@@ -1,4 +1,7 @@
 language: php
+cache:
+  directories:
+    - $HOME/.composer/cache/files
 
 php:
   - '5.6'
@@ -11,7 +14,11 @@ env:
   - SYMFONY_VERSION="3.3.*"
 
 install:
-  - curl -s https://getcomposer.org/installer | php
-  - php composer.phar require symfony/symfony:${SYMFONY_VERSION}
+  - phpenv config-rm xdebug.ini || echo "xDebug not disabled"
+  - composer require symfony/symfony:${SYMFONY_VERSION}
 
-script: vendor/bin/phpunit -c tests/ tests/
+script: phpdbg -qrr vendor/bin/phpunit -c tests/ tests/ --coverage-clover ./build/logs/clover.xml
+
+after_success:
+  - wget https://scrutinizer-ci.com/ocular.phar
+  - php ocular.phar code-coverage:upload --format=php-clover ./build/logs/clover.xml
