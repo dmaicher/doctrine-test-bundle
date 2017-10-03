@@ -4,6 +4,7 @@ doctrine:
             default:
                 driver:   pdo_mysql
                 charset:  UTF8
+                server_version: 5.5
                 host:     '%env(DB_HOST)%'
                 dbname:   'doctrine_test_bundle'
                 user:     '%env(DB_USER)%'
