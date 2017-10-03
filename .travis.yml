@@ -9,16 +9,15 @@ php:
   - '7.1'
 
 env:
-  global:
-      - DB_HOST: 127.0.0.1
-      - DB_USER: travis
-      - DB_PASSWORD: ''
-  matrix:
-    - SYMFONY_VERSION="3.2.*"
-    - SYMFONY_VERSION="3.3.*"
+  - SYMFONY_VERSION="2.7.*"
+  - SYMFONY_VERSION="3.2.*"
+  - SYMFONY_VERSION="3.3.*"
 
 install:
   - curl -s https://getcomposer.org/installer | php
   - php composer.phar require symfony/symfony:${SYMFONY_VERSION}
 
-script: vendor/bin/phpunit -c tests/ tests/
+script:
+  - cp parameters.yml.dist tests/Functional/parameters.yml
+  - rm -rf tests/Functional/cache
+  - vendor/bin/phpunit -c tests/ tests/

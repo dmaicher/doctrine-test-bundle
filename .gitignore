@@ -2,3 +2,4 @@ vendor
 composer.lock
 tests/Functional/cache
 tests/Functional/logs
+tests/Functional/parameters.yml

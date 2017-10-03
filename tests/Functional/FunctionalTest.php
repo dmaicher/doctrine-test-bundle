@@ -24,6 +24,11 @@ class FunctionalTest extends \PHPUnit_Framework_TestCase
         $this->connection = $this->kernel->getContainer()->get('doctrine.dbal.default_connection');
     }
 
+    protected function tearDown()
+    {
+        $this->kernel->shutdown();
+    }
+
     private function assertRowCount($count)
     {
         $this->assertEquals($count, $this->connection->fetchColumn('SELECT COUNT(*) FROM test'));

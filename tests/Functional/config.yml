@@ -1,3 +1,6 @@
+imports:
+    - { resource: parameters.yml }
+
 doctrine:
     dbal:
         connections:
@@ -5,10 +8,10 @@ doctrine:
                 driver:   pdo_mysql
                 charset:  UTF8
                 server_version: 5.5
-                host:     '%env(DB_HOST)%'
-                dbname:   'doctrine_test_bundle'
-                user:     '%env(DB_USER)%'
-                password: '%env(DB_PASSWORD)%'
+                host:     '%db_host%'
+                dbname:   '%db_name%'
+                user:     '%db_user%'
+                password: '%db_password%'
 
 dama_doctrine_test:
     enable_static_connection: true
