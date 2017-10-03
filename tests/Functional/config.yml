@@ -1,0 +1,20 @@
+doctrine:
+    dbal:
+        connections:
+            default:
+                driver:   pdo_mysql
+                charset:  UTF8
+                host:     '%env(DB_HOST)%'
+                dbname:   'doctrine_test_bundle'
+                user:     '%env(DB_USER)%'
+                password: '%env(DB_PASSWORD)%'
+
+dama_doctrine_test:
+    enable_static_connection: true
+    enable_static_meta_data_cache: true
+    enable_static_query_cache: true
+
+parameters:
+    kernel.secret: foo
+
+

@@ -1,12 +1,19 @@
 language: php
 
+services:
+  - mysql
+
+env:
+  - DB_HOST: 127.0.0.1
+  - DB_USER: travis
+  - DB_PASSWORD: ''
+
 php:
   - '5.6'
   - '7.0'
   - '7.1'
 
 env:
-  - SYMFONY_VERSION="2.7.*"
   - SYMFONY_VERSION="3.2.*"
   - SYMFONY_VERSION="3.3.*"
 

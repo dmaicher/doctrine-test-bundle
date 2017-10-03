@@ -1,7 +1,23 @@
-<phpunit bootstrap="../vendor/autoload.php" colors="true">
+<phpunit
+    backupGlobals               = "false"
+    backupStaticAttributes      = "false"
+    colors                      = "true"
+    convertErrorsToExceptions   = "true"
+    convertNoticesToExceptions  = "true"
+    convertWarningsToExceptions = "true"
+    processIsolation            = "false"
+    stopOnFailure               = "true"
+    syntaxCheck                 = "false"
+    stderr                      = "true"
+    bootstrap="./phpunit.bootstrap.php"
+>
     <testsuites>
         <testsuite name="DAMADoctrineTestBundle test suite">
             <directory suffix="Test.php">./src</directory>
         </testsuite>
     </testsuites>
+
+    <listeners>
+        <listener class="\DAMA\DoctrineTestBundle\PHPUnit\LegacyPHPUnitListener" />
+    </listeners>
 </phpunit>

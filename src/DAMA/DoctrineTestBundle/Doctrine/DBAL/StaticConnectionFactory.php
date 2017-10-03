@@ -46,7 +46,13 @@ class StaticConnectionFactory extends ConnectionFactory
 
         if (StaticDriver::isKeepStaticConnections()) {
             // The underlying connection already has a transaction started.
-            // So we start it as well on this connection so the internal state ($_transactionNestingLevel) is in sync with the underlying connection.
+            // Make sure we use savepoints to be able to easily roll-back nested transactions
+            if ($connection->getDriver()->getDatabasePlatform()->supportsSavepoints()) {
+                $connection->setNestTransactionsWithSavepoints(true);
+            }
+
+            // We start a transaction on the connection as well
+            // so the internal state ($_transactionNestingLevel) is in sync with the underlying connection.
             $connection->beginTransaction();
         }
 
