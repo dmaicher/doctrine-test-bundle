@@ -18,6 +18,6 @@ install:
   - php composer.phar require symfony/symfony:${SYMFONY_VERSION}
 
 script:
-  - cp parameters.yml.dist tests/Functional/parameters.yml
+  - cp tests/Functional/parameters.yml.dist tests/Functional/parameters.yml
   - rm -rf tests/Functional/cache
   - vendor/bin/phpunit -c tests/ tests/
