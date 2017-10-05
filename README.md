@@ -1,7 +1,10 @@
 [![PHP Version](https://img.shields.io/badge/php-%5E5.5-blue.svg)](https://img.shields.io/badge/php-%5E5.5-blue.svg)
 [![Stable release][Last stable image]][Packagist link]
 [![Unstable release][Last unstable image]][Packagist link]
+
 [![Build status][Master build image]][Master build link]
+[![Coverage Status][Master coverage image]][Master scrutinizer link]
+[![Scrutinizer][Master scrutinizer image]][Master scrutinizer link]
 
 ### What is it? 
 
@@ -72,6 +75,9 @@ dama_doctrine_test:
 [Last stable image]: https://poser.pugx.org/dama/doctrine-test-bundle/version.svg
 [Last unstable image]: https://poser.pugx.org/dama/doctrine-test-bundle/v/unstable.svg
 [Master build image]: https://travis-ci.org/dmaicher/doctrine-test-bundle.svg
+[Master scrutinizer image]: https://scrutinizer-ci.com/g/dmaicher/doctrine-test-bundle/badges/quality-score.png?b=master
+[Master coverage image]: https://scrutinizer-ci.com/g/dmaicher/doctrine-test-bundle/badges/coverage.png?b=master
 
 [Packagist link]: https://packagist.org/packages/dama/doctrine-test-bundle
 [Master build link]: https://travis-ci.org/dmaicher/doctrine-test-bundle
+[Master scrutinizer link]: https://scrutinizer-ci.com/g/dmaicher/doctrine-test-bundle/?branch=master
