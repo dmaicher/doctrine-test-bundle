@@ -25,7 +25,7 @@ install:
   - composer require symfony/symfony:${SYMFONY_VERSION:-"3.3.*"}
 
 script: 
-  - if [[ $TEST_COVERAGE ]]; then phpdbg -qrr vendor/bin/phpunit -c tests/ tests/ --coverage-clover ./build/logs/clover.xml; else vendor/bin/phpunit -c tests/ tests/; fi
+  - if [[ $TEST_COVERAGE ]]; then phpdbg -qrr vendor/bin/phpunit -c tests/ --coverage-clover ./build/logs/clover.xml; else vendor/bin/phpunit -c tests/ tests/; fi
 
 after_success:
   - wget https://scrutinizer-ci.com/ocular.phar

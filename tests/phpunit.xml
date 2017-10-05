@@ -1,13 +1,19 @@
-<phpunit bootstrap="../vendor/autoload.php" colors="true">
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/6.2/phpunit.xsd"
+         bootstrap="../vendor/autoload.php" 
+         colors="true">
     <testsuites>
         <testsuite name="DAMADoctrineTestBundle test suite">
-            <directory suffix="Test.php">./src</directory>
+            <directory>../tests</directory>
         </testsuite>
     </testsuites>
 
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
-            <directory suffix=".php">src</directory>
+            <directory suffix=".php">../src</directory>
+            <exclude>
+                <file>../src/DAMA/DoctrineTestBundle/PHPUnit/LegacyPHPUnitListener.php</file>
+            </exclude>
         </whitelist>
     </filter>
 </phpunit>
