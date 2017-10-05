@@ -4,8 +4,9 @@ namespace Tests\Functional;
 
 use Doctrine\DBAL\Connection;
 use Symfony\Component\HttpKernel\KernelInterface;
+use PHPUnit\Framework\TestCase;
 
-class FunctionalTest extends \PHPUnit_Framework_TestCase
+class FunctionalTest extends TestCase
 {
     /**
      * @var KernelInterface
