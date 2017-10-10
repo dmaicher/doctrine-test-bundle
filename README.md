@@ -64,7 +64,7 @@ dama_doctrine_test:
     
 [Last stable image]: https://poser.pugx.org/dama/doctrine-test-bundle/version.svg
 [Last unstable image]: https://poser.pugx.org/dama/doctrine-test-bundle/v/unstable.svg
-[Master build image]: https://travis-ci.org/dmaicher/doctrine-test-bundle.svg
+[Master build image]: https://travis-ci.org/dmaicher/doctrine-test-bundle.svg?branch=master
 [Master scrutinizer image]: https://scrutinizer-ci.com/g/dmaicher/doctrine-test-bundle/badges/quality-score.png?b=master
 [Master coverage image]: https://scrutinizer-ci.com/g/dmaicher/doctrine-test-bundle/badges/coverage.png?b=master
 
