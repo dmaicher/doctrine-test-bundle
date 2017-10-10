@@ -36,19 +36,8 @@ It also includes a `StaticArrayCache` that will be automatically configured as m
     }
     ```
     
-3. Add the PHPUnit test listener in your xml config (e.g. `app/phpunit.xml`) depending on your PHPUnit version
+3. Add the PHPUnit test listener in your xml config (e.g. `app/phpunit.xml`) 
 
-    PHPUnit < 6:
-    ```xml
-    <phpunit>
-        ...
-        <listeners>
-            <listener class="\DAMA\DoctrineTestBundle\PHPUnit\LegacyPHPUnitListener" />
-        </listeners>
-    </phpunit>
-    ```
-    
-    PHPUnit >= 6:
     ```xml
     <phpunit>
         ...
@@ -57,6 +46,7 @@ It also includes a `StaticArrayCache` that will be automatically configured as m
         </listeners>
     </phpunit>
     ```
+    
 4. Make sure you also have `phpunit/phpunit` available as a `dev` dependency to run your tests. Alternatively this bundle is also compatible with `symfony/phpunit-bridge` and its `simple-phpunit` script. 
 
 5. That's it! From now on whatever changes you do to the database within each single testcase (be it a `WebTestCase` or a `KernelTestCase` or any custom test) are automatically rolled back for you :blush:
