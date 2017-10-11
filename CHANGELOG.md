@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [3.3.0]
 ### Changed
-- use only one listener class for both PHPUnit 5 and 6+
+- use only one listener class for both PHPUnit 5 and 6+. Class `LegacyPHPUnitListener` is now deprecated.
 - use savepoints for nested transactions if possible
 - add functional tests
 
@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [3.2.0]
 ### Changed
 - decorate original doctrine connection factory service instead of replacing it
-
+  
 
 ## [3.1.0]
 ### Changed
