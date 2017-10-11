@@ -4,9 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [3.3.0]
+## [4.0.0]
 ### Changed
-- use only one listener class for both PHPUnit 5 and 6+. Class `LegacyPHPUnitListener` is now deprecated.
+- use only one listener class for both PHPUnit 5 and 6+.
 - use savepoints for nested transactions if possible
 - add functional tests
 
