@@ -6,17 +6,25 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
+use PHPUnit\Framework\MockObject\Generator;
 
 class MockDriver implements Driver
 {
     /**
-     * @param $class
+     * @param string $class
      *
      * @return object
      */
     private function getMock($class)
     {
-        return (new \PHPUnit_Framework_MockObject_Generator())->getMock(
+        if (class_exists(Generator::class)) {
+            // PHPUnit 6.5+
+            $generator = new Generator();
+        } else {
+            $generator = new \PHPUnit_Framework_MockObject_Generator();
+        }
+
+        return $generator->getMock(
             $class,
             [],
             [],
