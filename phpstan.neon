@@ -1,0 +1,4 @@
+parameters:
+    excludes_analyse:
+        - %rootDir%/../src/DAMA/DoctrineTestBundle/DependencyInjection/Configuration.php
+        - %rootDir%/../src/DAMA/DoctrineTestBundle/PHPUnit/PHPUnitListener.php

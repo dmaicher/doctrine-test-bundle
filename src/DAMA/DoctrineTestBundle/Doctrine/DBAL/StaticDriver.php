@@ -3,6 +3,7 @@
 namespace DAMA\DoctrineTestBundle\Doctrine\DBAL;
 
 use Doctrine\DBAL\Driver;
+use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Driver\Connection;
 use Doctrine\DBAL\Driver\DriverException;
 use Doctrine\DBAL\Driver\ExceptionConverterDriver;
@@ -97,7 +98,7 @@ class StaticDriver implements Driver, ExceptionConverterDriver, VersionAwarePlat
             return $this->underlyingDriver->convertException($message, $exception);
         }
 
-        return $exception;
+        return new Exception\DriverException($message, $exception);
     }
 
     /**
@@ -109,7 +110,7 @@ class StaticDriver implements Driver, ExceptionConverterDriver, VersionAwarePlat
     }
 
     /**
-     * @param $keepStaticConnections bool
+     * @param bool $keepStaticConnections
      */
     public static function setKeepStaticConnections($keepStaticConnections)
     {

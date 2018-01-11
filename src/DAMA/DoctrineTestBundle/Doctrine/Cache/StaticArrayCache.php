@@ -63,6 +63,6 @@ class StaticArrayCache extends CacheProvider
      */
     protected function doGetStats()
     {
-        return;
+        return null;
     }
 }

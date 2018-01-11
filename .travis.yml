@@ -31,6 +31,7 @@ script:
   - cp tests/Functional/parameters.yml.dist tests/Functional/parameters.yml
   - rm -rf tests/Functional/cache
   - if [[ $TEST_COVERAGE ]]; then phpdbg -qrr vendor/bin/phpunit -c tests/ --coverage-clover ./build/logs/clover.xml; else vendor/bin/phpunit -c tests/ tests/; fi
+  - make phpstan
 
 after_success:
   - if [[ $TEST_COVERAGE ]]; then wget https://scrutinizer-ci.com/ocular.phar; fi
