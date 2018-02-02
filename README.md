@@ -1,4 +1,4 @@
-[![PHP Version](https://img.shields.io/badge/php-%5E5.5-blue.svg)](https://img.shields.io/badge/php-%5E5.5-blue.svg)
+[![PHP Version](https://img.shields.io/badge/php-%5E7.0-blue.svg)](https://img.shields.io/badge/php-%5E7.0-blue.svg)
 [![Stable release][Last stable image]][Packagist link]
 [![Unstable release][Last unstable image]][Packagist link]
 
