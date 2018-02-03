@@ -11,13 +11,13 @@
     }
   ],
   "require": {
-    "php": ">=7.0",
+    "php": ">=7.1",
     "symfony/framework-bundle": "~2.7|~3.0|~4.0",
     "doctrine/dbal": "~2.5",
     "doctrine/doctrine-bundle": "~1.4"
   },
   "require-dev": {
-    "phpunit/phpunit": "^5.4.4|~6.0",
+    "phpunit/phpunit": "^5.4.4|~6.0|~7.0",
     "symfony/yaml": "~2.7|~3.0"
   },
   "autoload": {

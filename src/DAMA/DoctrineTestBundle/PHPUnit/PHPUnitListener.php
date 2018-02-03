@@ -4,7 +4,7 @@ namespace DAMA\DoctrineTestBundle\PHPUnit;
 
 use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticDriver;
 
-if (trait_exists('\PHPUnit\Framework\TestListenerDefaultImplementation') && PHP_VERSION_ID >= 70100) {
+if (trait_exists('\PHPUnit\Framework\TestListenerDefaultImplementation')) {
     // PHPUnit 7+
     class PHPUnitListener implements \PHPUnit\Framework\TestListener
     {
@@ -26,7 +26,7 @@ if (trait_exists('\PHPUnit\Framework\TestListenerDefaultImplementation') && PHP_
         }
     }
 
-} elseif (!class_exists('\PHPUnit_Framework_BaseTestListener')) {
+} else {
     // PHPUnit 6+
     class PHPUnitListener extends \PHPUnit\Framework\BaseTestListener
     {
@@ -41,25 +41,6 @@ if (trait_exists('\PHPUnit\Framework\TestListenerDefaultImplementation') && PHP_
         }
 
         public function startTestSuite(\PHPUnit\Framework\TestSuite $suite)
-        {
-            StaticDriver::setKeepStaticConnections(true);
-        }
-    }
-} else {
-    // PHPUnit 5
-    class PHPUnitListener extends \PHPUnit_Framework_BaseTestListener
-    {
-        public function startTest(\PHPUnit_Framework_Test $test)
-        {
-            StaticDriver::beginTransaction();
-        }
-
-        public function endTest(\PHPUnit_Framework_Test $test, $time)
-        {
-            StaticDriver::rollBack();
-        }
-
-        public function startTestSuite(\PHPUnit_Framework_TestSuite $suite)
         {
             StaticDriver::setKeepStaticConnections(true);
         }
