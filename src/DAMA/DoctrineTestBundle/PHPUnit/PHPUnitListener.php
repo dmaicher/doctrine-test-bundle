@@ -31,7 +31,7 @@ if (class_exists('\PHPUnit\Framework\BaseTestListener')) {
         {
             StaticDriver::beginTransaction();
         }
-        public function endTest(\PHPUnit\Framework\Test $test, $time): void
+        public function endTest(\PHPUnit\Framework\Test $test, float $time): void
         {
             StaticDriver::rollBack();
         }
