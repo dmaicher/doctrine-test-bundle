@@ -49,7 +49,7 @@ It also includes a `StaticArrayCache` that will be automatically configured as m
     </phpunit>
     ```
     
-4. Make sure you also have `phpunit/phpunit` available as a `dev` dependency to run your tests. Alternatively this bundle is also compatible with `symfony/phpunit-bridge` and its `simple-phpunit` script. 
+4. Make sure you also have `phpunit/phpunit` available as a `dev` dependency (**versions 6 and 7 are supported with the built in listener**) to run your tests. Alternatively this bundle is also compatible with `symfony/phpunit-bridge` and its `simple-phpunit` script. 
 
 5. That's it! From now on whatever changes you do to the database within each single testcase (be it a `WebTestCase` or a `KernelTestCase` or any custom test) are automatically rolled back for you :blush:
     

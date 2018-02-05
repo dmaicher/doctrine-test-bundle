@@ -15,6 +15,8 @@ env:
   - SYMFONY_VERSION="3.3.*"
   - SYMFONY_VERSION="3.4.*"
   - SYMFONY_VERSION="4.0.*"
+  - PHPUNIT_VERSION="6.*"
+  - PHPUNIT_VERSION="7.*"
 
 matrix:
   include:
@@ -24,7 +26,7 @@ matrix:
 
 install:
   - phpenv config-rm xdebug.ini || echo "xDebug not disabled"
-  - composer require symfony/symfony:${SYMFONY_VERSION:-"3.3.*"}
+  - composer require symfony/symfony:${SYMFONY_VERSION:-"3.3.*"} phpunit/phpunit:${PHPUNIT_VERSION:-"7.*"}
 
 script: 
   - cp tests/Functional/parameters.yml.dist tests/Functional/parameters.yml
