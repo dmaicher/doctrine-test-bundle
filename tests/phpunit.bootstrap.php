@@ -7,9 +7,6 @@ $kernel->boot();
 
 $application = new \Symfony\Bundle\FrameworkBundle\Console\Application($kernel);
 $application->setAutoExit(false);
-$application->add(new \Doctrine\Bundle\DoctrineBundle\Command\DropDatabaseDoctrineCommand());
-$application->add(new \Doctrine\Bundle\DoctrineBundle\Command\CreateDatabaseDoctrineCommand());
-$application->add(new \Doctrine\Bundle\DoctrineBundle\Command\Proxy\RunSqlDoctrineCommand());
 
 $application->run(new \Symfony\Component\Console\Input\ArrayInput([
     'command' => 'doctrine:database:drop',
