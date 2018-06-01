@@ -86,6 +86,19 @@ public function testMyTestCaseThatINeedToDebug()
     // now the DB changes are actually persisted and you can debug them
 }
 ```
+
+### Troubleshooting
+
+In case you are running (maybe without knowing it) queries during your tests that are implicitly committing any open transaction 
+(see https://dev.mysql.com/doc/refman/8.0/en/implicit-commit.html for example) you might see an error like this:
+
+```
+Doctrine\DBAL\Driver\PDOException: SQLSTATE[42000]: Syntax error or access violation: 1305 SAVEPOINT DOCTRINE2_SAVEPOINT_2 does not exist
+```
+
+Currently there is no way for this bundle to work with those queries as they simply cannot be rolled back after the test case finished.
+
+See also https://github.com/dmaicher/doctrine-test-bundle/issues/58
     
 [Last stable image]: https://poser.pugx.org/dama/doctrine-test-bundle/version.svg
 [Last unstable image]: https://poser.pugx.org/dama/doctrine-test-bundle/v/unstable.svg
