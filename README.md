@@ -23,7 +23,6 @@ It also includes a `StaticArrayCache` that will be automatically configured as m
     ```sh
     composer require --dev dama/doctrine-test-bundle
     ```
-    
 
 2. Enable the bundle for your test environment in your `AppKernel.php`
 
@@ -49,7 +48,9 @@ It also includes a `StaticArrayCache` that will be automatically configured as m
     </phpunit>
     ```
     
-4. Make sure you also have `phpunit/phpunit` available as a `dev` dependency (**versions 6 and 7 are supported with the built in listener**) to run your tests. Alternatively this bundle is also compatible with `symfony/phpunit-bridge` and its `simple-phpunit` script. 
+4. Make sure you also have `phpunit/phpunit` available as a `dev` dependency (**versions 6 and 7 are supported with the built in listener**) to run your tests. 
+   Alternatively this bundle is also compatible with `symfony/phpunit-bridge` and its `simple-phpunit` script. 
+   (Note: you may need to make sure the phpunit-bridge requires the correct PHPUnit 6+ Version using the environment variable `SYMFONY_PHPUNIT_VERSION`). 
 
 5. That's it! From now on whatever changes you do to the database within each single testcase (be it a `WebTestCase` or a `KernelTestCase` or any custom test) are automatically rolled back for you :blush:
     
