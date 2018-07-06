@@ -5,3 +5,4 @@ tests/Functional/cache
 tests/Functional/logs
 tests/Functional/parameters.yml
 vendor
+.idea
