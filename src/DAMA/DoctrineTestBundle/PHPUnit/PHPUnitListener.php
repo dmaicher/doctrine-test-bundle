@@ -5,20 +5,39 @@ namespace DAMA\DoctrineTestBundle\PHPUnit;
 use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticDriver;
 
 if (class_exists('\PHPUnit\Framework\BaseTestListener')) {
-    // PHPUnit 6
-    class PHPUnitListener extends \PHPUnit\Framework\BaseTestListener
-    {
-        public function startTest(\PHPUnit\Framework\Test $test)
+    if (interface_exists('\PHPUnit_Framework_Test')) {
+        // PHPUnit 5
+        class PHPUnitListener extends \PHPUnit\Framework\BaseTestListener
         {
-            StaticDriver::beginTransaction();
+            public function startTest(\PHPUnit_Framework_Test $test)
+            {
+                StaticDriver::beginTransaction();
+            }
+            public function endTest(\PHPUnit_Framework_Test $test, $time)
+            {
+                StaticDriver::rollBack();
+            }
+            public function startTestSuite(\PHPUnit_Framework_TestSuite $suite)
+            {
+                StaticDriver::setKeepStaticConnections(true);
+            }
         }
-        public function endTest(\PHPUnit\Framework\Test $test, $time)
+    } else {
+        // PHPUnit 6
+        class PHPUnitListener extends \PHPUnit\Framework\BaseTestListener
         {
-            StaticDriver::rollBack();
-        }
-        public function startTestSuite(\PHPUnit\Framework\TestSuite $suite)
-        {
-            StaticDriver::setKeepStaticConnections(true);
+            public function startTest(\PHPUnit\Framework\Test $test)
+            {
+                StaticDriver::beginTransaction();
+            }
+            public function endTest(\PHPUnit\Framework\Test $test, $time)
+            {
+                StaticDriver::rollBack();
+            }
+            public function startTestSuite(\PHPUnit\Framework\TestSuite $suite)
+            {
+                StaticDriver::setKeepStaticConnections(true);
+            }
         }
     }
 } elseif (trait_exists('\PHPUnit\Framework\TestListenerDefaultImplementation')) {
