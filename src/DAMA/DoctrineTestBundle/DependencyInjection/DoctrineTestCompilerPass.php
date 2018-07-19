@@ -21,7 +21,8 @@ class DoctrineTestCompilerPass implements CompilerPassInterface
             $factoryDef = new Definition(StaticConnectionFactory::class);
             $factoryDef
                 ->setDecoratedService('doctrine.dbal.connection_factory')
-                ->addArgument(new Reference('dama.doctrine.dbal.connection_factory.inner'));
+                ->addArgument(new Reference('dama.doctrine.dbal.connection_factory.inner'))
+            ;
             $container->setDefinition('dama.doctrine.dbal.connection_factory', $factoryDef);
         }
 

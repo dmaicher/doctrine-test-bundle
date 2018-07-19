@@ -23,7 +23,7 @@ $application->run(new \Symfony\Component\Console\Input\ArrayInput([
 
 $application->run(new \Symfony\Component\Console\Input\ArrayInput([
     'command' => 'doctrine:query:sql',
-    'sql' => 'CREATE TABLE test (test VARCHAR(10))'
+    'sql' => 'CREATE TABLE test (test VARCHAR(10))',
 ]));
 
 $kernel->shutdown();

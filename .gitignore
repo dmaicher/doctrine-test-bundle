@@ -5,3 +5,5 @@ tests/Functional/cache
 tests/Functional/logs
 tests/Functional/parameters.yml
 vendor
+.php_cs.cache
+php-cs-fixer.phar

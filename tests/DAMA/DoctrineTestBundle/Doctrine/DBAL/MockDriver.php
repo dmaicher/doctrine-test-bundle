@@ -10,21 +10,9 @@ use PHPUnit\Framework\MockObject\Generator;
 
 class MockDriver implements Driver
 {
-    /**
-     * @param string $class
-     *
-     * @return object
-     */
-    private function getMock($class)
+    private function getMock(string $class)
     {
-        if (class_exists(Generator::class)) {
-            // PHPUnit 6.5+
-            $generator = new Generator();
-        } else {
-            $generator = new \PHPUnit_Framework_MockObject_Generator();
-        }
-
-        return $generator->getMock(
+        return (new Generator())->getMock(
             $class,
             [],
             [],
@@ -36,7 +24,7 @@ class MockDriver implements Driver
     /**
      * {@inheritdoc}
      */
-    public function connect(array $params, $username = null, $password = null, array $driverOptions = array())
+    public function connect(array $params, $username = null, $password = null, array $driverOptions = [])
     {
         return $this->getMock(Driver\Connection::class);
     }

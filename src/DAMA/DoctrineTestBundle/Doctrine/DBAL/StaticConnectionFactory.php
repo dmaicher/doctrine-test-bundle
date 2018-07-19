@@ -21,14 +21,12 @@ class StaticConnectionFactory extends ConnectionFactory
     }
 
     /**
-     * @param array         $params
      * @param Configuration $config
      * @param EventManager  $eventManager
-     * @param array         $mappingTypes
      *
      * @return \Doctrine\DBAL\Connection
      */
-    public function createConnection(array $params, Configuration $config = null, EventManager $eventManager = null, array $mappingTypes = array())
+    public function createConnection(array $params, Configuration $config = null, EventManager $eventManager = null, array $mappingTypes = [])
     {
         // create the original connection to get the used wrapper class + driver
         $connectionOriginalDriver = $this->decoratedFactory->createConnection($params, $config, $eventManager, $mappingTypes);

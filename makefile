@@ -1,20 +1,23 @@
-SHELL = /bin/bash
-
 composer.phar:
 	curl -s https://getcomposer.org/installer | php
 	php composer.phar install --prefer-dist -o --dev
 
-.PHONY: test
 test:
 	vendor/bin/phpunit -c tests/ tests/
 
-.PHONY: phpstan
 phpstan: phpstan.phar
-	# Run PHPStan only for PHP version >=7.0
-	php -r 'exit(PHP_VERSION_ID >= 70000 ? 1 : 0);' || ./phpstan.phar analyse -c phpstan.neon -a vendor/autoload.php -l 7 src
+	./phpstan.phar analyse -c phpstan.neon -a vendor/autoload.php -l 7 src
 
 phpstan.phar:
-	wget https://raw.githubusercontent.com/phpstan/phpstan-shim/0.9.1/phpstan.phar && chmod 777 phpstan.phar
+	wget https://raw.githubusercontent.com/phpstan/phpstan-shim/0.10.1/phpstan.phar && chmod 777 phpstan.phar
 
-.PHONY: build
-build: composer.phar test phpstan
+build: composer.phar test phpstan php_cs_fixer_check
+
+php_cs_fixer_fix: php-cs-fixer.phar
+	./php-cs-fixer.phar fix --config .php_cs src tests
+
+php_cs_fixer_check: php-cs-fixer.phar
+	./php-cs-fixer.phar fix --config .php_cs src tests --dry-run
+
+php-cs-fixer.phar:
+	wget https://github.com/FriendsOfPHP/PHP-CS-Fixer/releases/download/v2.12.2/php-cs-fixer.phar && chmod 777 php-cs-fixer.phar

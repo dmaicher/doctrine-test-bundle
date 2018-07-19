@@ -1,11 +1,12 @@
 <?php
 
-namespace tests\DAMA\DoctrineTestBundle\DependencyInjection;
+namespace Tests\DAMA\DoctrineTestBundle\DependencyInjection;
 
 use DAMA\DoctrineTestBundle\DependencyInjection\DAMADoctrineTestExtension;
 use DAMA\DoctrineTestBundle\DependencyInjection\DoctrineTestCompilerPass;
 use DAMA\DoctrineTestBundle\Doctrine\Cache\StaticArrayCache;
 use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticConnectionFactory;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -25,11 +26,8 @@ class DoctrineTestCompilerPassTest extends TestCase
             ])
         ;
 
-        $containerBuilder = $this
-            ->getMockBuilder(ContainerBuilder::class)
-            ->disableOriginalConstructor()
-            ->getMock()
-        ;
+        /** @var ContainerBuilder|MockObject $containerBuilder */
+        $containerBuilder = $this->createMock(ContainerBuilder::class);
         $containerBuilder
             ->expects($this->once())
             ->method('getExtension')

@@ -41,7 +41,7 @@ class StaticDriver implements Driver, ExceptionConverterDriver, VersionAwarePlat
     /**
      * {@inheritdoc}
      */
-    public function connect(array $params, $username = null, $password = null, array $driverOptions = array())
+    public function connect(array $params, $username = null, $password = null, array $driverOptions = [])
     {
         if (self::$keepStaticConnections) {
             $key = sha1(serialize($params).$username.$password);

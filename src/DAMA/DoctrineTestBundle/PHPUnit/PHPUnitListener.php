@@ -12,10 +12,12 @@ if (class_exists('\PHPUnit\Framework\BaseTestListener')) {
         {
             StaticDriver::beginTransaction();
         }
+
         public function endTest(\PHPUnit\Framework\Test $test, $time)
         {
             StaticDriver::rollBack();
         }
+
         public function startTestSuite(\PHPUnit\Framework\TestSuite $suite)
         {
             StaticDriver::setKeepStaticConnections(true);
@@ -31,14 +33,15 @@ if (class_exists('\PHPUnit\Framework\BaseTestListener')) {
         {
             StaticDriver::beginTransaction();
         }
+
         public function endTest(\PHPUnit\Framework\Test $test, float $time): void
         {
             StaticDriver::rollBack();
         }
+
         public function startTestSuite(\PHPUnit\Framework\TestSuite $suite): void
         {
             StaticDriver::setKeepStaticConnections(true);
         }
     }
 }
-
