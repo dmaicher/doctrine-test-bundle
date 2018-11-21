@@ -82,7 +82,7 @@ Sometimes it can be useful to be able to debug the database contents when a test
 public function testMyTestCaseThatINeedToDebug()
 {
     // ... something thats changes the DB state
-    DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticDriver::commit();
+    \DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticDriver::commit();
     die;
     // now the DB changes are actually persisted and you can debug them
 }
