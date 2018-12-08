@@ -19,10 +19,10 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder('dama_doctrine_test');
 
         if (method_exists($treeBuilder, 'getRootNode')) {
-            $rootNode = $treeBuilder->getRootNode();
+            $root = $treeBuilder->getRootNode();
         } else {
             // BC layer for symfony/config 4.1 and older
-            $rootNode = $treeBuilder->root('dama_doctrine_test');
+            $root = $treeBuilder->root('dama_doctrine_test');
         }
 
         $root
