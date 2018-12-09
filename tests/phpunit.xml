@@ -8,11 +8,13 @@
     convertNoticesToExceptions="true"
     convertWarningsToExceptions="true"
     processIsolation="false"
-    stopOnFailure="true"
-    syntaxCheck="false"
     stderr="true"
     bootstrap="./phpunit.bootstrap.php"
 >
+    <php>
+        <env name="SYMFONY_DEPRECATIONS_HELPER" value="weak_vendors" />
+    </php>
+
     <testsuites>
         <testsuite name="DAMADoctrineTestBundle test suite">
             <directory>../tests</directory>
@@ -30,6 +32,7 @@
   
     <listeners>
         <listener class="\DAMA\DoctrineTestBundle\PHPUnit\PHPUnitListener" />
+        <listener class="\Symfony\Bridge\PhpUnit\SymfonyTestsListener" />
     </listeners>
 
 </phpunit>
