@@ -30,7 +30,7 @@ matrix:
 install:
   - rm -rf composer.lock vendor/*
   - phpenv config-rm xdebug.ini || echo "xDebug not disabled"
-  - composer require symfony/symfony:${SYMFONY_VERSION:-"3.3.*"} phpunit/phpunit:${PHPUNIT_VERSION:-"7.*"}
+  - export COMPOSER_MEMORY_LIMIT=-1 && composer require symfony/symfony:${SYMFONY_VERSION:-"3.3.*"} phpunit/phpunit:${PHPUNIT_VERSION:-"7.*"}
 
 script: 
   - cp tests/Functional/parameters.yml.dist tests/Functional/parameters.yml
