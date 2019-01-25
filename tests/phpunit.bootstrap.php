@@ -2,7 +2,8 @@
 
 require_once __DIR__.'/../vendor/autoload.php';
 
-function bootstrap() {
+function bootstrap()
+{
     $kernel = new \Tests\Functional\AppKernel('test', true);
     $kernel->boot();
 

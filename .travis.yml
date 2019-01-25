@@ -9,20 +9,20 @@ services:
 php:
   - 7.1
   - 7.2
+  - 7.3
 
 env:
   - SYMFONY_VERSION="3.4.*"
-  - SYMFONY_VERSION="4.1.*"
   - SYMFONY_VERSION="4.2.*"
   - PHPUNIT_VERSION="6.*"
   - PHPUNIT_VERSION="7.*"
 
 matrix:
   include:
-    - php: 7.1
+    - php: 7.3
       env: 
         - TEST_COVERAGE=true
-    - php: 7.2
+    - php: 7.3
       env:
         - PHPUNIT_VERSION="dev-master"
         - SYMFONY_VERSION="4.2.*"
