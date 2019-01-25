@@ -18,14 +18,14 @@ class FunctionalTest extends TestCase
      */
     private $connection;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->kernel = new AppKernel('test', true);
         $this->kernel->boot();
         $this->connection = $this->kernel->getContainer()->get('doctrine.dbal.default_connection');
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         $this->kernel->shutdown();
     }

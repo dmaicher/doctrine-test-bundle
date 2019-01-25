@@ -15,7 +15,7 @@ class StaticDriverTest extends TestCase
      */
     private $platform;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->platform = $this->createMock(AbstractPlatform::class);
     }

@@ -17,6 +17,7 @@ env:
   - SYMFONY_VERSION="4.2.*"
   - PHPUNIT_VERSION="6.*"
   - PHPUNIT_VERSION="7.*"
+  - PHPUNIT_VERSION="dev-master"
 
 matrix:
   include:
