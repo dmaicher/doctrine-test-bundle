@@ -14,11 +14,10 @@
     "php": "^7.1",
     "symfony/framework-bundle": "~2.7|~3.0|~4.0",
     "doctrine/dbal": "~2.5",
-    "doctrine/doctrine-bundle": "~1.4",
-    "symfony/symfony": "3.3.*",
-    "phpunit/phpunit": "7.*"
+    "doctrine/doctrine-bundle": "~1.4"
   },
   "require-dev": {
+    "phpunit/phpunit": "~6.0|~7.0|~8.0",
     "symfony/yaml": "~2.8|~3.0|~4.0",
     "symfony/phpunit-bridge": "~2.8|~3.0|~4.0"
   },
