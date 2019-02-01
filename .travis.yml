@@ -24,7 +24,7 @@ matrix:
         - TEST_COVERAGE=true
     - php: 7.3
       env:
-        - PHPUNIT_VERSION="dev-master"
+        - PHPUNIT_VERSION="8.*"
         - SYMFONY_VERSION="4.2.*"
 
 install:
