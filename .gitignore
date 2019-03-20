@@ -4,6 +4,7 @@ phpstan.phar
 tests/Functional/cache
 tests/Functional/logs
 tests/Functional/parameters.yml
+var
 vendor
 .php_cs.cache
 php-cs-fixer.phar
