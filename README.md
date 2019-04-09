@@ -101,7 +101,9 @@ public function testMyTestCaseThatINeedToDebug()
 
 ### Behat
 
-To use this bundle in a Behat test suite follow the installation instructions and add the following methods to your `FeatureContext` class:
+It is possible to use this bundle in a Behat test suite if scenarios are executed in the same process as Behat. This will not work if the Behat tests invoke the application via HTTP requests.
+
+To use the bundle follow the installation instructions and add the following methods to your `FeatureContext` class:
 
 ```php
     /**
