@@ -20,7 +20,7 @@ class StaticDriverTest extends TestCase
         $this->platform = $this->createMock(AbstractPlatform::class);
     }
 
-    public function testReturnCorrectPlatform()
+    public function testReturnCorrectPlatform(): void
     {
         $driver = new StaticDriver(new MockDriver(), $this->platform);
 
@@ -28,7 +28,7 @@ class StaticDriverTest extends TestCase
         $this->assertSame($this->platform, $driver->createDatabasePlatformForVersion('1'));
     }
 
-    public function testConnect()
+    public function testConnect(): void
     {
         $driver = new StaticDriver(new MockDriver(), $this->platform);
 

@@ -12,16 +12,13 @@ class DAMADoctrineTestExtension extends Extension
      */
     private $processedConfig;
 
-    public function load(array $configs, ContainerBuilder $container)
+    public function load(array $configs, ContainerBuilder $container): void
     {
         $configuration = new Configuration();
         $this->processedConfig = $this->processConfiguration($configuration, $configs);
     }
 
-    /**
-     * @return array
-     */
-    public function getProcessedConfig()
+    public function getProcessedConfig(): array
     {
         return $this->processedConfig;
     }

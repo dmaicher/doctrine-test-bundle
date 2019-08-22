@@ -3,6 +3,7 @@
 namespace DAMA\DoctrineTestBundle\Doctrine\DBAL;
 
 use Doctrine\DBAL\Driver\Connection;
+use Doctrine\DBAL\Driver\PDOStatement;
 
 /**
  * Wraps a real connection and just skips the first call to beginTransaction as a transaction is already started on the underlying connection.
@@ -27,7 +28,7 @@ class StaticConnection implements Connection
     /**
      * {@inheritdoc}
      */
-    public function prepare($prepareString)
+    public function prepare($prepareString): PDOStatement
     {
         return $this->connection->prepare($prepareString);
     }
@@ -35,7 +36,7 @@ class StaticConnection implements Connection
     /**
      * {@inheritdoc}
      */
-    public function query()
+    public function query(): PDOStatement
     {
         return call_user_func_array([$this->connection, 'query'], func_get_args());
     }
@@ -51,7 +52,7 @@ class StaticConnection implements Connection
     /**
      * {@inheritdoc}
      */
-    public function exec($statement)
+    public function exec($statement): int
     {
         return $this->connection->exec($statement);
     }
@@ -59,7 +60,7 @@ class StaticConnection implements Connection
     /**
      * {@inheritdoc}
      */
-    public function lastInsertId($name = null)
+    public function lastInsertId($name = null): string
     {
         return $this->connection->lastInsertId($name);
     }
@@ -67,7 +68,7 @@ class StaticConnection implements Connection
     /**
      * {@inheritdoc}
      */
-    public function beginTransaction()
+    public function beginTransaction(): bool
     {
         if ($this->transactionStarted) {
             return $this->connection->beginTransaction();
@@ -79,7 +80,7 @@ class StaticConnection implements Connection
     /**
      * {@inheritdoc}
      */
-    public function commit()
+    public function commit(): bool
     {
         return $this->connection->commit();
     }
@@ -87,7 +88,7 @@ class StaticConnection implements Connection
     /**
      * {@inheritdoc}
      */
-    public function rollBack()
+    public function rollBack(): bool
     {
         return $this->connection->rollBack();
     }
@@ -95,7 +96,7 @@ class StaticConnection implements Connection
     /**
      * {@inheritdoc}
      */
-    public function errorCode()
+    public function errorCode(): ?string
     {
         return $this->connection->errorCode();
     }
@@ -103,7 +104,7 @@ class StaticConnection implements Connection
     /**
      * {@inheritdoc}
      */
-    public function errorInfo()
+    public function errorInfo(): array
     {
         return $this->connection->errorInfo();
     }
@@ -111,7 +112,7 @@ class StaticConnection implements Connection
     /**
      * @return Connection
      */
-    public function getWrappedConnection()
+    public function getWrappedConnection(): Connection
     {
         return $this->connection;
     }

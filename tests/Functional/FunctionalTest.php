@@ -30,31 +30,31 @@ class FunctionalTest extends TestCase
         $this->kernel->shutdown();
     }
 
-    private function assertRowCount($count)
+    private function assertRowCount($count): void
     {
         $this->assertEquals($count, $this->connection->fetchColumn('SELECT COUNT(*) FROM test'));
     }
 
-    private function insertRow()
+    private function insertRow(): void
     {
         $this->connection->insert('test', [
             'test' => 'foo',
         ]);
     }
 
-    public function testChangeDbState()
+    public function testChangeDbState(): void
     {
         $this->assertRowCount(0);
         $this->insertRow();
         $this->assertRowCount(1);
     }
 
-    public function testPreviousChangesAreRolledBack()
+    public function testPreviousChangesAreRolledBack(): void
     {
         $this->assertRowCount(0);
     }
 
-    public function testChangeDbStateWithinTransaction()
+    public function testChangeDbStateWithinTransaction(): void
     {
         $this->assertRowCount(0);
 
@@ -70,12 +70,12 @@ class FunctionalTest extends TestCase
         $this->assertRowCount(1);
     }
 
-    public function testPreviousChangesAreRolledBackAfterTransaction()
+    public function testPreviousChangesAreRolledBackAfterTransaction(): void
     {
         $this->assertRowCount(0);
     }
 
-    public function testChangeDbStateWithSavePoint()
+    public function testChangeDbStateWithSavePoint(): void
     {
         $this->assertRowCount(0);
         $this->connection->createSavepoint('foo');
@@ -86,7 +86,7 @@ class FunctionalTest extends TestCase
         $this->insertRow();
     }
 
-    public function testPreviousChangesAreRolledBackAfterUsingSavePoint()
+    public function testPreviousChangesAreRolledBackAfterUsingSavePoint(): void
     {
         $this->assertRowCount(0);
     }

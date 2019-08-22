@@ -13,7 +13,7 @@ use Symfony\Component\DependencyInjection\Definition;
 
 class DoctrineTestCompilerPassTest extends TestCase
 {
-    public function testProcess()
+    public function testProcess(): void
     {
         $extension = $this->createMock(DAMADoctrineTestExtension::class);
         $extension

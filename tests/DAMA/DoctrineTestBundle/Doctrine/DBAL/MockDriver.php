@@ -10,7 +10,7 @@ use PHPUnit\Framework\MockObject\Generator;
 
 class MockDriver implements Driver
 {
-    private function getMock(string $class)
+    private function getMock(string $class): Generator
     {
         return (new Generator())->getMock(
             $class,
@@ -24,7 +24,7 @@ class MockDriver implements Driver
     /**
      * {@inheritdoc}
      */
-    public function connect(array $params, $username = null, $password = null, array $driverOptions = [])
+    public function connect(array $params, $username = null, $password = null, array $driverOptions = []): Driver\Connection
     {
         return $this->getMock(Driver\Connection::class);
     }
@@ -32,7 +32,7 @@ class MockDriver implements Driver
     /**
      * {@inheritdoc}
      */
-    public function getDatabasePlatform()
+    public function getDatabasePlatform(): AbstractPlatform
     {
         return $this->getMock(AbstractPlatform::class);
     }
@@ -40,7 +40,7 @@ class MockDriver implements Driver
     /**
      * {@inheritdoc}
      */
-    public function getSchemaManager(Connection $conn)
+    public function getSchemaManager(Connection $conn): AbstractSchemaManager
     {
         return $this->getMock(AbstractSchemaManager::class);
     }
@@ -48,7 +48,7 @@ class MockDriver implements Driver
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    public function getName(): string
     {
         return 'mock';
     }
@@ -56,7 +56,7 @@ class MockDriver implements Driver
     /**
      * {@inheritdoc}
      */
-    public function getDatabase(Connection $conn)
+    public function getDatabase(Connection $conn): string
     {
         return 'mock';
     }

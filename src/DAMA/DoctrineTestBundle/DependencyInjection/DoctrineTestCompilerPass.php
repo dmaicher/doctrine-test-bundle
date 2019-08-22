@@ -11,7 +11,7 @@ use Symfony\Component\DependencyInjection\Reference;
 
 class DoctrineTestCompilerPass implements CompilerPassInterface
 {
-    public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container): void
     {
         /** @var DAMADoctrineTestExtension $extension */
         $extension = $container->getExtension('dama_doctrine_test');

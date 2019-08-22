@@ -22,7 +22,7 @@ class StaticArrayCache extends CacheProvider
     /**
      * {@inheritdoc}
      */
-    protected function doContains($id)
+    protected function doContains($id): bool
     {
         // isset() is required for performance optimizations, to avoid unnecessary function calls to array_key_exists.
         return isset(self::$data[$id]) || array_key_exists($id, self::$data);
@@ -31,7 +31,7 @@ class StaticArrayCache extends CacheProvider
     /**
      * {@inheritdoc}
      */
-    protected function doSave($id, $data, $lifeTime = 0)
+    protected function doSave($id, $data, $lifeTime = 0): bool
     {
         self::$data[$id] = $data;
 
@@ -41,7 +41,7 @@ class StaticArrayCache extends CacheProvider
     /**
      * {@inheritdoc}
      */
-    protected function doDelete($id)
+    protected function doDelete($id): bool
     {
         unset(self::$data[$id]);
 
@@ -51,7 +51,7 @@ class StaticArrayCache extends CacheProvider
     /**
      * {@inheritdoc}
      */
-    protected function doFlush()
+    protected function doFlush(): bool
     {
         self::$data = [];
 
@@ -61,7 +61,7 @@ class StaticArrayCache extends CacheProvider
     /**
      * {@inheritdoc}
      */
-    protected function doGetStats()
+    protected function doGetStats(): ?array
     {
         return null;
     }

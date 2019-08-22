@@ -12,7 +12,7 @@ class DAMADoctrineTestExtensionTest extends TestCase
     /**
      * @dataProvider loadDataProvider
      */
-    public function testLoad(array $configs, array $expectedProcessedConfig)
+    public function testLoad(array $configs, array $expectedProcessedConfig): void
     {
         $extension = new DAMADoctrineTestExtension();
         /** @var ContainerBuilder|MockObject $containerBuilder */
@@ -22,7 +22,7 @@ class DAMADoctrineTestExtensionTest extends TestCase
         $this->assertEquals($extension->getProcessedConfig(), $expectedProcessedConfig);
     }
 
-    public function loadDataProvider()
+    public function loadDataProvider(): array
     {
         return [
             [[], [

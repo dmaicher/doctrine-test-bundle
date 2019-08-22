@@ -11,10 +11,7 @@ class Configuration implements ConfigurationInterface
     const STATIC_META_CACHE = 'enable_static_meta_data_cache';
     const STATIC_QUERY_CACHE = 'enable_static_query_cache';
 
-    /**
-     * @return TreeBuilder
-     */
-    public function getConfigTreeBuilder()
+    public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder('dama_doctrine_test');
 
