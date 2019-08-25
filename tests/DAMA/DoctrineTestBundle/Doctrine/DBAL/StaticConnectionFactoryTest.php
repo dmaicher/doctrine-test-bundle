@@ -11,9 +11,6 @@ class StaticConnectionFactoryTest extends TestCase
 {
     /**
      * @dataProvider createConnectionDataProvider
-     *
-     * @param bool $keepStaticConnections
-     * @param int  $expectedNestingLevel
      */
     public function testCreateConnection(bool $keepStaticConnections, int $expectedNestingLevel): void
     {

@@ -20,12 +20,6 @@ class StaticConnectionFactory extends ConnectionFactory
         $this->decoratedFactory = $decoratedFactory;
     }
 
-    /**
-     * @param Configuration $config
-     * @param EventManager  $eventManager
-     *
-     * @return Connection
-     */
     public function createConnection(array $params, Configuration $config = null, EventManager $eventManager = null, array $mappingTypes = []): Connection
     {
         // create the original connection to get the used wrapper class + driver

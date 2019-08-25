@@ -118,9 +118,6 @@ class StaticDriver implements Driver, ExceptionConverterDriver, VersionAwarePlat
         self::$keepStaticConnections = $keepStaticConnections;
     }
 
-    /**
-     * @return bool
-     */
     public static function isKeepStaticConnections(): bool
     {
         return self::$keepStaticConnections;

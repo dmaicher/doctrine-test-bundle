@@ -109,9 +109,6 @@ class StaticConnection implements Connection
         return $this->connection->errorInfo();
     }
 
-    /**
-     * @return Connection
-     */
     public function getWrappedConnection(): Connection
     {
         return $this->connection;
