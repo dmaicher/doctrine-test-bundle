@@ -3,7 +3,7 @@
 namespace DAMA\DoctrineTestBundle\Doctrine\DBAL;
 
 use Doctrine\DBAL\Driver\Connection;
-use Doctrine\DBAL\Driver\PDOStatement;
+use Doctrine\DBAL\Driver\Statement;
 
 /**
  * Wraps a real connection and just skips the first call to beginTransaction as a transaction is already started on the underlying connection.
@@ -28,7 +28,7 @@ class StaticConnection implements Connection
     /**
      * {@inheritdoc}
      */
-    public function prepare($prepareString): PDOStatement
+    public function prepare($prepareString): Statement
     {
         return $this->connection->prepare($prepareString);
     }
@@ -36,7 +36,7 @@ class StaticConnection implements Connection
     /**
      * {@inheritdoc}
      */
-    public function query(): PDOStatement
+    public function query(): Statement
     {
         return call_user_func_array([$this->connection, 'query'], func_get_args());
     }
