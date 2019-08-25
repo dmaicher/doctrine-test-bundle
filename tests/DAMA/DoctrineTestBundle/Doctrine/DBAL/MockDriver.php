@@ -10,7 +10,7 @@ use PHPUnit\Framework\MockObject\Generator;
 
 class MockDriver implements Driver
 {
-    private function getMock(string $class): Generator
+    private function getMock(string $class)
     {
         return (new Generator())->getMock(
             $class,
