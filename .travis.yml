@@ -11,8 +11,8 @@ php:
   - 7.3
 
 env:
-  - SYMFONY_VERSION="3.4.*"
-  - SYMFONY_VERSION="4.3.*"
+  - SYMFONY_REQUIRE="3.4.*"
+  - SYMFONY_REQUIRE="4.3.*"
   - PHPUNIT_VERSION="8.*"
 
 matrix:
@@ -23,21 +23,28 @@ matrix:
     - php: 7.3
       env:
         - PHPUNIT_VERSION="7.*"
-        - SYMFONY_VERSION="3.4.*"
+        - SYMFONY_REQUIRE="3.4.*"
+    - php: 7.3
+      env:
+        - STABILITY=dev
+        - SYMFONY_REQUIRE="5.0.*"
+
+before_install:
+    - phpenv config-rm xdebug.ini || echo "xDebug not disabled"
+    - composer global require --no-progress --no-scripts --no-plugins symfony/flex
 
 install:
   - rm -rf composer.lock vendor/*
-  - phpenv config-rm xdebug.ini || echo "xDebug not disabled"
-  - export COMPOSER_MEMORY_LIMIT=-1 && composer require symfony/symfony:${SYMFONY_VERSION:-"4.3.*"} phpunit/phpunit:${PHPUNIT_VERSION:-"8.*"}
+  - if ! [ -z "$STABILITY" ]; then composer config minimum-stability ${STABILITY}; fi;
+  - composer require phpunit/phpunit:${PHPUNIT_VERSION:-"8.*"} --update-with-all-dependencies
 
 script:
   - cp tests/Functional/parameters.yml.dist tests/Functional/parameters.yml
   - rm -rf tests/Functional/cache
   - make phpstan php_cs_fixer_check
   - |
-    if [[ ${PHPUNIT_VERSION} != "8.*" && ${TEST_COVERAGE} ]]; then phpdbg -qrr vendor/bin/phpunit -c tests/ --coverage-clover ./build/logs/clover.xml;
-    elif [[ ${PHPUNIT_VERSION} == "8.*" && ${TEST_COVERAGE} ]]; then phpdbg -qrr vendor/bin/phpunit -c tests/phpunit8.xml --coverage-clover ./build/logs/clover.xml;
-    elif [[ ${PHPUNIT_VERSION} == "8.*" ]]; then vendor/bin/phpunit -c tests/phpunit8.xml tests/;
+    if [[ ${TEST_COVERAGE} ]]; then phpdbg -qrr vendor/bin/phpunit -c tests/ --coverage-clover ./build/logs/clover.xml;
+    elif [[ ${PHPUNIT_VERSION} == "7.*" ]]; then vendor/bin/phpunit -c tests/phpunit7.xml tests/;
     else vendor/bin/phpunit -c tests/ tests/;
     fi
 

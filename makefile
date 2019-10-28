@@ -8,8 +8,8 @@ tests/Functional/parameters.yml:
 test: tests/Functional/parameters.yml
 	vendor/bin/phpunit -c tests/ tests/
 
-test_phpunit_8: tests/Functional/parameters.yml
-	vendor/bin/phpunit -c tests/phpunit8.xml tests/
+test_phpunit_7: tests/Functional/parameters.yml
+	vendor/bin/phpunit -c tests/phpunit7.xml tests/
 
 phpstan: phpstan.phar
 	./phpstan.phar analyse -c phpstan.neon -a vendor/autoload.php -l 7 src
