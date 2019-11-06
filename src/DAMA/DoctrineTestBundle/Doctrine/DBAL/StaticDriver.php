@@ -110,10 +110,7 @@ class StaticDriver implements Driver, ExceptionConverterDriver, VersionAwarePlat
         return $this->platform;
     }
 
-    /**
-     * @param bool $keepStaticConnections
-     */
-    public static function setKeepStaticConnections($keepStaticConnections): void
+    public static function setKeepStaticConnections(bool $keepStaticConnections): void
     {
         self::$keepStaticConnections = $keepStaticConnections;
     }
@@ -126,11 +123,7 @@ class StaticDriver implements Driver, ExceptionConverterDriver, VersionAwarePlat
     public static function beginTransaction(): void
     {
         foreach (self::$connections as $con) {
-            try {
-                $con->beginTransaction();
-            } catch (\PDOException $e) {
-                //transaction could be started already
-            }
+            $con->beginTransaction();
         }
     }
 
