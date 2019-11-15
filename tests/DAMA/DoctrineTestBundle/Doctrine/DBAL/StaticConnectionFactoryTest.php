@@ -26,6 +26,9 @@ class StaticConnectionFactoryTest extends TestCase
         ]);
 
         $this->assertInstanceOf(StaticDriver::class, $connection->getDriver());
+        $this->assertSame(0, $connection->getTransactionNestingLevel());
+
+        $connection->connect();
         $this->assertSame($expectedNestingLevel, $connection->getTransactionNestingLevel());
     }
 

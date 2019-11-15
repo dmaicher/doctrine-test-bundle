@@ -90,4 +90,12 @@ class FunctionalTest extends TestCase
     {
         $this->assertRowCount(0);
     }
+
+    public function testRollBackChangesWithReOpenedConnection(): void
+    {
+        $this->connection->close();
+        $this->connection->beginTransaction();
+        $this->connection->commit();
+        $this->assertRowCount(0);
+    }
 }
