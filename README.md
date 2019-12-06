@@ -71,9 +71,19 @@ The bundle exposes a configuration that looks like this by default:
     
 ```yaml
 dama_doctrine_test:
-  enable_static_connection: true
-  enable_static_meta_data_cache: true
-  enable_static_query_cache: true
+    enable_static_connection: true
+    enable_static_meta_data_cache: true
+    enable_static_query_cache: true
+```
+
+Setting `enable_static_connection: true` means it will enable it for all configured doctrine dbal connections.
+
+You can selectively only enable it for some connections if required:
+
+```yaml
+dama_doctrine_test:
+    enable_static_connection:
+        connection_a: true
 ```
 
 ### Example

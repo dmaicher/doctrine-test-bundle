@@ -12,7 +12,7 @@ test_phpunit_7: tests/Functional/parameters.yml
 	vendor/bin/phpunit -c tests/phpunit7.xml tests/
 
 phpstan: phpstan.phar
-	./phpstan.phar analyse -c phpstan.neon -a vendor/autoload.php -l 7 src
+	./phpstan.phar analyse -c phpstan.neon -a vendor/autoload.php -l 5 src
 
 phpstan.phar:
 	wget https://raw.githubusercontent.com/phpstan/phpstan-shim/0.11.8/phpstan.phar && chmod 777 phpstan.phar

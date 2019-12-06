@@ -45,7 +45,10 @@ class StaticDriver implements Driver, ExceptionConverterDriver, VersionAwarePlat
     public function connect(array $params, $username = null, $password = null, array $driverOptions = []): Connection
     {
         if (self::$keepStaticConnections) {
-            $key = sha1(serialize($params).$username.$password);
+            if (!isset($params['dama.connection_name'])) {
+                throw new \InvalidArgumentException('Did not find key "dama.connection_name" inside connection params.');
+            }
+            $key = $params['dama.connection_name'];
 
             if (!isset(self::$connections[$key])) {
                 self::$connections[$key] = $this->underlyingDriver->connect($params, $username, $password, $driverOptions);

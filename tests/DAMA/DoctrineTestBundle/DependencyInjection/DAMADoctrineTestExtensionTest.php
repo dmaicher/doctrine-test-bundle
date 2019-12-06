@@ -46,6 +46,21 @@ class DAMADoctrineTestExtensionTest extends TestCase
                     'enable_static_query_cache' => false,
                 ],
             ],
+            [[
+                [
+                    'enable_static_connection' => [
+                        'a' => true,
+                        'b' => false,
+                    ],
+                ],
+            ], [
+                'enable_static_connection' => [
+                    'a' => true,
+                    'b' => false,
+                ],
+                'enable_static_meta_data_cache' => true,
+                'enable_static_query_cache' => true,
+            ]],
         ];
     }
 }

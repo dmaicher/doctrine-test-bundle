@@ -35,9 +35,9 @@ class StaticDriverTest extends TestCase
         $driver::setKeepStaticConnections(true);
 
         /** @var StaticConnection $connection1 */
-        $connection1 = $driver->connect(['database_name' => 1], 'user1', 'pw1');
+        $connection1 = $driver->connect(['dama.connection_name' => 'foo']);
         /** @var StaticConnection $connection2 */
-        $connection2 = $driver->connect(['database_name' => 2], 'user1', 'pw2');
+        $connection2 = $driver->connect(['dama.connection_name' => 'bar']);
 
         $this->assertInstanceOf(StaticConnection::class, $connection1);
         $this->assertNotSame($connection1->getWrappedConnection(), $connection2->getWrappedConnection());
@@ -45,9 +45,9 @@ class StaticDriverTest extends TestCase
         $driver = new StaticDriver(new MockDriver(), $this->platform);
 
         /** @var StaticConnection $connectionNew1 */
-        $connectionNew1 = $driver->connect(['database_name' => 1], 'user1', 'pw1');
+        $connectionNew1 = $driver->connect(['dama.connection_name' => 'foo']);
         /** @var StaticConnection $connectionNew2 */
-        $connectionNew2 = $driver->connect(['database_name' => 2], 'user1', 'pw2');
+        $connectionNew2 = $driver->connect(['dama.connection_name' => 'bar']);
 
         $this->assertSame($connection1->getWrappedConnection(), $connectionNew1->getWrappedConnection());
         $this->assertSame($connection2->getWrappedConnection(), $connectionNew2->getWrappedConnection());

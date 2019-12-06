@@ -26,6 +26,10 @@ class StaticConnectionFactory extends ConnectionFactory
         // create the original connection to get the used wrapper class + driver
         $connectionOriginalDriver = $this->decoratedFactory->createConnection($params, $config, $eventManager, $mappingTypes);
 
+        if (!StaticDriver::isKeepStaticConnections() || !isset($params['dama.keep_static']) || !$params['dama.keep_static']) {
+            return $connectionOriginalDriver;
+        }
+
         // wrapper class can be overridden/customized in params (see Doctrine\DBAL\DriverManager)
         $connectionWrapperClass = get_class($connectionOriginalDriver);
 
@@ -37,13 +41,11 @@ class StaticConnectionFactory extends ConnectionFactory
             $connectionOriginalDriver->getEventManager()
         );
 
-        if (StaticDriver::isKeepStaticConnections()) {
-            $connection->getEventManager()->addEventListener(Events::postConnect, new PostConnectEventListener());
+        $connection->getEventManager()->addEventListener(Events::postConnect, new PostConnectEventListener());
 
-            // Make sure we use savepoints to be able to easily roll-back nested transactions
-            if ($connection->getDriver()->getDatabasePlatform()->supportsSavepoints()) {
-                $connection->setNestTransactionsWithSavepoints(true);
-            }
+        // Make sure we use savepoints to be able to easily roll-back nested transactions
+        if ($connection->getDriver()->getDatabasePlatform()->supportsSavepoints()) {
+            $connection->setNestTransactionsWithSavepoints(true);
         }
 
         return $connection;

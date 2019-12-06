@@ -25,7 +25,29 @@ class Configuration implements ConfigurationInterface
         $root
             ->addDefaultsIfNotSet()
             ->children()
-                ->booleanNode(self::ENABLE_STATIC_CONNECTION)->defaultTrue()->end()
+                ->variableNode(self::ENABLE_STATIC_CONNECTION)
+                    ->defaultTrue()
+                    ->validate()
+                        ->ifTrue(function ($value) {
+                            if (is_bool($value)) {
+                                return false;
+                            }
+
+                            if (!is_array($value)) {
+                                return true;
+                            }
+
+                            foreach ($value as $k => $v) {
+                                if (!is_string($k) || !is_bool($v)) {
+                                    return true;
+                                }
+                            }
+
+                            return false;
+                        })
+                        ->thenInvalid('Must be a boolean or an array with name -> bool')
+                    ->end()
+                ->end()
                 ->booleanNode(self::STATIC_META_CACHE)->defaultTrue()->end()
                 ->booleanNode(self::STATIC_QUERY_CACHE)->defaultTrue()->end()
             ->end()
