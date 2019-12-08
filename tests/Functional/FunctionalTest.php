@@ -3,8 +3,8 @@
 namespace Tests\Functional;
 
 use Doctrine\DBAL\Connection;
-use Symfony\Component\HttpKernel\KernelInterface;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 class FunctionalTest extends TestCase
 {

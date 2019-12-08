@@ -21,10 +21,13 @@ matrix:
     - php: 7.3
       env:
         - TEST_COVERAGE=true
-    - php: 7.3
+    - php: 7.1
       env:
         - PHPUNIT_VERSION="7.*"
         - SYMFONY_REQUIRE="3.4.*"
+    - php: 7.4
+      env:
+        - SYMFONY_REQUIRE="5.0.*"
 
 before_install:
     - phpenv config-rm xdebug.ini || echo "xDebug not disabled"
