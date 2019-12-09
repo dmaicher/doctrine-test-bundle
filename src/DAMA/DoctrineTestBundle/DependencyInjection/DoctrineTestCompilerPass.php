@@ -48,11 +48,7 @@ class DoctrineTestCompilerPass implements CompilerPassInterface
             if ($enableStaticConnectionsConfig === true
                 || isset($enableStaticConnectionsConfig[$name]) && $enableStaticConnectionsConfig[$name] === true
             ) {
-                $connectionDefinition = $container->getDefinition(sprintf('doctrine.dbal.%s_connection', $name));
-                $connectionOptions = $connectionDefinition->getArgument(0);
-                $connectionOptions['dama.connection_name'] = $name;
-                $connectionOptions['dama.keep_static'] = true;
-                $connectionDefinition->replaceArgument(0, $connectionOptions);
+                $this->addConnectionOptions($container, $name);
             }
 
             foreach ($cacheNames as $cacheName) {
@@ -74,5 +70,13 @@ class DoctrineTestCompilerPass implements CompilerPassInterface
         if (count($unknown)) {
             throw new \InvalidArgumentException(sprintf('Unknown doctrine dbal connection name(s): %s.', implode(', ', $unknown)));
         }
+    }
+
+    private function addConnectionOptions(ContainerBuilder $container, string $name): void
+    {
+        $connectionDefinition = $container->getDefinition(sprintf('doctrine.dbal.%s_connection', $name));
+        $connectionOptions = $connectionDefinition->getArgument(0);
+        $connectionOptions['dama.keep_static'] = true;
+        $connectionDefinition->replaceArgument(0, $connectionOptions);
     }
 }
