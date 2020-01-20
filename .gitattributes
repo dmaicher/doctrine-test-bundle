@@ -5,4 +5,4 @@ makefile       export-ignore
 README.md      export-ignore
 tests/         export-ignore
 .php_cs        export-ignore
-.phpstan.neon  export-ignore
+phpstan.neon   export-ignore
