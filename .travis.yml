@@ -28,6 +28,7 @@ matrix:
     - php: 7.4
       env:
         - SYMFONY_REQUIRE="5.0.*"
+        - PHPUNIT_VERSION="9.*"
 
 before_install:
     - phpenv config-rm xdebug.ini || echo "xDebug not disabled"

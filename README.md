@@ -59,7 +59,7 @@ It also includes a `StaticArrayCache` that will be automatically configured as m
     </phpunit>
     ```
     
-4. Make sure you also have `phpunit/phpunit` available as a `dev` dependency (**versions 7 and 8 are supported with the built in listener/extension**) to run your tests. 
+4. Make sure you also have `phpunit/phpunit` available as a `dev` dependency (**versions 7, 8 and 9 are supported with the built in listener/extension**) to run your tests. 
    Alternatively this bundle is also compatible with `symfony/phpunit-bridge` and its `simple-phpunit` script. 
    (Note: you may need to make sure the phpunit-bridge requires the correct PHPUnit 7+ Version using the environment variable `SYMFONY_PHPUNIT_VERSION`). 
 
