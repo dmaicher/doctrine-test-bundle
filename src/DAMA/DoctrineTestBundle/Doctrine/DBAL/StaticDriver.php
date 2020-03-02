@@ -85,7 +85,7 @@ class StaticDriver implements Driver, ExceptionConverterDriver, VersionAwarePlat
     /**
      * {@inheritdoc}
      */
-    public function getDatabase(\Doctrine\DBAL\Connection $conn): string
+    public function getDatabase(\Doctrine\DBAL\Connection $conn): ?string
     {
         return $this->underlyingDriver->getDatabase($conn);
     }
