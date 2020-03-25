@@ -145,7 +145,7 @@ To use the bundle follow the installation instructions and add the following met
      */
     public static function afterSuite()
     {
-       StaticDriver::setKeepStaticConnections(false);
+        StaticDriver::setKeepStaticConnections(false);
     }
 ```
 
