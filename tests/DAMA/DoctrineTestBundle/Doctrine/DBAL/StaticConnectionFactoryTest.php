@@ -12,11 +12,13 @@ class StaticConnectionFactoryTest extends TestCase
     /**
      * @dataProvider createConnectionDataProvider
      */
-    public function testCreateConnection(bool $keepStaticConnections, array $params, int $expectedNestingLevel): void
+    public function testCreateConnection(bool $defaultKeepStaticConnections, ?bool $keepStaticConnections, array $params, int $expectedNestingLevel): void
     {
-        $factory = new StaticConnectionFactory(new ConnectionFactory([]));
+        $factory = new StaticConnectionFactory(new ConnectionFactory([]), $defaultKeepStaticConnections);
 
-        StaticDriver::setKeepStaticConnections($keepStaticConnections);
+        if (null !== $keepStaticConnections) {
+            StaticDriver::setKeepStaticConnections($keepStaticConnections);
+        }
 
         $connection = $factory->createConnection(array_merge($params, [
             'driverClass' => MockDriver::class,
@@ -36,7 +38,15 @@ class StaticConnectionFactoryTest extends TestCase
 
     public function createConnectionDataProvider(): \Generator
     {
+        yield 'disabled by default' => [
+            false,
+            null,
+            ['dama.keep_static' => true, 'dama.connection_name' => 'a'],
+            0,
+        ];
+
         yield 'disabled by static property' => [
+            true,
             false,
             ['dama.keep_static' => true],
             0,
@@ -44,11 +54,20 @@ class StaticConnectionFactoryTest extends TestCase
 
         yield 'disabled by param' => [
             true,
+            true,
             ['dama.keep_static' => false],
             0,
         ];
 
+        yield 'enabled by default' => [
+            true,
+            null,
+            ['dama.keep_static' => true, 'dama.connection_name' => 'a'],
+            1,
+        ];
+
         yield 'enabled' => [
+            false,
             true,
             ['dama.keep_static' => true, 'dama.connection_name' => 'a'],
             1,

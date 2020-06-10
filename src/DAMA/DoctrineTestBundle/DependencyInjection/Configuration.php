@@ -10,6 +10,7 @@ class Configuration implements ConfigurationInterface
     const ENABLE_STATIC_CONNECTION = 'enable_static_connection';
     const STATIC_META_CACHE = 'enable_static_meta_data_cache';
     const STATIC_QUERY_CACHE = 'enable_static_query_cache';
+    const DEFAULT_KEEP_STATIC_CONNECTION = 'default_keep_static_connection';
 
     public function getConfigTreeBuilder(): TreeBuilder
     {
@@ -50,6 +51,7 @@ class Configuration implements ConfigurationInterface
                 ->end()
                 ->booleanNode(self::STATIC_META_CACHE)->defaultTrue()->end()
                 ->booleanNode(self::STATIC_QUERY_CACHE)->defaultTrue()->end()
+                ->booleanNode(self::DEFAULT_KEEP_STATIC_CONNECTION)->defaultFalse()->end()
             ->end()
         ;
 

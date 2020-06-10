@@ -21,7 +21,7 @@ class StaticDriver implements Driver, ExceptionConverterDriver, VersionAwarePlat
     /**
      * @var bool
      */
-    private static $keepStaticConnections = false;
+    private static $keepStaticConnections;
 
     /**
      * @var Driver
@@ -117,7 +117,12 @@ class StaticDriver implements Driver, ExceptionConverterDriver, VersionAwarePlat
 
     public static function isKeepStaticConnections(): bool
     {
-        return self::$keepStaticConnections;
+        return self::$keepStaticConnections ?? false;
+    }
+
+    public static function isKeepStaticConnectionsInitialized(): bool
+    {
+        return null !== self::$keepStaticConnections;
     }
 
     public static function beginTransaction(): void

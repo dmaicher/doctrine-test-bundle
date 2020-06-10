@@ -29,11 +29,13 @@ class DAMADoctrineTestExtensionTest extends TestCase
                 'enable_static_connection' => true,
                 'enable_static_meta_data_cache' => true,
                 'enable_static_query_cache' => true,
+                'default_keep_static_connection' => false,
             ]],
             [
                 [
                     [
                         'enable_static_connection' => false,
+                        'default_keep_static_connection' => true,
                     ],
                     [
                         'enable_static_meta_data_cache' => false,
@@ -44,6 +46,7 @@ class DAMADoctrineTestExtensionTest extends TestCase
                     'enable_static_connection' => false,
                     'enable_static_meta_data_cache' => false,
                     'enable_static_query_cache' => false,
+                    'default_keep_static_connection' => true,
                 ],
             ],
             [[
@@ -60,6 +63,7 @@ class DAMADoctrineTestExtensionTest extends TestCase
                 ],
                 'enable_static_meta_data_cache' => true,
                 'enable_static_query_cache' => true,
+                'default_keep_static_connection' => false,
             ]],
         ];
     }

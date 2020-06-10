@@ -15,16 +15,26 @@ class StaticConnectionFactory extends ConnectionFactory
      */
     private $decoratedFactory;
 
-    public function __construct(ConnectionFactory $decoratedFactory)
+    /**
+     * @var bool
+     */
+    private $defaultKeepStaticConnection;
+
+    public function __construct(ConnectionFactory $decoratedFactory, bool $defaultKeepStaticConnection)
     {
         parent::__construct([]);
         $this->decoratedFactory = $decoratedFactory;
+        $this->defaultKeepStaticConnection = $defaultKeepStaticConnection;
     }
 
     public function createConnection(array $params, Configuration $config = null, EventManager $eventManager = null, array $mappingTypes = []): Connection
     {
         // create the original connection to get the used wrapper class + driver
         $connectionOriginalDriver = $this->decoratedFactory->createConnection($params, $config, $eventManager, $mappingTypes);
+
+        if (!StaticDriver::isKeepStaticConnectionsInitialized()) {
+            StaticDriver::setKeepStaticConnections($this->defaultKeepStaticConnection);
+        }
 
         if (!StaticDriver::isKeepStaticConnections() || !isset($params['dama.keep_static']) || !$params['dama.keep_static']) {
             return $connectionOriginalDriver;

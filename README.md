@@ -74,6 +74,7 @@ dama_doctrine_test:
     enable_static_connection: true
     enable_static_meta_data_cache: true
     enable_static_query_cache: true
+    default_keep_static_connection: false
 ```
 
 Setting `enable_static_connection: true` means it will enable it for all configured doctrine dbal connections.
@@ -85,6 +86,8 @@ dama_doctrine_test:
     enable_static_connection:
         connection_a: true
 ```
+
+Setting `default_keep_static_connection` to true means that enabled connections will be wrapped even before `StaticDriver::setKeepStaticConnections(true);` is called.
 
 ### Example
 
