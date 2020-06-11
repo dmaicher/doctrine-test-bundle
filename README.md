@@ -6,7 +6,7 @@
 [![Coverage Status][Master coverage image]][Master scrutinizer link]
 [![Scrutinizer][Master scrutinizer image]][Master scrutinizer link]
 
-### What does it do? :) 
+### What does it do? :)
 
 This bundle provides features that help you run your Symfony-framework-based App's testsuite more efficiently with isolated tests.
 
@@ -34,9 +34,9 @@ It also includes a `StaticArrayCache` that will be automatically configured as m
         }
     }
     ```
-    
+
     Note: if you are using symfony flex and you are allowing contrib recipes (`extra.symfony.allow-contrib=true`) then the bundle will be automatically enabled for the `'test'` environment. See https://github.com/symfony/recipes-contrib/tree/master/dama/doctrine-test-bundle
-    
+
 3. For PHPUnit version >= 7.5 add the extension in your xml config (e.g. `app/phpunit.xml`)
 
     ```xml
@@ -48,7 +48,7 @@ It also includes a `StaticArrayCache` that will be automatically configured as m
     </phpunit>
     ```
 
-    For PHPUnit version 7.0 until 7.4 add the listener in your xml config (e.g. `app/phpunit.xml`) 
+    For PHPUnit version 7.0 until 7.4 add the listener in your xml config (e.g. `app/phpunit.xml`)
 
     ```xml
     <phpunit>
@@ -58,17 +58,17 @@ It also includes a `StaticArrayCache` that will be automatically configured as m
         </listeners>
     </phpunit>
     ```
-    
-4. Make sure you also have `phpunit/phpunit` available as a `dev` dependency (**versions 7, 8 and 9 are supported with the built in listener/extension**) to run your tests. 
-   Alternatively this bundle is also compatible with `symfony/phpunit-bridge` and its `simple-phpunit` script. 
-   (Note: you may need to make sure the phpunit-bridge requires the correct PHPUnit 7+ Version using the environment variable `SYMFONY_PHPUNIT_VERSION`). 
+
+4. Make sure you also have `phpunit/phpunit` available as a `dev` dependency (**versions 7, 8 and 9 are supported with the built in listener/extension**) to run your tests.
+   Alternatively this bundle is also compatible with `symfony/phpunit-bridge` and its `simple-phpunit` script.
+   (Note: you may need to make sure the phpunit-bridge requires the correct PHPUnit 7+ Version using the environment variable `SYMFONY_PHPUNIT_VERSION`).
 
 5. That's it! From now on whatever changes you do to the database within each single testcase (be it a `WebTestCase` or a `KernelTestCase` or any custom test) are automatically rolled back for you :blush:
-    
+
 ### Configuration
 
 The bundle exposes a configuration that looks like this by default:
-    
+
 ```yaml
 dama_doctrine_test:
     enable_static_connection: true
@@ -95,7 +95,7 @@ An example usage can be seen within the functional tests included in this bundle
 
 This bundle is also used on the official Symfony Demo testsuite: https://github.com/symfony/demo
 
-### Debugging 
+### Debugging
 
 Sometimes it can be useful to be able to debug the database contents when a test failed. As normally all changes are rolled back automatically you can do this manually:
 
@@ -153,7 +153,7 @@ See [dmaicher/symfony-flex-behat-test](https://github.com/dmaicher/symfony-flex-
 
 ### Troubleshooting
 
-In case you are running (maybe without knowing it) queries during your tests that are implicitly committing any open transaction 
+In case you are running (maybe without knowing it) queries during your tests that are implicitly committing any open transaction
 (see https://dev.mysql.com/doc/refman/8.0/en/implicit-commit.html for example) you might see an error like this:
 
 ```
@@ -163,7 +163,7 @@ Doctrine\DBAL\Driver\PDOException: SQLSTATE[42000]: Syntax error or access viola
 Currently there is no way for this bundle to work with those queries as they simply cannot be rolled back after the test case finished.
 
 See also https://github.com/dmaicher/doctrine-test-bundle/issues/58
-    
+
 [Last stable image]: https://poser.pugx.org/dama/doctrine-test-bundle/version.svg
 [Last unstable image]: https://poser.pugx.org/dama/doctrine-test-bundle/v/unstable.svg
 [Master build image]: https://travis-ci.org/dmaicher/doctrine-test-bundle.svg?branch=master
