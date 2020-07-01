@@ -2,6 +2,7 @@
 
 namespace DAMA\DoctrineTestBundle\PHPUnit;
 
+use DAMA\DoctrineTestBundle\DependencyInjection\DoNotRunInTransactionInterface;
 use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticDriver;
 
 class PHPUnitListener implements \PHPUnit\Framework\TestListener
@@ -20,6 +21,7 @@ class PHPUnitListener implements \PHPUnit\Framework\TestListener
 
     public function startTestSuite(\PHPUnit\Framework\TestSuite $suite): void
     {
-        StaticDriver::setKeepStaticConnections(true);
+        $keepStatic = !is_subclass_of($suite->getName(), DoNotRunInTransactionInterface::class);
+        StaticDriver::setKeepStaticConnections($keepStatic);
     }
 }
