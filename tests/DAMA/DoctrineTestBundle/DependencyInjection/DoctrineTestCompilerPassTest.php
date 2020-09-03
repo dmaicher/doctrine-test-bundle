@@ -73,6 +73,7 @@ class DoctrineTestCompilerPassTest extends TestCase
 
                 $this->assertSame([
                     'dama.keep_static' => true,
+                    'dama.connection_name' => 'a',
                 ], $containerBuilder->getDefinition('doctrine.dbal.a_connection')->getArgument(0));
             },
         ];
@@ -103,12 +104,14 @@ class DoctrineTestCompilerPassTest extends TestCase
 
                 $this->assertSame([
                     'dama.keep_static' => true,
+                    'dama.connection_name' => 'a',
                 ], $containerBuilder->getDefinition('doctrine.dbal.a_connection')->getArgument(0));
 
                 $this->assertSame([], $containerBuilder->getDefinition('doctrine.dbal.b_connection')->getArgument(0));
 
                 $this->assertSame([
                     'dama.keep_static' => true,
+                    'dama.connection_name' => 'c',
                 ], $containerBuilder->getDefinition('doctrine.dbal.c_connection')->getArgument(0));
             },
         ];

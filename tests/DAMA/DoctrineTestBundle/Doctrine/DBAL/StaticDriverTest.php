@@ -45,11 +45,21 @@ class StaticDriverTest extends TestCase
         $driver = new StaticDriver(new MockDriver(), $this->platform);
 
         /** @var StaticConnection $connectionNew1 */
-        $connectionNew1 = $driver->connect(['dama.connection_name' => 'foo']);
+        $connectionNew1 = $driver->connect(['dama.connection_name' => 'foo'], 'username');
         /** @var StaticConnection $connectionNew2 */
-        $connectionNew2 = $driver->connect(['dama.connection_name' => 'bar']);
+        $connectionNew2 = $driver->connect(['dama.connection_name' => 'bar'], null, 'password');
 
         $this->assertSame($connection1->getWrappedConnection(), $connectionNew1->getWrappedConnection());
         $this->assertSame($connection2->getWrappedConnection(), $connectionNew2->getWrappedConnection());
+
+        /** @var StaticConnection $connection1 */
+        $connection1 = $driver->connect(['host' => 'foo']);
+        /** @var StaticConnection $connection2 */
+        $connection2 = $driver->connect(['host' => 'foo']);
+        $this->assertSame($connection1->getWrappedConnection(), $connection2->getWrappedConnection());
+
+        /** @var StaticConnection $connection3 */
+        $connection3 = $driver->connect(['host' => 'bar']);
+        $this->assertNotSame($connection1->getWrappedConnection(), $connection3->getWrappedConnection());
     }
 }
