@@ -37,7 +37,9 @@ It also includes a `StaticArrayCache` that will be automatically configured as m
     
     Note: if you are using symfony flex and you are allowing contrib recipes (`extra.symfony.allow-contrib=true`) then the bundle will be automatically enabled for the `'test'` environment. See https://github.com/symfony/recipes-contrib/tree/master/dama/doctrine-test-bundle
     
-3. For PHPUnit version >= 7.5 add the extension in your xml config (e.g. `app/phpunit.xml`)
+#### Using the Bundle with PHPUnit
+
+1. For PHPUnit version >= 7.5 add the extension in your xml config (e.g. `app/phpunit.xml`)
 
     ```xml
     <phpunit>
@@ -59,11 +61,26 @@ It also includes a `StaticArrayCache` that will be automatically configured as m
     </phpunit>
     ```
     
-4. Make sure you also have `phpunit/phpunit` available as a `dev` dependency (**versions 7, 8 and 9 are supported with the built in listener/extension**) to run your tests. 
+2. Make sure you also have `phpunit/phpunit` available as a `dev` dependency (**versions 7, 8 and 9 are supported with the built in listener/extension**) to run your tests. 
    Alternatively this bundle is also compatible with `symfony/phpunit-bridge` and its `simple-phpunit` script. 
    (Note: you may need to make sure the phpunit-bridge requires the correct PHPUnit 7+ Version using the environment variable `SYMFONY_PHPUNIT_VERSION`). 
 
-5. That's it! From now on whatever changes you do to the database within each single testcase (be it a `WebTestCase` or a `KernelTestCase` or any custom test) are automatically rolled back for you :blush:
+3. That's it! From now on whatever changes you do to the database within each single testcase (be it a `WebTestCase` or a `KernelTestCase` or any custom test) are automatically rolled back for you :blush:
+
+#### Using the Bundle with Behat
+
+Enable the extension in your Behat config (e.g. `behat.yml`)
+
+```yaml
+default:
+   # ...
+   extensions:
+       DAMA\DoctrineTestBundle\Behat\ServiceContainer\DoctrineExtension: ~
+```
+
+That's it! From now on whatever changes you do to the database within each scenario are automatically rolled back for you.
+
+Please note that this is only works if the tests are executed in the same process as Behat. This means it cannot work when using e.g. Selenium to call your application. 
     
 ### Configuration
 
@@ -108,48 +125,6 @@ public function testMyTestCaseThatINeedToDebug()
     // now the DB changes are actually persisted and you can debug them
 }
 ```
-
-### Behat
-
-It is possible to use this bundle in a Behat test suite if scenarios are executed in the same process as Behat. This will not work if the Behat tests invoke the application via HTTP requests.
-
-To use the bundle follow the installation instructions and add the following methods to your `FeatureContext` class:
-
-```php
-    /**
-     * @BeforeSuite
-     */
-    public static function beforeSuite()
-    {
-        StaticDriver::setKeepStaticConnections(true);
-    }
-
-    /**
-     * @BeforeScenario
-     */
-    public function beforeScenario()
-    {
-        StaticDriver::beginTransaction();
-    }
-
-    /**
-     * @AfterScenario
-     */
-    public function afterScenario()
-    {
-        StaticDriver::rollBack();
-    }
-
-    /**
-     * @AfterSuite
-     */
-    public static function afterSuite()
-    {
-        StaticDriver::setKeepStaticConnections(false);
-    }
-```
-
-See [dmaicher/symfony-flex-behat-test](https://github.com/dmaicher/symfony-flex-behat-test) for a complete example.
 
 ### Troubleshooting
 
