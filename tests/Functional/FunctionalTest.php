@@ -3,6 +3,7 @@
 namespace Tests\Functional;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception\TableNotFoundException;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpKernel\KernelInterface;
 
@@ -97,5 +98,11 @@ class FunctionalTest extends TestCase
         $this->connection->beginTransaction();
         $this->connection->commit();
         $this->assertRowCount(0);
+    }
+
+    public function testWillThrowSpecificException(): void
+    {
+        $this->expectException(TableNotFoundException::class);
+        $this->connection->insert('does_not_exist', ['foo' => 'bar']);
     }
 }
