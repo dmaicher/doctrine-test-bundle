@@ -9,7 +9,7 @@
     convertWarningsToExceptions="true"
     processIsolation="false"
     stderr="true"
-    bootstrap="./phpunit.bootstrap.php"
+    bootstrap="./bootstrap.php"
 >
     <php>
         <env name="SYMFONY_DEPRECATIONS_HELPER" value="max[direct]=1" />

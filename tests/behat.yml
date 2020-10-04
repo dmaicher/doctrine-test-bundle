@@ -1,0 +1,10 @@
+default:
+    autoload:
+        '': '%paths.base%/Functional/features/bootstrap'
+
+    suites:
+        functional:
+            paths: ['%paths.base%/Functional/features']
+
+    extensions:
+        DAMA\DoctrineTestBundle\Behat\ServiceContainer\DoctrineExtension: ~

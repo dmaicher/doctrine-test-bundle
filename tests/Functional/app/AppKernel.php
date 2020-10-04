@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Functional;
+namespace Tests\Functional\app;
 
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\HttpKernel\Kernel;

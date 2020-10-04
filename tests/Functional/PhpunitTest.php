@@ -2,46 +2,12 @@
 
 namespace Tests\Functional;
 
-use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception\TableNotFoundException;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\HttpKernel\KernelInterface;
 
-class FunctionalTest extends TestCase
+class PhpunitTest extends TestCase
 {
-    /**
-     * @var KernelInterface
-     */
-    private $kernel;
-
-    /**
-     * @var Connection
-     */
-    private $connection;
-
-    protected function setUp(): void
-    {
-        $this->kernel = new AppKernel('test', true);
-        $this->kernel->boot();
-        $this->connection = $this->kernel->getContainer()->get('doctrine.dbal.default_connection');
-    }
-
-    protected function tearDown(): void
-    {
-        $this->kernel->shutdown();
-    }
-
-    private function assertRowCount($count): void
-    {
-        $this->assertEquals($count, $this->connection->fetchColumn('SELECT COUNT(*) FROM test'));
-    }
-
-    private function insertRow(): void
-    {
-        $this->connection->insert('test', [
-            'test' => 'foo',
-        ]);
-    }
+    use FunctionalTestTrait;
 
     public function testChangeDbState(): void
     {
@@ -50,6 +16,9 @@ class FunctionalTest extends TestCase
         $this->assertRowCount(1);
     }
 
+    /**
+     * @depends testChangeDbState
+     */
     public function testPreviousChangesAreRolledBack(): void
     {
         $this->assertRowCount(0);
@@ -59,18 +28,21 @@ class FunctionalTest extends TestCase
     {
         $this->assertRowCount(0);
 
-        $this->connection->beginTransaction();
+        $this->beginTransaction();
         $this->insertRow();
         $this->assertRowCount(1);
-        $this->connection->rollBack();
+        $this->rollbackTransaction();
         $this->assertRowCount(0);
 
-        $this->connection->beginTransaction();
+        $this->beginTransaction();
         $this->insertRow();
-        $this->connection->commit();
+        $this->commitTransaction();
         $this->assertRowCount(1);
     }
 
+    /**
+     * @depends testChangeDbStateWithinTransaction
+     */
     public function testPreviousChangesAreRolledBackAfterTransaction(): void
     {
         $this->assertRowCount(0);
@@ -79,14 +51,17 @@ class FunctionalTest extends TestCase
     public function testChangeDbStateWithSavePoint(): void
     {
         $this->assertRowCount(0);
-        $this->connection->createSavepoint('foo');
+        $this->createSavepoint('foo');
         $this->insertRow();
         $this->assertRowCount(1);
-        $this->connection->rollbackSavepoint('foo');
+        $this->rollbackSavepoint('foo');
         $this->assertRowCount(0);
         $this->insertRow();
     }
 
+    /**
+     * @depends testChangeDbStateWithSavePoint
+     */
     public function testPreviousChangesAreRolledBackAfterUsingSavePoint(): void
     {
         $this->assertRowCount(0);

@@ -46,7 +46,7 @@ install:
   - composer require phpunit/phpunit:${PHPUNIT_VERSION:-"8.*"} --update-with-all-dependencies
 
 script:
-  - cp tests/Functional/parameters.yml.dist tests/Functional/parameters.yml
+  - cp tests/Functional/app/parameters.yml.dist tests/Functional/app/parameters.yml
   - rm -rf tests/Functional/cache
   - if [[ ${SKIP_CS_FIXER} != "1" ]]; then make php_cs_fixer_check; fi
   - make phpstan
@@ -55,6 +55,7 @@ script:
     elif [[ ${PHPUNIT_VERSION} == "7.*" ]]; then vendor/bin/phpunit -c tests/phpunit7.xml tests/;
     else vendor/bin/phpunit -c tests/ tests/;
     fi
+  - vendor/bin/behat -c tests/behat.yml -fprogress
 
 after_success:
   - if [[ ${TEST_COVERAGE} ]]; then wget https://scrutinizer-ci.com/ocular.phar; fi

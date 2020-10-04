@@ -4,7 +4,7 @@ require_once __DIR__.'/../vendor/autoload.php';
 
 function bootstrap(): void
 {
-    $kernel = new \Tests\Functional\AppKernel('test', true);
+    $kernel = new \Tests\Functional\app\AppKernel('test', true);
     $kernel->boot();
 
     $application = new \Symfony\Bundle\FrameworkBundle\Console\Application($kernel);
