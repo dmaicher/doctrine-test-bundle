@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [6.4.0]
 ### Changed
 - add support for php 8
+- drop support for unmaintained Symfony versions 4.3 and 5.0
 
 ## [6.3.0]
 ### Changed
