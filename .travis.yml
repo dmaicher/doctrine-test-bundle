@@ -13,7 +13,7 @@ php:
 env:
   - SYMFONY_REQUIRE="3.4.*"
   - SYMFONY_REQUIRE="4.4.*"
-  - SYMFONY_REQUIRE="5.0.*"
+  - SYMFONY_REQUIRE="5.1.*"
   - PHPUNIT_VERSION="8.*"
 
 matrix:
