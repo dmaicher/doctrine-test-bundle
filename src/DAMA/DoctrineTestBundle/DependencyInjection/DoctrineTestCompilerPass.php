@@ -77,6 +77,7 @@ class DoctrineTestCompilerPass implements CompilerPassInterface
         $connectionDefinition = $container->getDefinition(sprintf('doctrine.dbal.%s_connection', $name));
         $connectionOptions = $connectionDefinition->getArgument(0);
         $connectionOptions['dama.keep_static'] = true;
+        $connectionOptions['dama.connection_name'] = $name;
         $connectionDefinition->replaceArgument(0, $connectionOptions);
     }
 }

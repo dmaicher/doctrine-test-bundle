@@ -44,18 +44,18 @@ class StaticDriver implements Driver, ExceptionConverterDriver, VersionAwarePlat
      */
     public function connect(array $params, $username = null, $password = null, array $driverOptions = []): Connection
     {
-        if (self::$keepStaticConnections) {
-            $key = sha1(serialize($params).$username.$password);
-
-            if (!isset(self::$connections[$key])) {
-                self::$connections[$key] = $this->underlyingDriver->connect($params, $username, $password, $driverOptions);
-                self::$connections[$key]->beginTransaction();
-            }
-
-            return new StaticConnection(self::$connections[$key]);
+        if (!self::$keepStaticConnections) {
+            return $this->underlyingDriver->connect($params, $username, $password, $driverOptions);
         }
 
-        return $this->underlyingDriver->connect($params, $username, $password, $driverOptions);
+        $key = $params['dama.connection_name'] ?? sha1(serialize($params).$username.$password);
+
+        if (!isset(self::$connections[$key])) {
+            self::$connections[$key] = $this->underlyingDriver->connect($params, $username, $password, $driverOptions);
+            self::$connections[$key]->beginTransaction();
+        }
+
+        return new StaticConnection(self::$connections[$key]);
     }
 
     /**
