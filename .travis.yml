@@ -29,6 +29,12 @@ matrix:
       env:
         - SYMFONY_REQUIRE="5.1.*"
         - PHPUNIT_VERSION="9.*"
+    - php: nightly
+      env:
+        - SYMFONY_REQUIRE="5.1.*"
+        - PHPUNIT_VERSION="9.*"
+        - STABILITY=dev
+        - SKIP_CS_FIXER=1
 
 before_install:
     - phpenv config-rm xdebug.ini || echo "xDebug not disabled"
@@ -42,7 +48,8 @@ install:
 script:
   - cp tests/Functional/parameters.yml.dist tests/Functional/parameters.yml
   - rm -rf tests/Functional/cache
-  - make phpstan php_cs_fixer_check
+  - if [[ ${SKIP_CS_FIXER} != "1" ]]; then make php_cs_fixer_check; fi
+  - make phpstan
   - |
     if [[ ${TEST_COVERAGE} ]]; then phpdbg -qrr vendor/bin/phpunit -c tests/ --coverage-clover ./build/logs/clover.xml;
     elif [[ ${PHPUNIT_VERSION} == "7.*" ]]; then vendor/bin/phpunit -c tests/phpunit7.xml tests/;

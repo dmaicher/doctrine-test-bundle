@@ -21,7 +21,7 @@ function bootstrap(): void
     ]));
 
     $application->run(new \Symfony\Component\Console\Input\ArrayInput([
-        'command' => 'doctrine:query:sql',
+        'command' => $application->has('dbal:run-sql') ? 'dbal:run-sql' : 'doctrine:query:sql',
         'sql' => 'CREATE TABLE test (test VARCHAR(10))',
     ]));
 
