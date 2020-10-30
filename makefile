@@ -23,4 +23,4 @@ php_cs_fixer_check: php-cs-fixer.phar
 	./php-cs-fixer.phar fix --config .php_cs src tests --dry-run
 
 php-cs-fixer.phar:
-	wget https://github.com/FriendsOfPHP/PHP-CS-Fixer/releases/download/v2.16.1/php-cs-fixer.phar && chmod 777 php-cs-fixer.phar
+	wget https://github.com/FriendsOfPHP/PHP-CS-Fixer/releases/download/v2.16.6/php-cs-fixer.phar && chmod 777 php-cs-fixer.phar
