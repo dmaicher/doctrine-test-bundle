@@ -27,13 +27,15 @@ matrix:
         - SYMFONY_REQUIRE="3.4.*"
     - php: 7.4
       env:
-        - SYMFONY_REQUIRE="5.1.*"
-        - PHPUNIT_VERSION="9.*"
-    - php: nightly
+        - COMPOSER_OPTIONS="--prefer-lowest"
+    - php: 7.4
       env:
         - SYMFONY_REQUIRE="5.1.*"
         - PHPUNIT_VERSION="9.*"
-        - STABILITY=dev
+    - php: 8.0
+      env:
+        - SYMFONY_REQUIRE="5.2.*"
+        - PHPUNIT_VERSION="9.*"
         - SKIP_CS_FIXER=1
 
 before_install:
@@ -59,7 +61,7 @@ before_install:
 install:
   - rm -rf composer.lock vendor/*
   - if ! [ -z "$STABILITY" ]; then composer config minimum-stability ${STABILITY}; fi;
-  - composer require phpunit/phpunit:${PHPUNIT_VERSION:-"8.*"} --update-with-all-dependencies
+  - composer require phpunit/phpunit:${PHPUNIT_VERSION:-"8.*"} --update-with-all-dependencies ${COMPOSER_OPTIONS}
 
 before_script:
   - cp tests/Functional/app/parameters.yml.dist tests/Functional/app/parameters.yml

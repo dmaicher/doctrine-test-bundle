@@ -1,9 +1,7 @@
 composer.lock
 composer.phar
 phpstan.phar
-tests/Functional/cache
-tests/Functional/logs
-tests/Functional/parameters.yml
+tests/Functional/app/parameters.yml
 var
 vendor
 .php_cs.cache

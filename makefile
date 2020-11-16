@@ -2,10 +2,10 @@ composer.phar:
 	curl -s https://getcomposer.org/installer | php
 	php composer.phar install --prefer-dist -o --dev
 
-tests/Functional/parameters.yml:
-	cp tests/Functional/parameters.yml.dist tests/Functional/parameters.yml
+tests/Functional/app/parameters.yml:
+	cp tests/Functional/app/parameters.yml.dist tests/Functional/app/parameters.yml
 
-test: tests/Functional/parameters.yml
+test: tests/Functional/app/parameters.yml
 	vendor/bin/phpunit -c tests/ tests/
 
 test_phpunit_7: tests/Functional/parameters.yml
@@ -23,4 +23,4 @@ php_cs_fixer_check: php-cs-fixer.phar
 	./php-cs-fixer.phar fix --config .php_cs src tests --dry-run --diff --diff-format=udiff
 
 php-cs-fixer.phar:
-	wget https://github.com/FriendsOfPHP/PHP-CS-Fixer/releases/download/v2.16.6/php-cs-fixer.phar && chmod 777 php-cs-fixer.phar
+	wget https://github.com/FriendsOfPHP/PHP-CS-Fixer/releases/download/v2.17.1/php-cs-fixer.phar && chmod 777 php-cs-fixer.phar

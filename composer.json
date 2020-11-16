@@ -13,7 +13,7 @@
   "require": {
     "php": "^7.1 || ^8.0",
     "symfony/framework-bundle": "^3.4 || ^4.4 || ^5.1",
-    "doctrine/dbal": "^2.9,>=2.9.3",
+    "doctrine/dbal": "^2.9.3 || ^3.0",
     "doctrine/doctrine-bundle": "^1.11 || ^2.0"
   },
   "require-dev": {

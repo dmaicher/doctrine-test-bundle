@@ -3,3 +3,13 @@ parameters:
         - %currentWorkingDirectory%/src/DAMA/DoctrineTestBundle/DependencyInjection/Configuration.php
         - %currentWorkingDirectory%/src/DAMA/DoctrineTestBundle/PHPUnit/PHPUnitListener.php
         - %currentWorkingDirectory%/src/DAMA/DoctrineTestBundle/PHPUnit/PHPUnitExtension.php
+
+        - %currentWorkingDirectory%/src/DAMA/DoctrineTestBundle/Doctrine/DBAL/AbstractStaticDriverV2.php
+        - %currentWorkingDirectory%/src/DAMA/DoctrineTestBundle/Doctrine/DBAL/AbstractStaticDriverV3.php
+        - %currentWorkingDirectory%/src/DAMA/DoctrineTestBundle/Doctrine/DBAL/StaticDriver.php
+
+        - %currentWorkingDirectory%/src/DAMA/DoctrineTestBundle/Doctrine/DBAL/AbstractStaticConnectionV2.php
+        - %currentWorkingDirectory%/src/DAMA/DoctrineTestBundle/Doctrine/DBAL/AbstractStaticConnectionV3.php
+        - %currentWorkingDirectory%/src/DAMA/DoctrineTestBundle/Doctrine/DBAL/StaticConnection.php
+
+

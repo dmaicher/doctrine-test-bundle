@@ -20,11 +20,7 @@ function bootstrap(): void
         'command' => 'doctrine:database:create',
     ]));
 
-    $application->run(new \Symfony\Component\Console\Input\ArrayInput([
-        'command' => $application->has('dbal:run-sql') ? 'dbal:run-sql' : 'doctrine:query:sql',
-        'sql' => 'CREATE TABLE test (test VARCHAR(10))',
-    ]));
-
+    $kernel->getContainer()->get('doctrine')->getConnection()->executeQuery('CREATE TABLE test (test VARCHAR(10))');
     $kernel->shutdown();
 }
 
