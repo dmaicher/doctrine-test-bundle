@@ -7,6 +7,9 @@ use Doctrine\DBAL\Driver\DriverException;
 use Doctrine\DBAL\Driver\ExceptionConverterDriver;
 use Doctrine\DBAL\Exception;
 
+/**
+ * @internal
+ */
 abstract class AbstractStaticDriverV2 extends AbstractStaticDriver implements ExceptionConverterDriver
 {
     /**

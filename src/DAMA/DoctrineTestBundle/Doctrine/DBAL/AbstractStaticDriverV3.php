@@ -30,11 +30,17 @@ abstract class AbstractStaticDriverV3 extends AbstractStaticDriver
         return new StaticConnection(self::$connections[$key]);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getSchemaManager(Connection $conn, AbstractPlatform $platform)
     {
         return $this->underlyingDriver->getSchemaManager($conn, $platform);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getExceptionConverter(): ExceptionConverter
     {
         return $this->underlyingDriver->getExceptionConverter();
