@@ -1,10 +1,5 @@
-[![PHP Version](https://img.shields.io/badge/php-%5E7.1-blue.svg)](https://img.shields.io/badge/php-%5E7.1-blue.svg)
-[![Stable release][Last stable image]][Packagist link]
-[![Unstable release][Last unstable image]][Packagist link]
-
-[![Build status][Master build image]][Master build link]
-[![Coverage Status][Master coverage image]][Master scrutinizer link]
-[![Scrutinizer][Master scrutinizer image]][Master scrutinizer link]
+[![PHP Version](https://img.shields.io/packagist/php-v/dama/doctrine-test-bundle)](https://packagist.org/packages/dama/doctrine-test-bundle)
+[![Stable release](https://img.shields.io/packagist/v/dama/doctrine-test-bundle)](https://packagist.org/packages/dama/doctrine-test-bundle)
 
 ### What does it do? :) 
 
@@ -138,13 +133,3 @@ Doctrine\DBAL\Driver\PDOException: SQLSTATE[42000]: Syntax error or access viola
 Currently there is no way for this bundle to work with those queries as they simply cannot be rolled back after the test case finished.
 
 See also https://github.com/dmaicher/doctrine-test-bundle/issues/58
-    
-[Last stable image]: https://poser.pugx.org/dama/doctrine-test-bundle/version.svg
-[Last unstable image]: https://poser.pugx.org/dama/doctrine-test-bundle/v/unstable.svg
-[Master build image]: https://travis-ci.org/dmaicher/doctrine-test-bundle.svg?branch=master
-[Master scrutinizer image]: https://scrutinizer-ci.com/g/dmaicher/doctrine-test-bundle/badges/quality-score.png?b=master
-[Master coverage image]: https://scrutinizer-ci.com/g/dmaicher/doctrine-test-bundle/badges/coverage.png?b=master
-
-[Packagist link]: https://packagist.org/packages/dama/doctrine-test-bundle
-[Master build link]: https://travis-ci.org/dmaicher/doctrine-test-bundle
-[Master scrutinizer link]: https://scrutinizer-ci.com/g/dmaicher/doctrine-test-bundle/?branch=master

@@ -71,12 +71,7 @@ script:
   - if [[ ${SKIP_CS_FIXER} != "1" ]]; then tfold 'PHP CS Fixer' make php_cs_fixer_check; fi
   - tfold 'PHPStan' make phpstan
   - |
-    if [[ ${TEST_COVERAGE} ]]; then tfold 'PHPUnit with Coverage' phpdbg -qrr vendor/bin/phpunit -c tests/ --coverage-clover ./build/logs/clover.xml;
-    elif [[ ${PHPUNIT_VERSION} == "7.*" ]]; then tfold 'PHPUnit 7' vendor/bin/phpunit -c tests/phpunit7.xml tests/;
+    if [[ ${PHPUNIT_VERSION} == "7.*" ]]; then tfold 'PHPUnit 7' vendor/bin/phpunit -c tests/phpunit7.xml tests/;
     else tfold 'PHPUnit' vendor/bin/phpunit -c tests/ tests/;
     fi
   - tfold 'Behat' vendor/bin/behat -c tests/behat.yml -fprogress
-
-after_success:
-  - if [[ ${TEST_COVERAGE} ]]; then wget https://scrutinizer-ci.com/ocular.phar; fi
-  - if [[ ${TEST_COVERAGE} ]]; then php ocular.phar code-coverage:upload --format=php-clover ./build/logs/clover.xml; fi
