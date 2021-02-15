@@ -2,7 +2,11 @@
 
 namespace DAMA\DoctrineTestBundle\Doctrine\DBAL;
 
-if (interface_exists(\Doctrine\DBAL\Driver\ExceptionConverterDriver::class)) {
+use PackageVersions\Versions;
+
+$dbalVersion = Versions::getVersion('doctrine/dbal');
+
+if (version_compare($dbalVersion, '2.11.0', '<')) {
     // dbal v2
     class StaticDriver extends AbstractStaticDriverV2
     {
