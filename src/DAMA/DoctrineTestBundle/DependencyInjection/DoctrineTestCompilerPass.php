@@ -2,8 +2,12 @@
 
 namespace DAMA\DoctrineTestBundle\DependencyInjection;
 
+use DAMA\DoctrineTestBundle\Doctrine\Cache\Psr6StaticArrayCache;
 use DAMA\DoctrineTestBundle\Doctrine\Cache\StaticArrayCache;
 use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticConnectionFactory;
+use Doctrine\Common\Cache\Cache;
+use Psr\Cache\CacheItemPoolInterface;
+use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -53,12 +57,18 @@ class DoctrineTestCompilerPass implements CompilerPassInterface
 
             foreach ($cacheNames as $cacheName) {
                 $cacheServiceId = sprintf($cacheName, $name);
-                if ($container->hasAlias($cacheServiceId)) {
-                    $container->removeAlias($cacheServiceId);
+
+                if (!$container->has($cacheServiceId)) {
+                    // might happen if ORM is not used
+                    continue;
                 }
-                $cache = new Definition(StaticArrayCache::class);
-                $cache->addMethodCall('setNamespace', [sha1($cacheServiceId)]); //make sure we have no key collisions
-                $container->setDefinition($cacheServiceId, $cache);
+
+                $definition = $container->findDefinition($cacheServiceId);
+                while (!$definition->getClass() && $definition instanceof ChildDefinition) {
+                    $definition = $container->findDefinition($definition->getParent());
+                }
+
+                $this->registerStaticCache($container, $definition, $cacheServiceId);
             }
         }
     }
@@ -79,5 +89,29 @@ class DoctrineTestCompilerPass implements CompilerPassInterface
         $connectionOptions['dama.keep_static'] = true;
         $connectionOptions['dama.connection_name'] = $name;
         $connectionDefinition->replaceArgument(0, $connectionOptions);
+    }
+
+    private function registerStaticCache(
+        ContainerBuilder $container,
+        Definition $originalCacheServiceDefinition,
+        string $cacheServiceId
+    ): void {
+        $cache = new Definition();
+        $namespace = sha1($cacheServiceId);
+
+        if (is_a($originalCacheServiceDefinition->getClass(), CacheItemPoolInterface::class, true)) {
+            $cache->setClass(Psr6StaticArrayCache::class);
+            $cache->setArgument(0, $namespace); //make sure we have no key collisions
+        } elseif (is_a($originalCacheServiceDefinition->getClass(), Cache::class, true)) {
+            $cache->setClass(StaticArrayCache::class);
+            $cache->addMethodCall('setNamespace', [$namespace]); //make sure we have no key collisions
+        } else {
+            throw new \InvalidArgumentException(sprintf('Unsupported cache class "%s" found on service "%s".', $originalCacheServiceDefinition->getClass(), $cacheServiceId));
+        }
+
+        if ($container->hasAlias($cacheServiceId)) {
+            $container->removeAlias($cacheServiceId);
+        }
+        $container->setDefinition($cacheServiceId, $cache);
     }
 }

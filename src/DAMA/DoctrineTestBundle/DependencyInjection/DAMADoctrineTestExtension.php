@@ -18,6 +18,9 @@ class DAMADoctrineTestExtension extends Extension
         $this->processedConfig = $this->processConfiguration($configuration, $configs);
     }
 
+    /**
+     * @internal
+     */
     public function getProcessedConfig(): array
     {
         return $this->processedConfig;

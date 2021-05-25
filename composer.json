@@ -1,40 +1,52 @@
 {
-  "name": "dama/doctrine-test-bundle",
-  "description": "Symfony bundle to isolate doctrine database tests and improve test performance",
-  "keywords": ["symfony", "doctrine", "tests", "isolation", "performance"],
-  "type": "symfony-bundle",
-  "license": "MIT",
-  "authors": [
-    {
-      "name": "David Maicher",
-      "email": "mail@dmaicher.de"
+    "name": "dama/doctrine-test-bundle",
+    "description": "Symfony bundle to isolate doctrine database tests and improve test performance",
+    "keywords": [
+        "symfony",
+        "doctrine",
+        "tests",
+        "isolation",
+        "performance"
+    ],
+    "type": "symfony-bundle",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "David Maicher",
+            "email": "mail@dmaicher.de"
+        }
+    ],
+    "require": {
+        "php": "^7.1 || ^8.0",
+        "doctrine/dbal": "^2.9.3 || ^3.0",
+        "doctrine/doctrine-bundle": "^1.11 || ^2.0",
+        "symfony/cache": "^4.4 || ^5.2",
+        "symfony/framework-bundle": "^4.4 || ^5.2"
+    },
+    "require-dev": {
+        "behat/behat": "^3.0",
+        "phpunit/phpunit": "^7.0 || ^8.0 || ^9.0",
+        "symfony/yaml": "^4.4 || ^5.2",
+        "symfony/phpunit-bridge": "^5.2",
+        "symfony/process": "^4.4 || ^5.2",
+        "phpstan/phpstan": "^0.12.85"
+    },
+    "autoload": {
+        "psr-4": {
+            "DAMA\\DoctrineTestBundle\\": "src/DAMA/DoctrineTestBundle"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "7.0.x-dev"
+        }
+    },
+    "config": {
+        "sort-packages": true
     }
-  ],
-  "require": {
-    "php": "^7.1 || ^8.0",
-    "symfony/framework-bundle": "^4.4 || ^5.2",
-    "doctrine/dbal": "^2.9.3 || ^3.0",
-    "doctrine/doctrine-bundle": "^1.11 || ^2.0"
-  },
-  "require-dev": {
-    "behat/behat": "^3.0",
-    "phpunit/phpunit": "^7.0 || ^8.0 || ^9.0",
-    "symfony/yaml": "^4.4 || ^5.2",
-    "symfony/phpunit-bridge": "^5.2",
-    "symfony/process": "^4.4 || ^5.2",
-    "phpstan/phpstan": "^0.12.85"
-  },
-  "autoload": {
-    "psr-4": {
-      "DAMA\\DoctrineTestBundle\\": "src/DAMA/DoctrineTestBundle"
-    }
-  },
-  "autoload-dev": {
-    "psr-4": { "Tests\\": "tests/" }
-  },
-  "extra": {
-    "branch-alias": {
-      "dev-master": "7.0.x-dev"
-    }
-  }
 }
