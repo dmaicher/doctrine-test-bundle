@@ -1,10 +1,9 @@
 <?php
 
-return PhpCsFixer\Config::create()
+return (new PhpCsFixer\Config())
     ->setRiskyAllowed(true)
     ->setRules([
         '@Symfony' => true,
-        'psr0' => false,
         'yoda_style' => false,
         'array_syntax' => [
             'syntax' => 'short',
