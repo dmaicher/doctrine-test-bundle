@@ -102,8 +102,8 @@ dama_doctrine_test:
 
 An example usage can be seen within the functional tests included in this bundle: https://github.com/dmaicher/doctrine-test-bundle/tree/master/tests
 
-- initial database bootstrap is done using phpunit bootstrap file: https://github.com/dmaicher/doctrine-test-bundle/blob/master/tests/phpunit.bootstrap.php
-- several tests that make sure any changes from previous tests are rolled back: https://github.com/dmaicher/doctrine-test-bundle/blob/master/tests/Functional/FunctionalTest.php
+- initial database bootstrap is done using phpunit bootstrap file: https://github.com/dmaicher/doctrine-test-bundle/blob/master/tests/bootstrap.php
+- several tests that make sure any changes from previous tests are rolled back: https://github.com/dmaicher/doctrine-test-bundle/blob/master/tests/Functional/PhpunitTest.php
 
 This bundle is also used on the official Symfony Demo testsuite: https://github.com/symfony/demo
 
