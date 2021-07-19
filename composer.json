@@ -25,11 +25,12 @@
     },
     "require-dev": {
         "behat/behat": "^3.0",
+        "doctrine/cache": "^1.12",
+        "phpstan/phpstan": "^0.12.85",
         "phpunit/phpunit": "^7.0 || ^8.0 || ^9.0",
-        "symfony/yaml": "^4.4 || ^5.2",
         "symfony/phpunit-bridge": "^5.2",
         "symfony/process": "^4.4 || ^5.2",
-        "phpstan/phpstan": "^0.12.85"
+        "symfony/yaml": "^4.4 || ^5.2"
     },
     "autoload": {
         "psr-4": {
