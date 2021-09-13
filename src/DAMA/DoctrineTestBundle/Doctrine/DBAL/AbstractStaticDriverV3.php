@@ -4,17 +4,16 @@ namespace DAMA\DoctrineTestBundle\Doctrine\DBAL;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\API\ExceptionConverter;
+use Doctrine\DBAL\Driver\Connection as DriverConnection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Schema\AbstractSchemaManager;
 
 /**
  * @internal
  */
 abstract class AbstractStaticDriverV3 extends AbstractStaticDriver
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function connect(array $params)
+    public function connect(array $params): DriverConnection
     {
         if (!self::$keepStaticConnections) {
             return $this->underlyingDriver->connect($params);
@@ -30,17 +29,11 @@ abstract class AbstractStaticDriverV3 extends AbstractStaticDriver
         return new StaticConnection(self::$connections[$key]);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getSchemaManager(Connection $conn, AbstractPlatform $platform)
+    public function getSchemaManager(Connection $conn, AbstractPlatform $platform): AbstractSchemaManager
     {
         return $this->underlyingDriver->getSchemaManager($conn, $platform);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getExceptionConverter(): ExceptionConverter
     {
         return $this->underlyingDriver->getExceptionConverter();

@@ -38,17 +38,11 @@ abstract class AbstractStaticDriver implements Driver, VersionAwarePlatformDrive
         $this->platform = $platform;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getDatabasePlatform(): AbstractPlatform
     {
         return $this->platform;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function createDatabasePlatformForVersion($version): AbstractPlatform
     {
         return $this->platform;

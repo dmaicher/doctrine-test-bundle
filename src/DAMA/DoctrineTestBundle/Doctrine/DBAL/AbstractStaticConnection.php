@@ -25,17 +25,11 @@ abstract class AbstractStaticConnection implements Connection
         $this->connection = $connection;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function lastInsertId($name = null): string
     {
         return $this->connection->lastInsertId($name);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function beginTransaction(): bool
     {
         if ($this->transactionStarted) {
@@ -45,17 +39,11 @@ abstract class AbstractStaticConnection implements Connection
         return $this->transactionStarted = true;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function commit(): bool
     {
         return $this->connection->commit();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function rollBack(): bool
     {
         return $this->connection->rollBack();
@@ -66,9 +54,6 @@ abstract class AbstractStaticConnection implements Connection
         return $this->connection;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function quote($input, $type = ParameterType::STRING)
     {
         return $this->connection->quote($input, $type);

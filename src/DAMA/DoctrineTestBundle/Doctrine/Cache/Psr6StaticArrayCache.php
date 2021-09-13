@@ -34,74 +34,47 @@ final class Psr6StaticArrayCache implements CacheItemPoolInterface
         self::$adaptersByNamespace = [];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getItem($key)
+    public function getItem($key): CacheItemInterface
     {
         return $this->adapter->getItem($key);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getItems(array $keys = [])
+    public function getItems(array $keys = []): iterable
     {
         return $this->adapter->getItems($keys);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function hasItem($key)
+    public function hasItem($key): bool
     {
         return $this->adapter->hasItem($key);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function clear()
+    public function clear(): bool
     {
         return $this->adapter->clear();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function deleteItem($key)
+    public function deleteItem($key): bool
     {
         return $this->adapter->deleteItem($key);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function deleteItems(array $keys)
+    public function deleteItems(array $keys): bool
     {
         return $this->adapter->deleteItems($keys);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function save(CacheItemInterface $item)
+    public function save(CacheItemInterface $item): bool
     {
         return $this->adapter->save($item);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function saveDeferred(CacheItemInterface $item)
+    public function saveDeferred(CacheItemInterface $item): bool
     {
         return $this->adapter->saveDeferred($item);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function commit()
+    public function commit(): bool
     {
         return $this->adapter->commit();
     }

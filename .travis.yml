@@ -33,6 +33,11 @@ matrix:
         - PHPUNIT_VERSION="9.*"
     - php: 8.0
       env:
+        - SYMFONY_REQUIRE="6.0.*"
+        - PHPUNIT_VERSION="9.*"
+        - STABILITY="dev"
+    - php: 8.0
+      env:
         - SYMFONY_REQUIRE="5.2.*"
         - PHPUNIT_VERSION="9.*"
         - SKIP_CS_FIXER=1
