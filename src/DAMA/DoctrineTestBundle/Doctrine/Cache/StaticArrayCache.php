@@ -11,7 +11,10 @@ class StaticArrayCache extends CacheProvider
      */
     private static $data = [];
 
-    protected function doFetch($id): bool
+    /**
+     * @return false|mixed
+     */
+    protected function doFetch($id)
     {
         return $this->doContains($id) ? self::$data[$id] : false;
     }
