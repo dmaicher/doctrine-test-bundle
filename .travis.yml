@@ -36,7 +36,7 @@ matrix:
         - SYMFONY_REQUIRE="6.0.*"
         - PHPUNIT_VERSION="9.*"
         - STABILITY="dev"
-    - php: 8.1
+    - php: nightly
       env:
         - SYMFONY_REQUIRE="6.0.*"
         - PHPUNIT_VERSION="9.*"
