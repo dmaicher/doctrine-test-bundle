@@ -25,7 +25,7 @@
         "symfony/framework-bundle": "^4.4 || ^5.2 || ^6.0"
     },
     "require-dev": {
-        "behat/behat": "^3.0",
+        "behat/behat": "dev-master",
         "doctrine/cache": "^1.12",
         "phpstan/phpstan": "^0.12.85",
         "phpunit/phpunit": "^7.0 || ^8.0 || ^9.0",
