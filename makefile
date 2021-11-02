@@ -8,11 +8,14 @@ tests/Functional/app/parameters.yml:
 test: tests/Functional/app/parameters.yml
 	vendor/bin/phpunit -c tests/ tests/
 
-test_phpunit_7: tests/Functional/parameters.yml
+test_phpunit_7: tests/Functional/app/parameters.yml
 	vendor/bin/phpunit -c tests/phpunit7.xml tests/
 
 phpstan:
 	vendor/bin/phpstan analyse -c phpstan.neon -a vendor/autoload.php -l 5 src
+
+behat:
+	vendor/bin/behat -c tests/behat.yml -fprogress
 
 build: composer.phar test phpstan php_cs_fixer_check
 

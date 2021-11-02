@@ -1,0 +1,106 @@
+name: Build
+
+on: [ pull_request ]
+
+jobs:
+    tests:
+        runs-on: ubuntu-latest
+        name: Test
+        env:
+            SYMFONY_REQUIRE: "${{ matrix.symfony_require }}"
+        services:
+            mysql:
+                image: mysql:5.7
+                env:
+                    MYSQL_ALLOW_EMPTY_PASSWORD: true
+                ports:
+                    - 3306:3306
+                options: --health-cmd "mysqladmin ping --silent"
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    -   php: 7.1
+                        phpunit_require: '^7.0'
+                    -   php: 7.2
+                    -   php: 7.3
+                        symfony_require: 4.4.*
+                    -   php: 7.4
+                        composer_flags: --prefer-lowest
+                        phpunit_require: '^7.0'
+                    -   php: 7.4
+                        symfony_require: 5.3.*
+                    -   php: 8.0
+                    -   php: 8.1
+                        stability: dev
+                        symfony_require: 6.0.*
+
+        steps:
+            -   uses: actions/checkout@v2
+
+            -   name: Setup PHP
+                uses: shivammathur/setup-php@v2
+                with:
+                    php-version: "${{ matrix.php }}"
+                    coverage: none
+
+            -   name: Configure Composer minimum stability
+                if: matrix.stability
+                run: composer config minimum-stability ${{ matrix.stability }}
+
+            -   name: Install symfony/flex
+                run: composer global require symfony/flex
+
+            -   name: Install dependencies
+                run: composer update ${{ matrix.composer_flags }} --prefer-dist
+
+            -   name: Install PHPUnit
+                if: matrix.phpunit_require
+                run: composer req phpunit/phpunit ${{ matrix.phpunit_require }} --dev
+
+            -   name: Phpunit
+                if: matrix.phpunit_require != '^7.0'
+                run: make test
+
+            -   name: Phpunit 7
+                if: matrix.phpunit_require == '^7.0'
+                run: make test_phpunit_7
+
+            -   name: Behat
+                run: make behat
+
+    php-stan:
+        runs-on: ubuntu-latest
+        name: php-stan
+
+        steps:
+            -   uses: actions/checkout@v2
+
+            -   name: Setup PHP
+                uses: shivammathur/setup-php@v2
+                with:
+                    php-version: "7.4"
+
+            -   name: Install dependencies
+                run: composer update --prefer-dist
+
+            -   name: PHPStan
+                run: make phpstan
+
+    cs-fixer:
+        runs-on: ubuntu-latest
+        name: CS-Fixer
+
+        steps:
+            -   uses: actions/checkout@v2
+
+            -   name: Setup PHP
+                uses: shivammathur/setup-php@v2
+                with:
+                    php-version: "7.4"
+
+            -   name: Install dependencies
+                run: composer update --prefer-dist
+
+            -   name: PHP CS Fixer
+                run: make php_cs_fixer_check
