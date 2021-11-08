@@ -54,6 +54,9 @@ abstract class AbstractStaticConnection implements Connection
         return $this->connection;
     }
 
+    /**
+     * @return mixed
+     */
     public function quote($input, $type = ParameterType::STRING)
     {
         return $this->connection->quote($input, $type);
