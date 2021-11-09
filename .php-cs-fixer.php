@@ -16,7 +16,6 @@ return (new PhpCsFixer\Config())
         'multiline_whitespace_before_semicolons' => [
             'strategy' => 'new_line_for_chained_calls',
         ],
-        'no_superfluous_phpdoc_tags' => true,
         'phpdoc_var_annotation_correct_order' => true,
         'void_return' => true,
     ])
