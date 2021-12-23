@@ -1,6 +1,6 @@
 parameters:
     treatPhpDocTypesAsCertain: false
-    excludes_analyse:
+    excludePaths:
         - %currentWorkingDirectory%/src/DAMA/DoctrineTestBundle/DependencyInjection/Configuration.php
         - %currentWorkingDirectory%/src/DAMA/DoctrineTestBundle/PHPUnit/PHPUnitListener.php
         - %currentWorkingDirectory%/src/DAMA/DoctrineTestBundle/PHPUnit/PHPUnitExtension.php
