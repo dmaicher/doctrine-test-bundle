@@ -19,7 +19,7 @@ abstract class AbstractStaticDriverV2 extends AbstractStaticDriver implements Ex
             return $this->underlyingDriver->connect($params, $username, $password, $driverOptions);
         }
 
-        $key = $params['dama.connection_name'] ?? sha1(serialize($params).$username.$password);
+        $key = sha1(serialize($params).$username.$password);
 
         if (!isset(self::$connections[$key])) {
             self::$connections[$key] = $this->underlyingDriver->connect($params, $username, $password, $driverOptions);
