@@ -4,6 +4,7 @@ namespace DAMA\DoctrineTestBundle\Doctrine\DBAL;
 
 use Doctrine\DBAL\Driver\Connection;
 use Doctrine\DBAL\ParameterType;
+use LogicException;
 
 /**
  * @internal
@@ -52,6 +53,15 @@ abstract class AbstractStaticConnection implements Connection
     public function getWrappedConnection(): Connection
     {
         return $this->connection;
+    }
+
+    public function getNativeConnection()
+    {
+        if (!method_exists($this->connection, 'getNativeConnection')) {
+            throw new LogicException(sprintf('The driver connection %s does not support accessing the native connection.', get_class($this->connection)));
+        }
+
+        return $this->connection->getNativeConnection();
     }
 
     /**
