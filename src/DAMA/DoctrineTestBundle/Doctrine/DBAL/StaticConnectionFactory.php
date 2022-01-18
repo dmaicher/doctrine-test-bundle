@@ -6,7 +6,6 @@ use Doctrine\Bundle\DoctrineBundle\ConnectionFactory;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Events;
 
 class StaticConnectionFactory extends ConnectionFactory
 {
@@ -40,8 +39,6 @@ class StaticConnectionFactory extends ConnectionFactory
             $connectionOriginalDriver->getConfiguration(),
             $connectionOriginalDriver->getEventManager()
         );
-
-        $connection->getEventManager()->addEventListener(Events::postConnect, new PostConnectEventListener());
 
         // Make sure we use savepoints to be able to easily roll-back nested transactions
         if ($connection->getDriver()->getDatabasePlatform()->supportsSavepoints()) {
