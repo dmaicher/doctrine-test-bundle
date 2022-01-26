@@ -4,6 +4,7 @@ namespace Tests\Functional;
 
 use DAMA\DoctrineTestBundle\Doctrine\DBAL\PostConnectEventListener;
 use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticDriver;
+use Doctrine\DBAL\Connections\PrimaryReadReplicaConnection;
 use Doctrine\DBAL\Events;
 use Doctrine\DBAL\Exception\TableNotFoundException;
 use PHPUnit\Framework\TestCase;
@@ -99,5 +100,38 @@ class PhpunitTest extends TestCase
     {
         $this->expectException(TableNotFoundException::class);
         $this->connection->insert('does_not_exist', ['foo' => 'bar']);
+    }
+
+    public function testReplicatedConnection(): void
+    {
+        /** @var PrimaryReadReplicaConnection $replicatedConnection */
+        $replicatedConnection = $this->kernel->getContainer()->get('doctrine.dbal.replicated_connection');
+        $this->connection = $replicatedConnection;
+
+        $replicatedConnection->ensureConnectedToPrimary();
+        $this->insertRow();
+        $this->assertRowCount(1);
+        $replicatedConnection->close();
+
+        $replicatedConnection->ensureConnectedToReplica();
+        $this->insertRow();
+        $this->assertRowCount(2);
+    }
+
+    /**
+     * @depends testReplicatedConnection
+     */
+    public function testReplicatedConnectionRollback(): void
+    {
+        /** @var PrimaryReadReplicaConnection $replicatedConnection */
+        $replicatedConnection = $this->kernel->getContainer()->get('doctrine.dbal.replicated_connection');
+        $this->connection = $replicatedConnection;
+
+        $replicatedConnection->ensureConnectedToPrimary();
+        $this->assertRowCount(0);
+        $replicatedConnection->close();
+
+        $replicatedConnection->ensureConnectedToReplica();
+        $this->assertRowCount(0);
     }
 }

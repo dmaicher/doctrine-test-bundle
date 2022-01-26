@@ -19,7 +19,7 @@
     "require": {
         "php": "^7.1 || ^8.0",
         "doctrine/dbal": "^2.9.3 || ^3.0",
-        "doctrine/doctrine-bundle": "^1.11 || ^2.0",
+        "doctrine/doctrine-bundle": "^2.2",
         "psr/cache": "^1.0 || ^2.0 || ^3.0",
         "symfony/cache": "^4.4 || ^5.3 || ^6.0",
         "symfony/framework-bundle": "^4.4 || ^5.3 || ^6.0"
