@@ -2,32 +2,12 @@
 
 namespace Tests\Functional;
 
-use DAMA\DoctrineTestBundle\Doctrine\DBAL\PostConnectEventListener;
-use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticDriver;
-use Doctrine\DBAL\Events;
 use Doctrine\DBAL\Exception\TableNotFoundException;
 use PHPUnit\Framework\TestCase;
 
 class PhpunitTest extends TestCase
 {
     use FunctionalTestTrait;
-
-    public function testHasStaticDriver(): void
-    {
-        $this->assertInstanceOf(StaticDriver::class, $this->connection->getDriver());
-    }
-
-    public function testHasPostConnectEventListener(): void
-    {
-        $listeners = array_filter(
-            $this->connection->getEventManager()->getListeners(Events::postConnect),
-            function ($listener) {
-                return $listener instanceof PostConnectEventListener;
-            }
-        );
-
-        $this->assertCount(1, $listeners);
-    }
 
     public function testChangeDbState(): void
     {
