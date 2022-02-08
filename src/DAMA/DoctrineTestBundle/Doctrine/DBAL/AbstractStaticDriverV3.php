@@ -19,7 +19,7 @@ abstract class AbstractStaticDriverV3 extends AbstractStaticDriver
             return $this->underlyingDriver->connect($params);
         }
 
-        $key = sha1(serialize($params));
+        $key = sha1(json_encode($params));
 
         if (!isset(self::$connections[$key])) {
             self::$connections[$key] = $this->underlyingDriver->connect($params);
