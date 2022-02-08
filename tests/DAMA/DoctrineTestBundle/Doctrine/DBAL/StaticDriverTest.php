@@ -19,6 +19,7 @@ class StaticDriverTest extends TestCase
     public function setUp(): void
     {
         $this->platform = $this->createMock(AbstractPlatform::class);
+        $this->platform->closureForTest = function() {};
     }
 
     public function testReturnCorrectPlatform(): void
@@ -35,9 +36,6 @@ class StaticDriverTest extends TestCase
 
         $driver::setKeepStaticConnections(true);
 
-        $objectWithClosure = new stdClass();
-        $objectWithClosure->closure = function () {};
-
         $params = [
             'driver' => 'pdo_mysql',
             'charset' => 'UTF8',
@@ -46,7 +44,7 @@ class StaticDriverTest extends TestCase
             'user' => 'user',
             'password' => 'password',
             'port' => null,
-            'object_with_closure' => $objectWithClosure,
+            'platform' => $this->platform,
             'dama.keep_static' => true,
             'dama.connection_name' => 'foo',
         ];
