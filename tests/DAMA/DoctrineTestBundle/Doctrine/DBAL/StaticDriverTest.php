@@ -7,6 +7,7 @@ use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticDriver;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use stdClass;
 
 class StaticDriverTest extends TestCase
 {
@@ -34,6 +35,9 @@ class StaticDriverTest extends TestCase
 
         $driver::setKeepStaticConnections(true);
 
+        $objectWithClosure = new stdClass();
+        $objectWithClosure->closure = function () {};
+
         $params = [
             'driver' => 'pdo_mysql',
             'charset' => 'UTF8',
@@ -42,6 +46,7 @@ class StaticDriverTest extends TestCase
             'user' => 'user',
             'password' => 'password',
             'port' => null,
+            'object_with_closure' => $objectWithClosure,
             'dama.keep_static' => true,
             'dama.connection_name' => 'foo',
         ];
