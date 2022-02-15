@@ -17,12 +17,16 @@ class PHPUnitExtension implements BeforeFirstTestHook, AfterLastTestHook, Before
 
     public function executeBeforeTest(string $test): void
     {
-        StaticDriver::beginTransaction();
+        if (!StaticDriver::isManualOperations()) {
+            StaticDriver::beginTransaction();
+        }
     }
 
     public function executeAfterTest(string $test, float $time): void
     {
-        StaticDriver::rollBack();
+        if (!StaticDriver::isManualOperations()) {
+            StaticDriver::rollBack();
+        }
     }
 
     public function executeAfterLastTest(): void

@@ -20,6 +20,11 @@ abstract class AbstractStaticDriver implements Driver, VersionAwarePlatformDrive
     /**
      * @var bool
      */
+    protected static $manualOperations = false;
+
+    /**
+     * @var bool
+     */
     protected static $keepStaticConnections = false;
 
     /**
@@ -56,6 +61,16 @@ abstract class AbstractStaticDriver implements Driver, VersionAwarePlatformDrive
     public static function isKeepStaticConnections(): bool
     {
         return self::$keepStaticConnections;
+    }
+
+    public static function setManualOperations(bool $manualOperations): void
+    {
+        self::$manualOperations = $manualOperations;
+    }
+
+    public static function isManualOperations(): bool
+    {
+        return self::$manualOperations;
     }
 
     public static function beginTransaction(): void
