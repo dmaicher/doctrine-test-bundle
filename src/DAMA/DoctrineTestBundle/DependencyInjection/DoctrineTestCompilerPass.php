@@ -101,10 +101,10 @@ class DoctrineTestCompilerPass implements CompilerPassInterface
 
         if (is_a($originalCacheServiceDefinition->getClass(), CacheItemPoolInterface::class, true)) {
             $cache->setClass(Psr6StaticArrayCache::class);
-            $cache->setArgument(0, $namespace); //make sure we have no key collisions
+            $cache->setArgument(0, $namespace); // make sure we have no key collisions
         } elseif (is_a($originalCacheServiceDefinition->getClass(), Cache::class, true)) {
             $cache->setClass(StaticArrayCache::class);
-            $cache->addMethodCall('setNamespace', [$namespace]); //make sure we have no key collisions
+            $cache->addMethodCall('setNamespace', [$namespace]); // make sure we have no key collisions
         } else {
             throw new \InvalidArgumentException(sprintf('Unsupported cache class "%s" found on service "%s".', $originalCacheServiceDefinition->getClass(), $cacheServiceId));
         }
