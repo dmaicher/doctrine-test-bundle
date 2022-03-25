@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [7.0.0]
+### Changed
+- dropped support for php 7.1
+- dropped support for phpunit 7
+
 ## [6.7.0]
 ### Changed
 - dropped support for unmaintained Symfony version 5.2

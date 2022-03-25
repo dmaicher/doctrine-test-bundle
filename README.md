@@ -7,7 +7,7 @@ This bundle provides features that help you run your Symfony-framework-based App
 
 It provides a `StaticDriver` that will wrap your originally configured `Driver` class (like `DBAL\Driver\PDOMysql\Driver`) and keeps a database connection statically in the current php process.
 
-With the help of a PHPUnit listener class it will begin a transaction before every testcase and roll it back again after the test finished for all configured DBAL connections. This results in a performance boost as there is no need to rebuild the schema, import a backup SQL dump or re-insert fixtures before every testcase. As long as you avoid issuing DDL queries that might result in implicit transaction commits (Like `ALTER TABLE`, `DROP TABLE` etc; see https://wiki.postgresql.org/wiki/Transactional_DDL_in_PostgreSQL:_A_Competitive_Analysis) your tests will be isolated and all see the same database state.
+With the help of a PHPUnit extension class it will begin a transaction before every testcase and roll it back again after the test finished for all configured DBAL connections. This results in a performance boost as there is no need to rebuild the schema, import a backup SQL dump or re-insert fixtures before every testcase. As long as you avoid issuing DDL queries that might result in implicit transaction commits (Like `ALTER TABLE`, `DROP TABLE` etc; see https://wiki.postgresql.org/wiki/Transactional_DDL_in_PostgreSQL:_A_Competitive_Analysis) your tests will be isolated and all see the same database state.
 
 It also includes a `StaticArrayCache` that will be automatically configured as meta data & query cache for all EntityManagers. This improved the speed and memory usage for my testsuites dramatically! This is especially beneficial if you have a lot of tests that boot kernels (like Controller tests or ContainerAware tests) and use Doctrine entities.
 
@@ -34,7 +34,7 @@ It also includes a `StaticArrayCache` that will be automatically configured as m
     
 #### Using the Bundle with PHPUnit
 
-1. For PHPUnit version >= 7.5 add the extension in your xml config (e.g. `app/phpunit.xml`)
+1. For PHPUnit version >= 8.0 add the extension in your xml config (e.g. `app/phpunit.xml`)
 
     ```xml
     <phpunit>
@@ -44,21 +44,10 @@ It also includes a `StaticArrayCache` that will be automatically configured as m
         </extensions>
     </phpunit>
     ```
-
-    For PHPUnit version 7.0 until 7.4 add the listener in your xml config (e.g. `app/phpunit.xml`) 
-
-    ```xml
-    <phpunit>
-        ...
-        <listeners>
-            <listener class="\DAMA\DoctrineTestBundle\PHPUnit\PHPUnitListener" />
-        </listeners>
-    </phpunit>
-    ```
     
-2. Make sure you also have `phpunit/phpunit` available as a `dev` dependency (**versions 7, 8 and 9 are supported with the built in listener/extension**) to run your tests. 
+2. Make sure you also have `phpunit/phpunit` available as a `dev` dependency (**versions 8 and 9 are supported with the built in extension**) to run your tests. 
    Alternatively this bundle is also compatible with `symfony/phpunit-bridge` and its `simple-phpunit` script. 
-   (Note: you may need to make sure the phpunit-bridge requires the correct PHPUnit 7+ Version using the environment variable `SYMFONY_PHPUNIT_VERSION`). 
+   (Note: you may need to make sure the phpunit-bridge requires the correct PHPUnit 8+ Version using the environment variable `SYMFONY_PHPUNIT_VERSION`). 
 
 3. That's it! From now on whatever changes you do to the database within each single testcase (be it a `WebTestCase` or a `KernelTestCase` or any custom test) are automatically rolled back for you :blush:
 
