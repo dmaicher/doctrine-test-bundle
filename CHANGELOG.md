@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - dropped support for phpunit 7
 - dropped support for Doctrine DBAL 2
 - dropped support for DoctrineBundle 1
+- dropped support for Symfony 5.3
 
 ## [6.7.0]
 ### Changed
