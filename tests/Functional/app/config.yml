@@ -1,6 +1,9 @@
 imports:
     - { resource: parameters.yml }
 
+framework:
+    http_method_override: false
+
 doctrine:
     dbal:
         connections:
