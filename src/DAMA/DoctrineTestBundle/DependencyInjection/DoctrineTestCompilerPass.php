@@ -4,6 +4,7 @@ namespace DAMA\DoctrineTestBundle\DependencyInjection;
 
 use DAMA\DoctrineTestBundle\Doctrine\Cache\Psr6StaticArrayCache;
 use DAMA\DoctrineTestBundle\Doctrine\Cache\StaticArrayCache;
+use DAMA\DoctrineTestBundle\Doctrine\DBAL\Middleware;
 use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticConnectionFactory;
 use Doctrine\Common\Cache\Cache;
 use Psr\Cache\CacheItemPoolInterface;
@@ -32,6 +33,8 @@ class DoctrineTestCompilerPass implements CompilerPassInterface
             ;
             $container->setDefinition('dama.doctrine.dbal.connection_factory', $factoryDef);
         }
+
+        $container->register('dama.doctrine.dbal.middleware', Middleware::class);
 
         $cacheNames = [];
 
@@ -89,6 +92,24 @@ class DoctrineTestCompilerPass implements CompilerPassInterface
         $connectionOptions['dama.keep_static'] = true;
         $connectionOptions['dama.connection_name'] = $name;
         $connectionDefinition->replaceArgument(0, $connectionOptions);
+
+        $connectionConfig = $container->getDefinition(sprintf('doctrine.dbal.%s_connection.configuration', $name));
+        $methodCalls = $connectionConfig->getMethodCalls();
+        $middlewareRef = new Reference('dama.doctrine.dbal.middleware');
+        $hasMiddlewaresMethodCall = false;
+        foreach ($methodCalls as &$methodCall) {
+            if ($methodCall[0] === 'setMiddlewares') {
+                $hasMiddlewaresMethodCall = true;
+                // our middleware needs to be the first one here so we wrap the "native" driver
+                $methodCall[1][0] = array_merge([$middlewareRef], $methodCall[1][0]);
+            }
+        }
+
+        if (!$hasMiddlewaresMethodCall) {
+            $methodCalls[] = ['setMiddlewares', [[$middlewareRef]]];
+        }
+
+        $connectionConfig->setMethodCalls($methodCalls);
     }
 
     private function registerStaticCache(

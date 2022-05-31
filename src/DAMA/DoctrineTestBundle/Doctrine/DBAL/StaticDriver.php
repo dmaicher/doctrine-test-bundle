@@ -8,9 +8,8 @@ use Doctrine\DBAL\Driver\Connection;
 use Doctrine\DBAL\Driver\Connection as DriverConnection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
-use Doctrine\DBAL\VersionAwarePlatformDriver;
 
-class StaticDriver implements Driver, VersionAwarePlatformDriver
+class StaticDriver implements Driver
 {
     /**
      * @var Connection[]
@@ -27,15 +26,9 @@ class StaticDriver implements Driver, VersionAwarePlatformDriver
      */
     protected $underlyingDriver;
 
-    /**
-     * @var AbstractPlatform
-     */
-    protected $platform;
-
-    public function __construct(Driver $underlyingDriver, AbstractPlatform $platform)
+    public function __construct(Driver $underlyingDriver)
     {
         $this->underlyingDriver = $underlyingDriver;
-        $this->platform = $platform;
     }
 
     public function connect(array $params): DriverConnection
@@ -66,16 +59,7 @@ class StaticDriver implements Driver, VersionAwarePlatformDriver
 
     public function getDatabasePlatform(): AbstractPlatform
     {
-        return $this->platform;
-    }
-
-    public function createDatabasePlatformForVersion($version): AbstractPlatform
-    {
-        if ($this->underlyingDriver instanceof VersionAwarePlatformDriver) {
-            return $this->underlyingDriver->createDatabasePlatformForVersion($version);
-        }
-
-        return $this->platform;
+        return $this->underlyingDriver->getDatabasePlatform();
     }
 
     public static function setKeepStaticConnections(bool $keepStaticConnections): void

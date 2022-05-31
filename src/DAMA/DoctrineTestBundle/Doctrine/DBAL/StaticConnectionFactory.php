@@ -23,23 +23,11 @@ class StaticConnectionFactory extends ConnectionFactory
 
     public function createConnection(array $params, Configuration $config = null, EventManager $eventManager = null, array $mappingTypes = []): Connection
     {
-        // create the original connection to get the used wrapper class + driver
-        $connectionOriginalDriver = $this->decoratedFactory->createConnection($params, $config, $eventManager, $mappingTypes);
+        $connection = $this->decoratedFactory->createConnection($params, $config, $eventManager, $mappingTypes);
 
         if (!StaticDriver::isKeepStaticConnections() || !isset($params['dama.keep_static']) || !$params['dama.keep_static']) {
-            return $connectionOriginalDriver;
+            return $connection;
         }
-
-        // wrapper class can be overridden/customized in params (see Doctrine\DBAL\DriverManager)
-        $connectionWrapperClass = get_class($connectionOriginalDriver);
-
-        /** @var Connection $connection */
-        $connection = new $connectionWrapperClass(
-            $connectionOriginalDriver->getParams(),
-            new StaticDriver($connectionOriginalDriver->getDriver(), $connectionOriginalDriver->getDatabasePlatform()),
-            $connectionOriginalDriver->getConfiguration(),
-            $connectionOriginalDriver->getEventManager()
-        );
 
         $connection->getEventManager()->addEventListener(Events::postConnect, new PostConnectEventListener());
 

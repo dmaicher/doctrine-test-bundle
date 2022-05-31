@@ -43,13 +43,7 @@ trait FunctionalTestTrait
      */
     public function assertRowCount($count): void
     {
-        if (method_exists($this->connection, 'fetchFirstColumn')) {
-            // dbal v3
-            Assert::assertEquals([$count], $this->connection->fetchFirstColumn('SELECT COUNT(*) FROM test'));
-        } else {
-            // dbal v2
-            Assert::assertEquals($count, $this->connection->fetchColumn('SELECT COUNT(*) FROM test'));
-        }
+        Assert::assertEquals([$count], $this->connection->fetchFirstColumn('SELECT COUNT(*) FROM test'));
     }
 
     /**

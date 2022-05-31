@@ -5,7 +5,7 @@ test: tests/Functional/app/parameters.yml
 	vendor/bin/phpunit -c tests/ tests/
 
 phpstan:
-	vendor/bin/phpstan analyse -c phpstan.neon -a vendor/autoload.php -l 5 src
+	vendor/bin/phpstan analyse -c phpstan.neon -a vendor/autoload.php -l 5 src tests
 
 behat:
 	vendor/bin/behat -c tests/behat.yml -fprogress

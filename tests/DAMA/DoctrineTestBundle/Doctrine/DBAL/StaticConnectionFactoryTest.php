@@ -22,11 +22,7 @@ class StaticConnectionFactoryTest extends TestCase
             'driverClass' => MockDriver::class,
         ]));
 
-        if ($expectedNestingLevel > 0) {
-            $this->assertInstanceOf(StaticDriver::class, $connection->getDriver());
-        } else {
-            $this->assertInstanceOf(MockDriver::class, $connection->getDriver());
-        }
+        $this->assertInstanceOf(MockDriver::class, $connection->getDriver());
 
         $this->assertSame(0, $connection->getTransactionNestingLevel());
 

@@ -8,12 +8,14 @@ use DAMA\DoctrineTestBundle\Doctrine\Cache\Psr6StaticArrayCache;
 use DAMA\DoctrineTestBundle\Doctrine\Cache\StaticArrayCache;
 use Doctrine\Bundle\DoctrineBundle\ConnectionFactory;
 use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\Connection;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\DependencyInjection\Reference;
 
 class DoctrineTestCompilerPassTest extends TestCase
 {
@@ -38,9 +40,19 @@ class DoctrineTestCompilerPassTest extends TestCase
         $extension->load([$config], $containerBuilder);
 
         $containerBuilder->setParameter('doctrine.connections', ['a' => 0, 'b' => 1, 'c' => 2]);
+
         $containerBuilder->setDefinition('doctrine.dbal.a_connection', new Definition(Connection::class, [[]]));
         $containerBuilder->setDefinition('doctrine.dbal.b_connection', new Definition(Connection::class, [[]]));
         $containerBuilder->setDefinition('doctrine.dbal.c_connection', new Definition(Connection::class, [[]]));
+
+        $containerBuilder->setDefinition(
+            'doctrine.dbal.a_connection.configuration',
+            (new Definition(Configuration::class))
+                ->setMethodCalls([['setMiddlewares', [[new Reference('foo')]]]])
+        );
+        $containerBuilder->setDefinition('doctrine.dbal.b_connection.configuration', new Definition(Configuration::class));
+        $containerBuilder->setDefinition('doctrine.dbal.c_connection.configuration', new Definition(Configuration::class));
+
         $containerBuilder->setDefinition('doctrine.dbal.connection_factory', new Definition(ConnectionFactory::class));
 
         if ($expectationCallback !== null) {
@@ -78,6 +90,35 @@ class DoctrineTestCompilerPassTest extends TestCase
                     'dama.keep_static' => true,
                     'dama.connection_name' => 'a',
                 ], $containerBuilder->getDefinition('doctrine.dbal.a_connection')->getArgument(0));
+
+                $this->assertEquals(
+                    [
+                        [
+                            'setMiddlewares',
+                            [
+                                [
+                                    new Reference('dama.doctrine.dbal.middleware'),
+                                    new Reference('foo'),
+                                ],
+                            ],
+                        ],
+                    ],
+                    $containerBuilder->getDefinition('doctrine.dbal.a_connection.configuration')->getMethodCalls()
+                );
+
+                $this->assertEquals(
+                    [
+                        [
+                            'setMiddlewares',
+                            [
+                                [
+                                    new Reference('dama.doctrine.dbal.middleware'),
+                                ],
+                            ],
+                        ],
+                    ],
+                    $containerBuilder->getDefinition('doctrine.dbal.b_connection.configuration')->getMethodCalls()
+                );
             },
         ];
 
@@ -90,6 +131,20 @@ class DoctrineTestCompilerPassTest extends TestCase
             function (ContainerBuilder $containerBuilder): void {
                 $this->assertFalse($containerBuilder->hasDefinition('dama.doctrine.dbal.connection_factory'));
                 $this->assertFalse($containerBuilder->hasDefinition('doctrine.orm.a_metadata_cache'));
+
+                $this->assertEquals(
+                    [
+                        [
+                            'setMiddlewares',
+                            [
+                                [
+                                    new Reference('foo'),
+                                ],
+                            ],
+                        ],
+                    ],
+                    $containerBuilder->getDefinition('doctrine.dbal.a_connection.configuration')->getMethodCalls()
+                );
             },
         ];
 
