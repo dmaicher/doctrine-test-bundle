@@ -31,7 +31,6 @@ jobs:
                         symfony_require: 6.0.*
                     -   php: 8.1
                         symfony_require: 6.1.*
-                        stability: dev
 
         steps:
             -   uses: actions/checkout@v2
