@@ -10,7 +10,7 @@ use Symfony\Component\DependencyInjection\Definition;
 
 final class RegisterDoctrineEventListenersPass implements CompilerPassInterface
 {
-    public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container): void
     {
         /** @var bool|array $enableStaticConnectionsConfig */
         $enableStaticConnectionsConfig = $container->getParameter('dama.'.Configuration::ENABLE_STATIC_CONNECTION);
