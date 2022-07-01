@@ -18,14 +18,10 @@ class DoctrineTestCompilerPass implements CompilerPassInterface
 {
     public function process(ContainerBuilder $container): void
     {
-        /** @var DAMADoctrineTestExtension $extension */
-        $extension = $container->getExtension('dama_doctrine_test');
-        $config = $extension->getProcessedConfig();
+        /** @var string[] $transactionalBehaviorEnabledConnections */
+        $transactionalBehaviorEnabledConnections = $container->getParameter('dama.doctrine.enabled_connections');
 
-        /** @var bool|array $enableStaticConnectionsConfig */
-        $enableStaticConnectionsConfig = $config[Configuration::ENABLE_STATIC_CONNECTION];
-
-        if ($enableStaticConnectionsConfig !== false) {
+        if (count($transactionalBehaviorEnabledConnections) > 0) {
             $factoryDef = new Definition(StaticConnectionFactory::class);
             $factoryDef
                 ->setDecoratedService('doctrine.dbal.connection_factory')
@@ -38,23 +34,18 @@ class DoctrineTestCompilerPass implements CompilerPassInterface
 
         $cacheNames = [];
 
-        if ($config[Configuration::STATIC_META_CACHE]) {
+        if ($container->getParameter('dama.'.Configuration::STATIC_META_CACHE)) {
             $cacheNames[] = 'doctrine.orm.%s_metadata_cache';
         }
 
-        if ($config[Configuration::STATIC_QUERY_CACHE]) {
+        if ($container->getParameter('dama.'.Configuration::STATIC_QUERY_CACHE)) {
             $cacheNames[] = 'doctrine.orm.%s_query_cache';
         }
 
         $connectionNames = array_keys($container->getParameter('doctrine.connections'));
-        if (is_array($enableStaticConnectionsConfig)) {
-            $this->validateConnectionNames(array_keys($enableStaticConnectionsConfig), $connectionNames);
-        }
 
         foreach ($connectionNames as $name) {
-            if ($enableStaticConnectionsConfig === true
-                || isset($enableStaticConnectionsConfig[$name]) && $enableStaticConnectionsConfig[$name] === true
-            ) {
+            if (in_array($name, $transactionalBehaviorEnabledConnections, true)) {
                 $this->addConnectionOptions($container, $name);
             }
 
@@ -74,15 +65,10 @@ class DoctrineTestCompilerPass implements CompilerPassInterface
                 $this->registerStaticCache($container, $definition, $cacheServiceId);
             }
         }
-    }
 
-    private function validateConnectionNames(array $configNames, array $existingNames): void
-    {
-        $unknown = array_diff($configNames, $existingNames);
-
-        if (count($unknown)) {
-            throw new \InvalidArgumentException(sprintf('Unknown doctrine dbal connection name(s): %s.', implode(', ', $unknown)));
-        }
+        $container->getParameterBag()->remove('dama.'.Configuration::STATIC_META_CACHE);
+        $container->getParameterBag()->remove('dama.'.Configuration::STATIC_QUERY_CACHE);
+        $container->getParameterBag()->remove('dama.doctrine.enabled_connections');
     }
 
     private function addConnectionOptions(ContainerBuilder $container, string $name): void

@@ -24,9 +24,7 @@ trait FunctionalTestTrait
      */
     public function setUp(): void
     {
-        $this->kernel = new AppKernel('test', true);
-        $this->kernel->boot();
-        $this->connection = $this->kernel->getContainer()->get('doctrine.dbal.default_connection');
+        $this->init();
     }
 
     /**
@@ -94,5 +92,12 @@ trait FunctionalTestTrait
     public function rollbackSavepoint(string $name): void
     {
         $this->connection->rollbackSavepoint($name);
+    }
+
+    private function init(): void
+    {
+        $this->kernel = new AppKernel('test', true);
+        $this->kernel->boot();
+        $this->connection = $this->kernel->getContainer()->get('doctrine.dbal.default_connection');
     }
 }

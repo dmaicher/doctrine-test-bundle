@@ -12,7 +12,7 @@ class StaticConnectionFactoryTest extends TestCase
     /**
      * @dataProvider createConnectionDataProvider
      */
-    public function testCreateConnection(bool $keepStaticConnections, array $params, int $expectedNestingLevel): void
+    public function testCreateConnection(bool $keepStaticConnections, array $params, bool $expectedNestingWithSavepoints): void
     {
         $factory = new StaticConnectionFactory(new ConnectionFactory([]));
 
@@ -24,10 +24,7 @@ class StaticConnectionFactoryTest extends TestCase
 
         $this->assertInstanceOf(MockDriver::class, $connection->getDriver());
 
-        $this->assertSame(0, $connection->getTransactionNestingLevel());
-
-        $connection->connect();
-        $this->assertSame($expectedNestingLevel, $connection->getTransactionNestingLevel());
+        $this->assertSame($expectedNestingWithSavepoints, $connection->getNestTransactionsWithSavepoints());
     }
 
     public function createConnectionDataProvider(): \Generator
@@ -35,19 +32,19 @@ class StaticConnectionFactoryTest extends TestCase
         yield 'disabled by static property' => [
             false,
             ['dama.keep_static' => true],
-            0,
+            false,
         ];
 
         yield 'disabled by param' => [
             true,
             ['dama.keep_static' => false],
-            0,
+            false,
         ];
 
         yield 'enabled' => [
             true,
             ['dama.keep_static' => true, 'dama.connection_name' => 'a'],
-            1,
+            true,
         ];
     }
 }

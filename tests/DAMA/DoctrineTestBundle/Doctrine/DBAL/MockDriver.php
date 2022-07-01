@@ -6,6 +6,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Driver\API\ExceptionConverter;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Platforms\MySQL80Platform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use PHPUnit\Framework\MockObject\Generator;
 
@@ -35,7 +36,7 @@ class MockDriver implements Driver
      */
     public function getDatabasePlatform(): AbstractPlatform
     {
-        return $this->getMock(AbstractPlatform::class);
+        return new MySQL80Platform();
     }
 
     /**

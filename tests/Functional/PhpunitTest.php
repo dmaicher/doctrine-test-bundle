@@ -2,6 +2,7 @@
 
 namespace Tests\Functional;
 
+use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticDriver;
 use Doctrine\DBAL\Exception\TableNotFoundException;
 use PHPUnit\Framework\TestCase;
 
@@ -89,5 +90,26 @@ class PhpunitTest extends TestCase
     {
         $this->expectException(TableNotFoundException::class);
         $this->connection->insert('does_not_exist', ['foo' => 'bar']);
+    }
+
+    public function testTransactionalBehaviorCanBeDisabledDuringRuntime(): void
+    {
+        StaticDriver::setKeepStaticConnections(false);
+
+        $this->kernel->shutdown();
+        $this->init();
+
+        $this->insertRow();
+        $this->assertRowCount(1);
+
+        StaticDriver::setKeepStaticConnections(true);
+    }
+
+    /**
+     * @depends testTransactionalBehaviorCanBeDisabledDuringRuntime
+     */
+    public function testChangesFromPreviousTestAreVisibleWhenDisabledDuringRuntime(): void
+    {
+        $this->assertRowCount(1);
     }
 }
