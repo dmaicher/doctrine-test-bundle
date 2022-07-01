@@ -3,7 +3,6 @@
 namespace Tests\DAMA\DoctrineTestBundle\DependencyInjection;
 
 use DAMA\DoctrineTestBundle\DependencyInjection\DAMADoctrineTestExtension;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
@@ -12,14 +11,15 @@ class DAMADoctrineTestExtensionTest extends TestCase
     /**
      * @dataProvider loadDataProvider
      */
-    public function testLoad(array $configs, array $expectedProcessedConfig): void
+    public function testLoad(array $configs, array $expectedParameters): void
     {
         $extension = new DAMADoctrineTestExtension();
-        /** @var ContainerBuilder|MockObject $containerBuilder */
-        $containerBuilder = $this->createMock(ContainerBuilder::class);
+        $containerBuilder = new ContainerBuilder();
         $extension->load($configs, $containerBuilder);
 
-        $this->assertEquals($extension->getProcessedConfig(), $expectedProcessedConfig);
+        foreach ($expectedParameters as $name => $value) {
+            $this->assertSame($value, $containerBuilder->getParameter('dama.'.$name));
+        }
     }
 
     public function loadDataProvider(): array

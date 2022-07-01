@@ -4,6 +4,7 @@ namespace Tests\DAMA\DoctrineTestBundle\DependencyInjection;
 
 use DAMA\DoctrineTestBundle\DependencyInjection\DAMADoctrineTestExtension;
 use DAMA\DoctrineTestBundle\DependencyInjection\DoctrineTestCompilerPass;
+use DAMA\DoctrineTestBundle\DependencyInjection\RegisterDoctrineEventListenersPass;
 use DAMA\DoctrineTestBundle\Doctrine\Cache\Psr6StaticArrayCache;
 use DAMA\DoctrineTestBundle\Doctrine\Cache\StaticArrayCache;
 use Doctrine\Bundle\DoctrineBundle\ConnectionFactory;
@@ -59,7 +60,12 @@ class DoctrineTestCompilerPassTest extends TestCase
             $expectationCallback($this, $containerBuilder);
         }
 
+        (new RegisterDoctrineEventListenersPass())->process($containerBuilder);
         (new DoctrineTestCompilerPass())->process($containerBuilder);
+
+        foreach (array_keys($containerBuilder->getParameterBag()->all()) as $parameterName) {
+            $this->assertStringStartsNotWith('dama.', $parameterName);
+        }
 
         $assertCallback($containerBuilder);
     }
