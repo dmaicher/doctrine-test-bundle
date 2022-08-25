@@ -16,6 +16,8 @@ class PostConnectEventListener
         // The underlying connection already has a transaction started.
         // We start a transaction on the connection as well
         // so the internal state ($_transactionNestingLevel) is in sync with the underlying connection.
-        $args->getConnection()->beginTransaction();
+        if ($args->getConnection()->getTransactionNestingLevel() === 0) {
+            $args->getConnection()->beginTransaction();
+        }
     }
 }
