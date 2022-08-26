@@ -110,6 +110,18 @@ class PhpunitTest extends TestCase
      */
     public function testChangesFromPreviousTestAreVisibleWhenDisabledDuringRuntime(): void
     {
+        StaticDriver::setKeepStaticConnections(false);
+
+        $this->kernel->shutdown();
+        $this->setUp();
+
         $this->assertRowCount(1);
+
+        // cleanup persisted row to not affect any other tests afterwards
+        $this->connection->executeQuery('DELETE FROM test');
+
+        $this->assertRowCount(0);
+
+        StaticDriver::setKeepStaticConnections(true);
     }
 }
