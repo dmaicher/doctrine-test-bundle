@@ -1,5 +1,2 @@
 parameters:
-    db_host: 127.0.0.1
-    db_name: doctrine_test_bundle
-    db_user: root
-    db_password: ~
+    database.url: mysql://root@127.0.0.1/doctrine_test_bundle?charset=UTF8

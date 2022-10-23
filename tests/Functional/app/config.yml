@@ -8,13 +8,14 @@ doctrine:
     dbal:
         connections:
             default:
-                driver:   pdo_mysql
-                charset:  UTF8
-                host:     '%db_host%'
-                dbname:   '%db_name%'
-                user:     '%db_user%'
-                password: '%db_password%'
-
+                url: '%database.url%'
+                
+            replica:
+                url: '%database.url%'
+                replicas:
+                    replica_one:
+                        url: '%database.url%'
+            
 dama_doctrine_test:
     enable_static_connection: true
     enable_static_meta_data_cache: true
