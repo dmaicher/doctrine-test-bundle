@@ -1,2 +1,2 @@
 parameters:
-    database.url: mysql://root@127.0.0.1/doctrine_test_bundle?charset=UTF8
+    database.url: pdo-mysql://root@127.0.0.1/doctrine_test_bundle?charset=UTF8
