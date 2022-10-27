@@ -9,9 +9,11 @@ doctrine:
         connections:
             default:
                 url: '%database.url%'
+                use_savepoints: true
                 
             replica:
                 url: '%database.url%'
+                use_savepoints: true
                 replicas:
                     replica_one:
                         url: '%database.url%'

@@ -5,7 +5,6 @@ namespace DAMA\DoctrineTestBundle\DependencyInjection;
 use DAMA\DoctrineTestBundle\Doctrine\Cache\Psr6StaticArrayCache;
 use DAMA\DoctrineTestBundle\Doctrine\Cache\StaticArrayCache;
 use DAMA\DoctrineTestBundle\Doctrine\DBAL\Middleware;
-use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticConnectionFactory;
 use Doctrine\Common\Cache\Cache;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\DependencyInjection\ChildDefinition;
@@ -18,20 +17,8 @@ class DoctrineTestCompilerPass implements CompilerPassInterface
 {
     public function process(ContainerBuilder $container): void
     {
-        /** @var string[] $transactionalBehaviorEnabledConnections */
-        $transactionalBehaviorEnabledConnections = $container->getParameter('dama.doctrine.enabled_connections');
-
-        if (count($transactionalBehaviorEnabledConnections) > 0) {
-            $factoryDef = new Definition(StaticConnectionFactory::class);
-            $factoryDef
-                ->setDecoratedService('doctrine.dbal.connection_factory')
-                ->addArgument(new Reference('dama.doctrine.dbal.connection_factory.inner'))
-            ;
-            $container->setDefinition('dama.doctrine.dbal.connection_factory', $factoryDef);
-        }
-
+        $transactionalBehaviorEnabledConnections = $this->getTransactionEnabledConnectionNames($container);
         $container->register('dama.doctrine.dbal.middleware', Middleware::class);
-
         $cacheNames = [];
 
         if ($container->getParameter('dama.'.Configuration::STATIC_META_CACHE)) {
@@ -46,7 +33,7 @@ class DoctrineTestCompilerPass implements CompilerPassInterface
 
         foreach ($connectionNames as $name) {
             if (in_array($name, $transactionalBehaviorEnabledConnections, true)) {
-                $this->addConnectionOptions($container, $name);
+                $this->modifyConnectionService($container, $name);
             }
 
             foreach ($cacheNames as $cacheName) {
@@ -66,18 +53,19 @@ class DoctrineTestCompilerPass implements CompilerPassInterface
             }
         }
 
+        $container->getParameterBag()->remove('dama.'.Configuration::ENABLE_STATIC_CONNECTION);
         $container->getParameterBag()->remove('dama.'.Configuration::STATIC_META_CACHE);
         $container->getParameterBag()->remove('dama.'.Configuration::STATIC_QUERY_CACHE);
-        $container->getParameterBag()->remove('dama.doctrine.enabled_connections');
     }
 
-    private function addConnectionOptions(ContainerBuilder $container, string $name): void
+    private function modifyConnectionService(ContainerBuilder $container, string $name): void
     {
         $connectionDefinition = $container->getDefinition(sprintf('doctrine.dbal.%s_connection', $name));
-        $connectionOptions = $connectionDefinition->getArgument(0);
-        $connectionOptions['dama.keep_static'] = true;
-        $connectionOptions['dama.connection_name'] = $name;
-        $connectionDefinition->replaceArgument(0, $connectionOptions);
+
+        $connectionDefinition->replaceArgument(
+            0,
+            $this->getModifiedConnectionOptions($connectionDefinition->getArgument(0), $name),
+        );
 
         $connectionConfig = $container->getDefinition(sprintf('doctrine.dbal.%s_connection.configuration', $name));
         $methodCalls = $connectionConfig->getMethodCalls();
@@ -96,6 +84,32 @@ class DoctrineTestCompilerPass implements CompilerPassInterface
         }
 
         $connectionConfig->setMethodCalls($methodCalls);
+    }
+
+    private function getModifiedConnectionOptions(array $options, string $name): array
+    {
+        $connectionOptions = array_merge($options, [
+            'dama.keep_static' => true,
+            'dama.connection_name' => $name,
+        ]);
+
+        if (isset($connectionOptions['primary'])) {
+            $connectionOptions['primary'] = array_merge($connectionOptions['primary'], [
+                'dama.keep_static' => true,
+                'dama.connection_name' => $name,
+            ]);
+        }
+
+        if (isset($connectionOptions['replica']) && is_array($connectionOptions['replica'])) {
+            foreach ($connectionOptions['replica'] as $replicaName => &$replica) {
+                $replica = array_merge($replica, [
+                    'dama.keep_static' => true,
+                    'dama.connection_name' => sprintf('%s.%s', $name, $replicaName),
+                ]);
+            }
+        }
+
+        return $connectionOptions;
     }
 
     private function registerStaticCache(
@@ -120,5 +134,44 @@ class DoctrineTestCompilerPass implements CompilerPassInterface
             $container->removeAlias($cacheServiceId);
         }
         $container->setDefinition($cacheServiceId, $cache);
+    }
+
+    /**
+     * @return string[]
+     */
+    private function getTransactionEnabledConnectionNames(ContainerBuilder $container): array
+    {
+        /** @var bool|array $enableStaticConnectionsConfig */
+        $enableStaticConnectionsConfig = $container->getParameter('dama.'.Configuration::ENABLE_STATIC_CONNECTION);
+
+        $connectionNames = array_keys($container->getParameter('doctrine.connections'));
+        if (is_array($enableStaticConnectionsConfig)) {
+            $this->validateConnectionNames(array_keys($enableStaticConnectionsConfig), $connectionNames);
+        }
+
+        $enabledConnections = [];
+
+        foreach ($connectionNames as $name) {
+            if ($enableStaticConnectionsConfig === true
+                || isset($enableStaticConnectionsConfig[$name]) && $enableStaticConnectionsConfig[$name] === true
+            ) {
+                $enabledConnections[] = $name;
+            }
+        }
+
+        return $enabledConnections;
+    }
+
+    /**
+     * @param string[] $configNames
+     * @param string[] $existingNames
+     */
+    private function validateConnectionNames(array $configNames, array $existingNames): void
+    {
+        $unknown = array_diff($configNames, $existingNames);
+
+        if (count($unknown)) {
+            throw new \InvalidArgumentException(sprintf('Unknown doctrine dbal connection name(s): %s.', implode(', ', $unknown)));
+        }
     }
 }

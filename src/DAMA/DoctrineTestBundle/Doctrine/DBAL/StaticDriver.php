@@ -33,7 +33,10 @@ class StaticDriver implements Driver
 
     public function connect(array $params): DriverConnection
     {
-        if (!self::$keepStaticConnections) {
+        if (!self::isKeepStaticConnections()
+            || !isset($params['dama.keep_static'])
+            || !$params['dama.keep_static']
+        ) {
             return $this->underlyingDriver->connect($params);
         }
 
@@ -44,7 +47,13 @@ class StaticDriver implements Driver
             self::$connections[$key]->beginTransaction();
         }
 
-        return new StaticConnection(self::$connections[$key]);
+        $platform = $this->getDatabasePlatformForVersion(self::$connections[$key], $params['serverVersion'] ?? null);
+
+        if (!$platform->supportsSavepoints()) {
+            throw new \RuntimeException('This bundle only works for database platforms that support savepoints.');
+        }
+
+        return new StaticConnection(self::$connections[$key], $platform);
     }
 
     public function getSchemaManager(\Doctrine\DBAL\Connection $conn, AbstractPlatform $platform): AbstractSchemaManager
@@ -91,5 +100,10 @@ class StaticDriver implements Driver
         foreach (self::$connections as $con) {
             $con->commit();
         }
+    }
+
+    protected function getDatabasePlatformForVersion(Connection $driverConnection, ?string $version): AbstractPlatform
+    {
+        return $this->getDatabasePlatform();
     }
 }

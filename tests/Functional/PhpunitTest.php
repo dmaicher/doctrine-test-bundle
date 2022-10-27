@@ -23,7 +23,7 @@ class PhpunitTest extends TestCase
     public function testPreviousChangesAreRolledBack(): void
     {
         $this->assertRowCount(0);
-        $this->assertTrue($this->connection->isTransactionActive());
+        $this->assertFalse($this->connection->isTransactionActive());
     }
 
     /**
@@ -55,11 +55,11 @@ class PhpunitTest extends TestCase
     /**
      * @depends testChangeDbStateForReplicaConnection
      */
-    public function testPreviousChangesAreRolledBackForReplica(): void
+    public function testChangeDbStateForReplicaConnectionRolledBack(): void
     {
         $this->connection = $this->kernel->getContainer()->get('doctrine.dbal.replica_connection');
         $this->assertRowCount(0);
-        $this->assertTrue($this->connection->isTransactionActive());
+        $this->assertFalse($this->connection->isTransactionActive());
     }
 
     public function testChangeDbStateWithMultipleConnections(): void

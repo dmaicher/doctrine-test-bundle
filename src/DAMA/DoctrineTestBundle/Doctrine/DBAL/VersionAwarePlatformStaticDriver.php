@@ -2,6 +2,8 @@
 
 namespace DAMA\DoctrineTestBundle\Doctrine\DBAL;
 
+use Doctrine\DBAL\Driver\Connection;
+use Doctrine\DBAL\Driver\ServerInfoAwareConnection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\VersionAwarePlatformDriver;
 
@@ -17,5 +19,14 @@ final class VersionAwarePlatformStaticDriver extends StaticDriver implements Ver
         }
 
         return $this->underlyingDriver->createDatabasePlatformForVersion($version);
+    }
+
+    protected function getDatabasePlatformForVersion(Connection $driverConnection, ?string $version): AbstractPlatform
+    {
+        if ($version === null && $driverConnection instanceof ServerInfoAwareConnection) {
+            $version = $driverConnection->getServerVersion();
+        }
+
+        return $version !== null ? $this->createDatabasePlatformForVersion($version) : $this->getDatabasePlatform();
     }
 }
