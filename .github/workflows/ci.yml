@@ -21,7 +21,6 @@ jobs:
             matrix:
                 include:
                     -   php: 7.3
-                        symfony_require: 4.4.*
                     -   php: 7.4
                         composer_flags: --prefer-lowest
                     -   php: 7.4
