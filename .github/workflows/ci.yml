@@ -30,7 +30,7 @@ jobs:
                         symfony_require: 6.0.*
                     -   php: 8.1
                         symfony_require: 6.1.*
-                    -   php: 8.1
+                    -   php: 8.2
                         symfony_require: 6.2.*
 
         steps:
