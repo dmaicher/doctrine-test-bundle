@@ -70,7 +70,7 @@ class DoctrineTestCompilerPassTest extends TestCase
         $assertCallback($containerBuilder);
     }
 
-    public function processDataProvider(): \Generator
+    public static function processDataProvider(): \Generator
     {
         $defaultConfig = [
             'enable_static_connection' => true,
@@ -81,23 +81,23 @@ class DoctrineTestCompilerPassTest extends TestCase
         yield 'default config' => [
             $defaultConfig,
             function (ContainerBuilder $containerBuilder): void {
-                $this->assertTrue($containerBuilder->hasDefinition('dama.doctrine.dbal.connection_factory'));
-                $this->assertSame(
+                self::assertTrue($containerBuilder->hasDefinition('dama.doctrine.dbal.connection_factory'));
+                self::assertSame(
                     'doctrine.dbal.connection_factory',
                     $containerBuilder->getDefinition('dama.doctrine.dbal.connection_factory')->getDecoratedService()[0]
                 );
 
                 foreach (self::CACHE_SERVICE_IDS as $id) {
-                    $this->assertFalse($containerBuilder->hasAlias($id));
-                    $this->assertFalse($containerBuilder->hasDefinition($id));
+                    self::assertFalse($containerBuilder->hasAlias($id));
+                    self::assertFalse($containerBuilder->hasDefinition($id));
                 }
 
-                $this->assertSame([
+                self::assertSame([
                     'dama.keep_static' => true,
                     'dama.connection_name' => 'a',
                 ], $containerBuilder->getDefinition('doctrine.dbal.a_connection')->getArgument(0));
 
-                $this->assertEquals(
+                self::assertEquals(
                     [
                         [
                             'setMiddlewares',
@@ -112,7 +112,7 @@ class DoctrineTestCompilerPassTest extends TestCase
                     $containerBuilder->getDefinition('doctrine.dbal.a_connection.configuration')->getMethodCalls()
                 );
 
-                $this->assertEquals(
+                self::assertEquals(
                     [
                         [
                             'setMiddlewares',
@@ -135,10 +135,10 @@ class DoctrineTestCompilerPassTest extends TestCase
                 'enable_static_query_cache' => false,
             ],
             function (ContainerBuilder $containerBuilder): void {
-                $this->assertFalse($containerBuilder->hasDefinition('dama.doctrine.dbal.connection_factory'));
-                $this->assertFalse($containerBuilder->hasDefinition('doctrine.orm.a_metadata_cache'));
+                self::assertFalse($containerBuilder->hasDefinition('dama.doctrine.dbal.connection_factory'));
+                self::assertFalse($containerBuilder->hasDefinition('doctrine.orm.a_metadata_cache'));
 
-                $this->assertEquals(
+                self::assertEquals(
                     [
                         [
                             'setMiddlewares',
@@ -164,16 +164,16 @@ class DoctrineTestCompilerPassTest extends TestCase
                 'enable_static_query_cache' => true,
             ],
             function (ContainerBuilder $containerBuilder): void {
-                $this->assertTrue($containerBuilder->hasDefinition('dama.doctrine.dbal.connection_factory'));
+                self::assertTrue($containerBuilder->hasDefinition('dama.doctrine.dbal.connection_factory'));
 
-                $this->assertSame([
+                self::assertSame([
                     'dama.keep_static' => true,
                     'dama.connection_name' => 'a',
                 ], $containerBuilder->getDefinition('doctrine.dbal.a_connection')->getArgument(0));
 
-                $this->assertSame([], $containerBuilder->getDefinition('doctrine.dbal.b_connection')->getArgument(0));
+                self::assertSame([], $containerBuilder->getDefinition('doctrine.dbal.b_connection')->getArgument(0));
 
-                $this->assertSame([
+                self::assertSame([
                     'dama.keep_static' => true,
                     'dama.connection_name' => 'c',
                 ], $containerBuilder->getDefinition('doctrine.dbal.c_connection')->getArgument(0));
@@ -201,8 +201,8 @@ class DoctrineTestCompilerPassTest extends TestCase
             $defaultConfig,
             function (ContainerBuilder $containerBuilder): void {
                 foreach (self::CACHE_SERVICE_IDS as $id) {
-                    $this->assertFalse($containerBuilder->hasAlias($id));
-                    $this->assertEquals(
+                    self::assertFalse($containerBuilder->hasAlias($id));
+                    self::assertEquals(
                         (new Definition(StaticArrayCache::class))->addMethodCall('setNamespace', [sha1($id)]),
                         $containerBuilder->getDefinition($id)
                     );
@@ -219,8 +219,8 @@ class DoctrineTestCompilerPassTest extends TestCase
             $defaultConfig,
             function (ContainerBuilder $containerBuilder): void {
                 foreach (self::CACHE_SERVICE_IDS as $id) {
-                    $this->assertFalse($containerBuilder->hasAlias($id));
-                    $this->assertEquals(
+                    self::assertFalse($containerBuilder->hasAlias($id));
+                    self::assertEquals(
                         (new Definition(Psr6StaticArrayCache::class))->setArgument(0, sha1($id)),
                         $containerBuilder->getDefinition($id)
                     );
@@ -237,8 +237,8 @@ class DoctrineTestCompilerPassTest extends TestCase
             $defaultConfig,
             function (ContainerBuilder $containerBuilder): void {
                 foreach (self::CACHE_SERVICE_IDS as $id) {
-                    $this->assertFalse($containerBuilder->hasAlias($id));
-                    $this->assertEquals(
+                    self::assertFalse($containerBuilder->hasAlias($id));
+                    self::assertEquals(
                         (new Definition(Psr6StaticArrayCache::class))->setArgument(0, sha1($id)),
                         $containerBuilder->getDefinition($id)
                     );

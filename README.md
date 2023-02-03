@@ -34,18 +34,30 @@ It also includes a `StaticArrayCache` / `Psr6StaticArrayCache` that will be auto
     
 #### Using the Bundle with PHPUnit
 
-1. For PHPUnit version >= 8.0 add the extension in your xml config (e.g. `app/phpunit.xml`)
+1. Add the Extension to your PHPUnit XML config
 
-    ```xml
-    <phpunit>
-        ...
-        <extensions>
-            <extension class="DAMA\DoctrineTestBundle\PHPUnit\PHPUnitExtension" />
-        </extensions>
-    </phpunit>
-    ```
+   - PHPUnit 8 or 9:
+
+       ```xml
+       <phpunit>
+           ...
+           <extensions>
+               <extension class="DAMA\DoctrineTestBundle\PHPUnit\PHPUnitExtension" />
+           </extensions>
+       </phpunit>
+       ```
+   - PHPUnit 10+:
+
+      ```xml
+      <phpunit>
+          ...
+          <extensions>
+              <bootstrap class="DAMA\DoctrineTestBundle\PHPUnit\PHPUnitExtension" />
+          </extensions>
+      </phpunit>
+      ```
     
-2. Make sure you also have `phpunit/phpunit` available as a `dev` dependency (**versions 8 and 9 are supported with the built in extension**) to run your tests. 
+2. Make sure you also have `phpunit/phpunit` available as a `dev` dependency (**versions 8, 9 and 10 are supported with the built-in extension**) to run your tests. 
    Alternatively this bundle is also compatible with `symfony/phpunit-bridge` and its `simple-phpunit` script. 
    (Note: you may need to make sure the phpunit-bridge requires the correct PHPUnit 8+ Version using the environment variable `SYMFONY_PHPUNIT_VERSION`). 
 

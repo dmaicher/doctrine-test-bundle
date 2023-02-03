@@ -1,38 +1,22 @@
-<phpunit
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/8.0/phpunit.xsd"
-    backupGlobals="false"
-    backupStaticAttributes="false"
-    colors="true"
-    convertErrorsToExceptions="true"
-    convertNoticesToExceptions="true"
-    convertWarningsToExceptions="true"
-    processIsolation="false"
-    stderr="true"
-    bootstrap="./bootstrap.php"
->
+<?xml version="1.0"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.0/phpunit.xsd"
+         backupGlobals="false"
+         colors="true"
+         processIsolation="false"
+         stderr="true"
+         bootstrap="./bootstrap.php"
+         cacheDirectory=".phpunit.cache"
+         backupStaticProperties="false">
     <php>
-        <env name="SYMFONY_DEPRECATIONS_HELPER" value="max[direct]=2" />
+        <env name="SYMFONY_DEPRECATIONS_HELPER" value="max[direct]=2"/>
     </php>
-
     <extensions>
-        <extension class="DAMA\DoctrineTestBundle\PHPUnit\PHPUnitExtension" />
+        <bootstrap class="DAMA\DoctrineTestBundle\PHPUnit\PHPUnitExtension" />
     </extensions>
-
     <testsuites>
         <testsuite name="DAMADoctrineTestBundle test suite">
             <directory>../tests</directory>
         </testsuite>
     </testsuites>
-
-    <filter>
-        <whitelist>
-            <directory suffix=".php">../src</directory>
-        </whitelist>
-    </filter>
-
-    <listeners>
-        <listener class="\Symfony\Bridge\PhpUnit\SymfonyTestsListener" />
-    </listeners>
-
 </phpunit>

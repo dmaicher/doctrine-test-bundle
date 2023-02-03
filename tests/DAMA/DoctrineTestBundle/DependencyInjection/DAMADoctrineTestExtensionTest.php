@@ -22,7 +22,7 @@ class DAMADoctrineTestExtensionTest extends TestCase
         }
     }
 
-    public function loadDataProvider(): array
+    public static function loadDataProvider(): array
     {
         return [
             [[], [

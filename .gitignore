@@ -7,3 +7,5 @@ vendor
 .php-cs-fixer.cache
 php-cs-fixer.phar
 .phpunit.result.cache
+tests/.phpunit.cache/
+.idea

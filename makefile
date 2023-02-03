@@ -4,6 +4,9 @@ tests/Functional/app/parameters.yml:
 test: tests/Functional/app/parameters.yml
 	vendor/bin/phpunit -c tests/ tests/
 
+test_phpunit_legacy: tests/Functional/app/parameters.yml
+	vendor/bin/phpunit -c tests/phpunit.9.xml tests/
+
 phpstan:
 	vendor/bin/phpstan analyse -c phpstan.neon -a vendor/autoload.php -l 5 src tests
 

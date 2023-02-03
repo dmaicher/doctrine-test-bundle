@@ -27,7 +27,7 @@ class StaticConnectionFactoryTest extends TestCase
         $this->assertSame($expectedNestingWithSavepoints, $connection->getNestTransactionsWithSavepoints());
     }
 
-    public function createConnectionDataProvider(): \Generator
+    public static function createConnectionDataProvider(): \Generator
     {
         yield 'disabled by static property' => [
             false,
