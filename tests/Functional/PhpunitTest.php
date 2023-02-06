@@ -26,6 +26,24 @@ class PhpunitTest extends TestCase
         $this->assertTrue($this->connection->isTransactionActive());
     }
 
+    /**
+     * @dataProvider someDataProvider
+     */
+    public function testWithDataProvider(string $argument): void
+    {
+        $this->assertRowCount(0);
+        $this->insertRow();
+        $this->assertTrue($this->connection->isTransactionActive());
+    }
+
+    /**
+     * @return iterable<array{string}>
+     */
+    public static function someDataProvider(): iterable
+    {
+        yield ['string1'];
+    }
+
     public function testChangeDbStateForReplicaConnection(): void
     {
         $this->connection = $this->kernel->getContainer()->get('doctrine.dbal.replica_connection');

@@ -7,10 +7,10 @@ use PHPUnit\Event\Test\Finished as TestFinishedEvent;
 use PHPUnit\Event\Test\FinishedSubscriber as TestFinishedSubscriber;
 use PHPUnit\Event\Test\PreparationStarted as TestStartedEvent;
 use PHPUnit\Event\Test\PreparationStartedSubscriber as TestStartedSubscriber;
-use PHPUnit\Event\TestSuite\Finished as TestSuiteFinishedEvent;
-use PHPUnit\Event\TestSuite\FinishedSubscriber as TestSuiteFinishedSubscriber;
-use PHPUnit\Event\TestSuite\Started as TestSuiteStartedEvent;
-use PHPUnit\Event\TestSuite\StartedSubscriber as TestSuiteStartedSubscriber;
+use PHPUnit\Event\TestRunner\Finished as TestRunnerFinishedEvent;
+use PHPUnit\Event\TestRunner\FinishedSubscriber as TestRunnerFinishedSubscriber;
+use PHPUnit\Event\TestRunner\Started as TestRunnerStartedEvent;
+use PHPUnit\Event\TestRunner\StartedSubscriber as TestRunnerStartedSubscriber;
 use PHPUnit\Runner\AfterLastTestHook;
 use PHPUnit\Runner\AfterTestHook;
 use PHPUnit\Runner\BeforeFirstTestHook;
@@ -20,7 +20,7 @@ use PHPUnit\Runner\Extension\Facade;
 use PHPUnit\Runner\Extension\ParameterCollection;
 use PHPUnit\TextUI\Configuration\Configuration;
 
-if (class_exists(TestSuiteStartedEvent::class)) {
+if (class_exists(TestRunnerStartedEvent::class)) {
     /**
      * PHPUnit >= 10.
      */
@@ -28,8 +28,8 @@ if (class_exists(TestSuiteStartedEvent::class)) {
     {
         public function bootstrap(Configuration $configuration, Facade $facade, ParameterCollection $parameters): void
         {
-            $facade->registerSubscriber(new class() implements TestSuiteStartedSubscriber {
-                public function notify(TestSuiteStartedEvent $event): void
+            $facade->registerSubscriber(new class() implements TestRunnerStartedSubscriber {
+                public function notify(TestRunnerStartedEvent $event): void
                 {
                     StaticDriver::setKeepStaticConnections(true);
                 }
@@ -49,8 +49,8 @@ if (class_exists(TestSuiteStartedEvent::class)) {
                 }
             });
 
-            $facade->registerSubscriber(new class() implements TestSuiteFinishedSubscriber {
-                public function notify(TestSuiteFinishedEvent $event): void
+            $facade->registerSubscriber(new class() implements TestRunnerFinishedSubscriber {
+                public function notify(TestRunnerFinishedEvent $event): void
                 {
                     StaticDriver::setKeepStaticConnections(false);
                 }
