@@ -29,19 +29,19 @@ class PhpunitTest extends TestCase
     /**
      * @dataProvider someDataProvider
      */
-    public function testWithDataProvider(string $argument): void
+    public function testWithDataProvider(int $expectedRowCount): void
     {
-        $this->assertRowCount(0);
+        $this->assertRowCount($expectedRowCount);
         $this->insertRow();
         $this->assertTrue($this->connection->isTransactionActive());
     }
 
     /**
-     * @return iterable<array{string}>
+     * @return iterable<array{int}>
      */
     public static function someDataProvider(): iterable
     {
-        yield ['string1'];
+        yield [0];
     }
 
     public function testChangeDbStateForReplicaConnection(): void
