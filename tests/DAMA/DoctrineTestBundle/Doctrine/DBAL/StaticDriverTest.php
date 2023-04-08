@@ -22,7 +22,7 @@ class StaticDriverTest extends TestCase
             'dbname' => 'doctrine_test_bundle',
             'user' => 'user',
             'password' => 'password',
-            'port' => null,
+            'port' => 3306,
             'platform' => $this->createMock(AbstractPlatform::class),
             'dama.keep_static' => true,
             'dama.connection_name' => 'foo',
