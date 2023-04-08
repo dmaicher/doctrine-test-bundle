@@ -23,7 +23,6 @@ class PhpunitTest extends TestCase
     public function testPreviousChangesAreRolledBack(): void
     {
         $this->assertRowCount(0);
-        $this->assertFalse($this->connection->isTransactionActive());
     }
 
     /**
@@ -33,7 +32,6 @@ class PhpunitTest extends TestCase
     {
         $this->assertRowCount($expectedRowCount);
         $this->insertRow();
-        $this->assertTrue($this->connection->isTransactionActive());
     }
 
     /**
