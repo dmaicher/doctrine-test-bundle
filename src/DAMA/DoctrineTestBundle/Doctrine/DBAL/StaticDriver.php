@@ -3,13 +3,11 @@
 namespace DAMA\DoctrineTestBundle\Doctrine\DBAL;
 
 use Doctrine\DBAL\Driver;
-use Doctrine\DBAL\Driver\API\ExceptionConverter;
 use Doctrine\DBAL\Driver\Connection;
 use Doctrine\DBAL\Driver\Connection as DriverConnection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\DBAL\Schema\AbstractSchemaManager;
 
-class StaticDriver implements Driver
+class StaticDriver extends Driver\Middleware\AbstractDriverMiddleware
 {
     /**
      * @var Connection[]
@@ -29,6 +27,7 @@ class StaticDriver implements Driver
     public function __construct(Driver $underlyingDriver)
     {
         $this->underlyingDriver = $underlyingDriver;
+        parent::__construct($underlyingDriver);
     }
 
     public function connect(array $params): DriverConnection
@@ -37,38 +36,25 @@ class StaticDriver implements Driver
             || !isset($params['dama.keep_static'])
             || !$params['dama.keep_static']
         ) {
-            return $this->underlyingDriver->connect($params);
+            return parent::connect($params);
         }
 
         $key = sha1(json_encode($params));
 
         if (!isset(self::$connections[$key])) {
-            self::$connections[$key] = $this->underlyingDriver->connect($params);
+            self::$connections[$key] = parent::connect($params);
             self::$connections[$key]->beginTransaction();
         }
 
-        $platform = $this->getDatabasePlatformForVersion(self::$connections[$key], $params['serverVersion'] ?? null);
+        $connection = self::$connections[$key];
+
+        $platform = $this->getDatabasePlatformByConnection($connection);
 
         if (!$platform->supportsSavepoints()) {
             throw new \RuntimeException('This bundle only works for database platforms that support savepoints.');
         }
 
-        return new StaticConnection(self::$connections[$key], $platform);
-    }
-
-    public function getSchemaManager(\Doctrine\DBAL\Connection $conn, AbstractPlatform $platform): AbstractSchemaManager
-    {
-        return $this->underlyingDriver->getSchemaManager($conn, $platform);
-    }
-
-    public function getExceptionConverter(): ExceptionConverter
-    {
-        return $this->underlyingDriver->getExceptionConverter();
-    }
-
-    public function getDatabasePlatform(): AbstractPlatform
-    {
-        return $this->underlyingDriver->getDatabasePlatform();
+        return new StaticConnection($connection, $platform);
     }
 
     public static function setKeepStaticConnections(bool $keepStaticConnections): void
@@ -102,8 +88,16 @@ class StaticDriver implements Driver
         }
     }
 
-    protected function getDatabasePlatformForVersion(Connection $driverConnection, ?string $version): AbstractPlatform
+    private function getDatabasePlatformByConnection(Connection $connection): AbstractPlatform
     {
-        return $this->getDatabasePlatform();
+        $platformVersion = $params['serverVersion'] ?? null;
+
+        if ($platformVersion === null && $connection instanceof Driver\ServerInfoAwareConnection) {
+            $platformVersion = $connection->getServerVersion();
+        }
+
+        return $platformVersion !== null
+            ? parent::createDatabasePlatformForVersion($platformVersion)
+            : parent::getDatabasePlatform();
     }
 }
