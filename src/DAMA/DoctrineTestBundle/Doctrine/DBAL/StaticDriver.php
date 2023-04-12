@@ -5,7 +5,6 @@ namespace DAMA\DoctrineTestBundle\Doctrine\DBAL;
 use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Driver\Connection;
 use Doctrine\DBAL\Driver\Connection as DriverConnection;
-use Doctrine\DBAL\Platforms\AbstractPlatform;
 
 class StaticDriver extends Driver\Middleware\AbstractDriverMiddleware
 {
@@ -48,9 +47,11 @@ class StaticDriver extends Driver\Middleware\AbstractDriverMiddleware
 
         $connection = self::$connections[$key];
 
-        $platform = $this->getDatabasePlatformByConnection($connection);
+        $platform = isset($params['serverVersion'])
+            ? $this->createDatabasePlatformForVersion($params['serverVersion'])
+            : $this->getDatabasePlatform();
 
-        if (!$platform->supportsSavepoints()) {
+        if (!$platform->supportsSavepoints() || !$platform->supportsReleaseSavepoints()) {
             throw new \RuntimeException('This bundle only works for database platforms that support savepoints.');
         }
 
@@ -86,18 +87,5 @@ class StaticDriver extends Driver\Middleware\AbstractDriverMiddleware
         foreach (self::$connections as $con) {
             $con->commit();
         }
-    }
-
-    private function getDatabasePlatformByConnection(Connection $connection): AbstractPlatform
-    {
-        $platformVersion = $params['serverVersion'] ?? null;
-
-        if ($platformVersion === null && $connection instanceof Driver\ServerInfoAwareConnection) {
-            $platformVersion = $connection->getServerVersion();
-        }
-
-        return $platformVersion !== null
-            ? parent::createDatabasePlatformForVersion($platformVersion)
-            : parent::getDatabasePlatform();
     }
 }
