@@ -22,4 +22,4 @@ php_cs_fixer_check: php-cs-fixer.phar
 	./php-cs-fixer.phar fix --config .php-cs-fixer.php src tests --dry-run --diff
 
 php-cs-fixer.phar:
-	wget https://github.com/FriendsOfPHP/PHP-CS-Fixer/releases/download/v3.9.5/php-cs-fixer.phar && chmod 777 php-cs-fixer.phar
+	wget https://github.com/FriendsOfPHP/PHP-CS-Fixer/releases/download/v3.16.0/php-cs-fixer.phar && chmod 777 php-cs-fixer.phar

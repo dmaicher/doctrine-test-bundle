@@ -31,10 +31,8 @@ jobs:
                     -   php: 8.0
                         test_make_target: test_phpunit_legacy
                     -   php: 8.1
-                        symfony_require: 6.0.*
                         test_make_target: test
                     -   php: 8.1
-                        symfony_require: 6.1.*
                         test_make_target: test
                     -   php: 8.2
                         symfony_require: 6.2.*
@@ -75,7 +73,7 @@ jobs:
             -   name: Setup PHP
                 uses: shivammathur/setup-php@v2
                 with:
-                    php-version: "8.1"
+                    php-version: "8.2"
 
             -   name: Install dependencies
                 run: composer update --prefer-dist
@@ -93,7 +91,7 @@ jobs:
             -   name: Setup PHP
                 uses: shivammathur/setup-php@v2
                 with:
-                    php-version: "8.1"
+                    php-version: "8.2"
 
             -   name: Install dependencies
                 run: composer update --prefer-dist
