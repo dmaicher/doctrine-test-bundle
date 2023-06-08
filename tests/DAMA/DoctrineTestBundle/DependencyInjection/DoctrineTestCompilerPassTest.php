@@ -51,6 +51,12 @@ class DoctrineTestCompilerPassTest extends TestCase
             ],
         ]]));
 
+        foreach (['a', 'b', 'c'] as $name) {
+            $containerBuilder->getDefinition(sprintf('doctrine.dbal.%s_connection', $name))
+                ->addMethodCall('setNestTransactionsWithSavepoints', [true])
+            ;
+        }
+
         $containerBuilder->setDefinition(
             'doctrine.dbal.a_connection.configuration',
             (new Definition(Configuration::class))

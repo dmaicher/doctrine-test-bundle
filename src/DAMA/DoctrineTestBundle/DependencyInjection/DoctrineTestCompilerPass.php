@@ -62,6 +62,10 @@ class DoctrineTestCompilerPass implements CompilerPassInterface
     {
         $connectionDefinition = $container->getDefinition(sprintf('doctrine.dbal.%s_connection', $name));
 
+        if (!$this->hasSavepointsEnabled($connectionDefinition)) {
+            throw new \LogicException(sprintf('This bundle relies on savepoints for nested database transactions. You need to enable "use_savepoints" on the Doctrine DBAL config for connection "%s".', $name));
+        }
+
         $connectionDefinition->replaceArgument(
             0,
             $this->getModifiedConnectionOptions($connectionDefinition->getArgument(0), $name),
@@ -173,5 +177,16 @@ class DoctrineTestCompilerPass implements CompilerPassInterface
         if (count($unknown)) {
             throw new \InvalidArgumentException(sprintf('Unknown doctrine dbal connection name(s): %s.', implode(', ', $unknown)));
         }
+    }
+
+    private function hasSavepointsEnabled(Definition $connectionDefinition): bool
+    {
+        foreach ($connectionDefinition->getMethodCalls() as $call) {
+            if ($call[0] === 'setNestTransactionsWithSavepoints' && isset($call[1][0]) && $call[1][0]) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
