@@ -10,7 +10,7 @@ if (class_exists(Deprecation::class)) {
 
 function bootstrap(): void
 {
-    $kernel = new \Tests\Functional\app\AppKernel('test', true);
+    $kernel = new \Tests\Functional\app\AppKernel('test', false);
     $kernel->boot();
 
     $application = new \Symfony\Bundle\FrameworkBundle\Console\Application($kernel);

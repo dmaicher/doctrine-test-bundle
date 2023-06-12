@@ -2,6 +2,7 @@
 
 namespace DAMA\DoctrineTestBundle\Doctrine\DBAL;
 
+use Doctrine\DBAL\Connection\StaticServerVersionProvider;
 use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Driver\Connection;
 

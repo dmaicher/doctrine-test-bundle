@@ -35,7 +35,7 @@ class StaticConnection extends AbstractConnectionMiddleware
         $this->platform = $platform;
     }
 
-    public function beginTransaction(): bool
+    public function beginTransaction(): void
     {
         if ($this->nested) {
             throw new \BadMethodCallException(sprintf('Bad call to "%s". A savepoint is already in use for a nested transaction.', __METHOD__));
@@ -44,11 +44,9 @@ class StaticConnection extends AbstractConnectionMiddleware
         $this->exec($this->platform->createSavePoint(self::SAVEPOINT_NAME));
 
         $this->nested = true;
-
-        return true;
     }
 
-    public function commit(): bool
+    public function commit(): void
     {
         if (!$this->nested) {
             throw new \BadMethodCallException(sprintf('Bad call to "%s". There is no savepoint for a nested transaction.', __METHOD__));
@@ -59,11 +57,9 @@ class StaticConnection extends AbstractConnectionMiddleware
         }
 
         $this->nested = false;
-
-        return true;
     }
 
-    public function rollBack(): bool
+    public function rollBack(): void
     {
         if (!$this->nested) {
             throw new \BadMethodCallException(sprintf('Bad call to "%s". There is no savepoint for a nested transaction.', __METHOD__));
@@ -72,8 +68,6 @@ class StaticConnection extends AbstractConnectionMiddleware
         $this->exec($this->platform->rollbackSavePoint(self::SAVEPOINT_NAME));
 
         $this->nested = false;
-
-        return true;
     }
 
     public function getWrappedConnection(): Connection

@@ -96,7 +96,7 @@ trait FunctionalTestTrait
 
     private function init(): void
     {
-        $this->kernel = new AppKernel('test', true);
+        $this->kernel = new AppKernel('test', false);
         $this->kernel->boot();
         $this->connection = $this->kernel->getContainer()->get('doctrine.dbal.default_connection');
     }

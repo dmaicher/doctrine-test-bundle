@@ -8,6 +8,7 @@ use Doctrine\DBAL\Driver\API\ExceptionConverter;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\MySQL80Platform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
+use Doctrine\DBAL\ServerVersionProvider;
 
 class MockDriver implements Driver
 {
@@ -35,7 +36,7 @@ class MockDriver implements Driver
         return clone $this->connection;
     }
 
-    public function getDatabasePlatform(): AbstractPlatform
+    public function getDatabasePlatform(ServerVersionProvider $versionProvider): AbstractPlatform
     {
         return new MySQL80Platform();
     }
