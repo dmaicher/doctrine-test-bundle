@@ -2,9 +2,11 @@
 
 namespace DAMA\DoctrineTestBundle\Doctrine\DBAL;
 
+use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Driver\Connection;
 use Doctrine\DBAL\Driver\Middleware\AbstractConnectionMiddleware;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Query;
 
 /**
  * Wraps a real connection and makes sure the initial nested transaction is using a savepoint.
@@ -12,6 +14,11 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 class StaticConnection extends AbstractConnectionMiddleware
 {
     private const SAVEPOINT_NAME = 'DAMA_TEST';
+
+    /**
+     * @var Driver
+     */
+    protected $driver;
 
     /**
      * @var Connection
@@ -28,9 +35,10 @@ class StaticConnection extends AbstractConnectionMiddleware
      */
     private $nested = false;
 
-    public function __construct(Connection $connection, AbstractPlatform $platform)
+    public function __construct(Driver $driver, Connection $connection, AbstractPlatform $platform)
     {
         parent::__construct($connection);
+        $this->driver = $driver;
         $this->connection = $connection;
         $this->platform = $platform;
     }
@@ -41,7 +49,11 @@ class StaticConnection extends AbstractConnectionMiddleware
             throw new \BadMethodCallException(sprintf('Bad call to "%s". A savepoint is already in use for a nested transaction.', __METHOD__));
         }
 
-        $this->exec($this->platform->createSavePoint(self::SAVEPOINT_NAME));
+        try {
+            $this->exec($sql = $this->platform->createSavePoint(self::SAVEPOINT_NAME));
+        } catch (Driver\Exception $e) {
+            throw $this->driver->getExceptionConverter()->convert($e, new Query($sql, [], []));
+        }
 
         $this->nested = true;
 
@@ -54,7 +66,11 @@ class StaticConnection extends AbstractConnectionMiddleware
             throw new \BadMethodCallException(sprintf('Bad call to "%s". There is no savepoint for a nested transaction.', __METHOD__));
         }
 
-        $this->exec($this->platform->releaseSavePoint(self::SAVEPOINT_NAME));
+        try {
+            $this->exec($sql = $this->platform->releaseSavePoint(self::SAVEPOINT_NAME));
+        } catch (Driver\Exception $e) {
+            throw $this->driver->getExceptionConverter()->convert($e, new Query($sql, [], []));
+        }
 
         $this->nested = false;
 
@@ -67,7 +83,11 @@ class StaticConnection extends AbstractConnectionMiddleware
             throw new \BadMethodCallException(sprintf('Bad call to "%s". There is no savepoint for a nested transaction.', __METHOD__));
         }
 
-        $this->exec($this->platform->rollbackSavePoint(self::SAVEPOINT_NAME));
+        try {
+            $this->exec($sql = $this->platform->rollbackSavePoint(self::SAVEPOINT_NAME));
+        } catch (Driver\Exception $e) {
+            throw $this->driver->getExceptionConverter()->convert($e, new Query($sql, [], []));
+        }
 
         $this->nested = false;
 

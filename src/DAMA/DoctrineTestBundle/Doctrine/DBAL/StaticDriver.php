@@ -55,7 +55,7 @@ class StaticDriver extends Driver\Middleware\AbstractDriverMiddleware
             throw new \RuntimeException('This bundle only works for database platforms that support savepoints.');
         }
 
-        return new StaticConnection($connection, $platform);
+        return new StaticConnection($this->underlyingDriver, $connection, $platform);
     }
 
     public static function setKeepStaticConnections(bool $keepStaticConnections): void
