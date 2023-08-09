@@ -69,11 +69,6 @@ class StaticDriverTest extends TestCase
             ->method('supportsSavepoints')
             ->willReturn(true)
         ;
-        $platform
-            ->expects(self::exactly(7))
-            ->method('supportsReleaseSavepoints')
-            ->willReturn(true)
-        ;
 
         $params = [
             'driver' => 'pdo_mysql',

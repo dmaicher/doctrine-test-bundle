@@ -51,7 +51,7 @@ class StaticDriver extends Driver\Middleware\AbstractDriverMiddleware
             ? $this->createDatabasePlatformForVersion($params['serverVersion'])
             : $this->getDatabasePlatform());
 
-        if (!$platform->supportsSavepoints() || !$platform->supportsReleaseSavepoints()) {
+        if (!$platform->supportsSavepoints()) {
             throw new \RuntimeException('This bundle only works for database platforms that support savepoints.');
         }
 

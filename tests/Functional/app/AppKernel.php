@@ -2,7 +2,10 @@
 
 namespace Tests\Functional\app;
 
+use DAMA\DoctrineTestBundle\DAMADoctrineTestBundle;
+use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use Psr\Log\NullLogger;
+use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Kernel;
@@ -12,9 +15,9 @@ class AppKernel extends Kernel
     public function registerBundles(): array
     {
         return [
-            new \Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
-            new \Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
-            new \DAMA\DoctrineTestBundle\DAMADoctrineTestBundle(),
+            new FrameworkBundle(),
+            new DoctrineBundle(),
+            new DAMADoctrineTestBundle(),
         ];
     }
 

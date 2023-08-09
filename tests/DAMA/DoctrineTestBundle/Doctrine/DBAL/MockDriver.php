@@ -8,13 +8,18 @@ use Doctrine\DBAL\Driver\API\ExceptionConverter;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\MySQL80Platform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
-use PHPUnit\Framework\MockObject\Generator;
 
 class MockDriver implements Driver
 {
     private function getMock(string $class)
     {
-        return (new Generator())->getMock(
+        // TODO: remove this once we drop support for PHPUnit < 10
+        $generatorClass = class_exists('PHPUnit\Framework\MockObject\Generator')
+            ? 'PHPUnit\Framework\MockObject\Generator'
+            : 'PHPUnit\Framework\MockObject\Generator\Generator';
+
+        /** @phpstan-ignore-next-line */
+        return (new $generatorClass())->getMock(
             $class,
             [],
             [],

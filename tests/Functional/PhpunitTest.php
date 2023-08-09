@@ -81,8 +81,19 @@ class PhpunitTest extends TestCase
 
         $this->beginTransaction();
         $this->insertRow();
+        $this->assertRowCount(1);
+        $this->rollbackTransaction();
+        $this->assertRowCount(0);
+
+        $this->beginTransaction();
+        $this->insertRow();
         $this->commitTransaction();
         $this->assertRowCount(1);
+
+        $this->beginTransaction();
+        $this->insertRow();
+        $this->commitTransaction();
+        $this->assertRowCount(2);
     }
 
     /**

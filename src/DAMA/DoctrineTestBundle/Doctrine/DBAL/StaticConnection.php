@@ -54,7 +54,9 @@ class StaticConnection extends AbstractConnectionMiddleware
             throw new \BadMethodCallException(sprintf('Bad call to "%s". There is no savepoint for a nested transaction.', __METHOD__));
         }
 
-        $this->exec($this->platform->releaseSavePoint(self::SAVEPOINT_NAME));
+        if ($this->platform->supportsReleaseSavepoints()) {
+            $this->exec($this->platform->releaseSavePoint(self::SAVEPOINT_NAME));
+        }
 
         $this->nested = false;
 
