@@ -11,23 +11,12 @@ class StaticDriver extends Driver\Middleware\AbstractDriverMiddleware
     /**
      * @var Connection[]
      */
-    protected static $connections = [];
+    private static $connections = [];
 
     /**
      * @var bool
      */
-    protected static $keepStaticConnections = false;
-
-    /**
-     * @var Driver
-     */
-    protected $underlyingDriver;
-
-    public function __construct(Driver $underlyingDriver)
-    {
-        $this->underlyingDriver = $underlyingDriver;
-        parent::__construct($underlyingDriver);
-    }
+    private static $keepStaticConnections = false;
 
     public function connect(array $params): DriverConnection
     {
@@ -70,22 +59,22 @@ class StaticDriver extends Driver\Middleware\AbstractDriverMiddleware
 
     public static function beginTransaction(): void
     {
-        foreach (self::$connections as $con) {
-            $con->beginTransaction();
+        foreach (self::$connections as $connection) {
+            $connection->beginTransaction();
         }
     }
 
     public static function rollBack(): void
     {
-        foreach (self::$connections as $con) {
-            $con->rollBack();
+        foreach (self::$connections as $connection) {
+            $connection->rollBack();
         }
     }
 
     public static function commit(): void
     {
-        foreach (self::$connections as $con) {
-            $con->commit();
+        foreach (self::$connections as $connection) {
+            $connection->commit();
         }
     }
 }
