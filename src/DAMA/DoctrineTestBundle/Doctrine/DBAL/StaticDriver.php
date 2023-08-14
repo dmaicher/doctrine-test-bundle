@@ -4,7 +4,6 @@ namespace DAMA\DoctrineTestBundle\Doctrine\DBAL;
 
 use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Driver\Connection;
-use Doctrine\DBAL\Driver\Connection as DriverConnection;
 
 class StaticDriver extends Driver\Middleware\AbstractDriverMiddleware
 {
@@ -18,7 +17,7 @@ class StaticDriver extends Driver\Middleware\AbstractDriverMiddleware
      */
     private static $keepStaticConnections = false;
 
-    public function connect(array $params): DriverConnection
+    public function connect(array $params): Connection
     {
         if (!self::isKeepStaticConnections()
             || !isset($params['dama.keep_static'])
