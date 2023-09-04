@@ -5,6 +5,7 @@
         "symfony",
         "doctrine",
         "tests",
+        "testing",
         "isolation",
         "performance"
     ],
