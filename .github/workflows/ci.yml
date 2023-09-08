@@ -38,6 +38,10 @@ jobs:
                     -   php: 8.2
                         symfony_require: 6.3.*
                         test_make_target: test
+                    -   php: 8.2
+                        symfony_require: 7.0.*
+                        stability: dev
+                        test_make_target: test
 
         steps:
             -   uses: actions/checkout@v2
