@@ -11,29 +11,31 @@ use Doctrine\DBAL\Schema\AbstractSchemaManager;
 
 class MockDriver implements Driver
 {
-    private function getMock(string $class)
-    {
-        // TODO: remove this once we drop support for PHPUnit < 10
-        $generatorClass = class_exists('PHPUnit\Framework\MockObject\Generator')
-            ? 'PHPUnit\Framework\MockObject\Generator'
-            : 'PHPUnit\Framework\MockObject\Generator\Generator';
+    private $connection;
+    private $schemaManager;
+    private $exceptionConverter;
 
-        /** @phpstan-ignore-next-line */
-        return (new $generatorClass())->getMock(
-            $class,
-            [],
-            [],
-            '',
-            false
-        );
+    /**
+     * @param Driver\Connection     $connection
+     * @param AbstractSchemaManager $schemaManager
+     * @param ExceptionConverter    $exceptionConverter
+     */
+    public function __construct(
+        $connection,
+        $schemaManager,
+        $exceptionConverter
+    ) {
+        $this->connection = $connection;
+        $this->schemaManager = $schemaManager;
+        $this->exceptionConverter = $exceptionConverter;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function connect(array $params): \Doctrine\DBAL\Driver\Connection
+    public function connect(array $params): Driver\Connection
     {
-        return $this->getMock(Driver\Connection::class);
+        return clone $this->connection;
     }
 
     /**
@@ -49,7 +51,7 @@ class MockDriver implements Driver
      */
     public function getSchemaManager(Connection $conn, AbstractPlatform $platform): AbstractSchemaManager
     {
-        return $this->getMock(AbstractSchemaManager::class);
+        return $this->schemaManager;
     }
 
     /**
@@ -70,6 +72,6 @@ class MockDriver implements Driver
 
     public function getExceptionConverter(): ExceptionConverter
     {
-        return $this->getMock(ExceptionConverter::class);
+        return $this->exceptionConverter;
     }
 }

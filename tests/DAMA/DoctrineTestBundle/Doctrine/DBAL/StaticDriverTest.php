@@ -9,9 +9,21 @@ use PHPUnit\Framework\TestCase;
 
 class StaticDriverTest extends TestCase
 {
+    private $driver;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->driver = new MockDriver(
+            $this->createMock('Doctrine\DBAL\Driver\Connection'),
+            $this->createMock('Doctrine\DBAL\Schema\AbstractSchemaManager'),
+            $this->createMock('Doctrine\DBAL\Driver\API\ExceptionConverter')
+        );
+    }
+
     public function testConnect(): void
     {
-        $driver = new StaticDriver(new MockDriver());
+        $driver = new StaticDriver($this->driver);
 
         $driver::setKeepStaticConnections(true);
 
@@ -36,7 +48,7 @@ class StaticDriverTest extends TestCase
         $this->assertInstanceOf(StaticConnection::class, $connection1);
         $this->assertNotSame($connection1->getWrappedConnection(), $connection2->getWrappedConnection());
 
-        $driver = new StaticDriver(new MockDriver());
+        $driver = new StaticDriver($this->driver);
 
         /** @var StaticConnection $connectionNew1 */
         $connectionNew1 = $driver->connect(['dama.connection_name' => 'foo'] + $params);
@@ -59,7 +71,7 @@ class StaticDriverTest extends TestCase
 
     public function testConnectWithPlatform(): void
     {
-        $driver = new StaticDriver(new MockDriver());
+        $driver = new StaticDriver($this->driver);
 
         $driver::setKeepStaticConnections(true);
 
@@ -92,7 +104,7 @@ class StaticDriverTest extends TestCase
         $this->assertInstanceOf(StaticConnection::class, $connection1);
         $this->assertNotSame($connection1->getWrappedConnection(), $connection2->getWrappedConnection());
 
-        $driver = new StaticDriver(new MockDriver());
+        $driver = new StaticDriver($this->driver);
 
         /** @var StaticConnection $connectionNew1 */
         $connectionNew1 = $driver->connect(['dama.connection_name' => 'foo'] + $params);
