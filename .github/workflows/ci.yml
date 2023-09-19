@@ -56,6 +56,10 @@ jobs:
                 if: matrix.stability
                 run: composer config minimum-stability ${{ matrix.stability }}
 
+            -   name: Remove behat/behat
+                if: matrix.symfony_require == '7.0.*'
+                run: composer remove behat/behat --no-update --dev
+
             -   name: Install symfony/flex
                 run: composer global config allow-plugins.symfony/flex true && composer global require symfony/flex
 
@@ -66,6 +70,7 @@ jobs:
                 run: make ${{ matrix.test_make_target }}
 
             -   name: Behat
+                if: matrix.symfony_require != '7.0.*'
                 run: make behat
 
     php-stan:
