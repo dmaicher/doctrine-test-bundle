@@ -29,6 +29,7 @@
     "require-dev": {
         "behat/behat": "^3.0",
         "doctrine/cache": "^1.12",
+        "friendsofphp/php-cs-fixer": "^3.27",
         "phpstan/phpstan": "^1.2",
         "phpunit/phpunit": "^8.0 || ^9.0 || ^10.0",
         "symfony/phpunit-bridge": "^6.2",

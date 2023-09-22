@@ -60,6 +60,9 @@ jobs:
                 if: matrix.symfony_require == '7.0.*'
                 run: composer remove behat/behat --no-update --dev
 
+            -   name: Remove CS fixer
+                run: composer remove friendsofphp/php-cs-fixer --no-update --dev
+
             -   name: Install symfony/flex
                 run: composer global config allow-plugins.symfony/flex true && composer global require symfony/flex
 

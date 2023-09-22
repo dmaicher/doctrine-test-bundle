@@ -30,41 +30,26 @@ class MockDriver implements Driver
         $this->exceptionConverter = $exceptionConverter;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function connect(array $params): Driver\Connection
     {
         return clone $this->connection;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getDatabasePlatform(): AbstractPlatform
     {
         return new MySQL80Platform();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getSchemaManager(Connection $conn, AbstractPlatform $platform): AbstractSchemaManager
     {
         return $this->schemaManager;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getName(): string
     {
         return 'mock';
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getDatabase(Connection $conn): string
     {
         return 'mock';
