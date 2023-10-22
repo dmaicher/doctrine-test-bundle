@@ -20,8 +20,8 @@
     "require": {
         "php": "^7.3 || ^8.0",
         "ext-json": "*",
-        "doctrine/dbal": "4.0.x-dev as 3.999",
-        "doctrine/doctrine-bundle": "^2.2.2",
+        "doctrine/dbal": "^3.3 || ^4.0",
+        "doctrine/doctrine-bundle": "dev-dbal_4",
         "psr/cache": "^1.0 || ^2.0 || ^3.0",
         "symfony/cache": "^5.4 || ^6.2 || ^7.0",
         "symfony/framework-bundle": "^5.4 || ^6.2 || ^7.0"
@@ -53,5 +53,12 @@
     },
     "config": {
         "sort-packages": true
-    }
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/dmaicher/DoctrineBundle"
+        }
+    ],
+    "minimum-stability": "dev"
 }

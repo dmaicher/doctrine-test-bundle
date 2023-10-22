@@ -1,6 +1,9 @@
 <?php
 
 use Doctrine\Deprecations\Deprecation;
+use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Component\Console\Input\ArrayInput;
+use Tests\Functional\app\AppKernel;
 
 require_once __DIR__.'/../vendor/autoload.php';
 
@@ -10,19 +13,19 @@ if (class_exists(Deprecation::class)) {
 
 function bootstrap(): void
 {
-    $kernel = new \Tests\Functional\app\AppKernel('test', false);
+    $kernel = new AppKernel('test', true);
     $kernel->boot();
 
-    $application = new \Symfony\Bundle\FrameworkBundle\Console\Application($kernel);
+    $application = new Application($kernel);
     $application->setAutoExit(false);
 
-    $application->run(new \Symfony\Component\Console\Input\ArrayInput([
+    $application->run(new ArrayInput([
         'command' => 'doctrine:database:drop',
         '--if-exists' => '1',
         '--force' => '1',
     ]));
 
-    $application->run(new \Symfony\Component\Console\Input\ArrayInput([
+    $application->run(new ArrayInput([
         'command' => 'doctrine:database:create',
     ]));
 
