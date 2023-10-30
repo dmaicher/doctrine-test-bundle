@@ -2,82 +2,58 @@
 
 namespace DAMA\DoctrineTestBundle\Doctrine\DBAL;
 
-use Doctrine\DBAL\Driver\Connection;
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Middleware\AbstractConnectionMiddleware;
-use Doctrine\DBAL\Platforms\AbstractPlatform;
 
 /**
  * Wraps a real connection and makes sure the initial nested transaction is using a savepoint.
  */
-class StaticConnection extends AbstractConnectionMiddleware
-{
-    private const SAVEPOINT_NAME = 'DAMA_TEST';
-
-    /**
-     * @var Connection
-     */
-    private $connection;
-
-    /**
-     * @var AbstractPlatform
-     */
-    private $platform;
-
-    /**
-     * @var bool
-     */
-    private $nested = false;
-
-    public function __construct(Connection $connection, AbstractPlatform $platform)
+if (method_exists(Connection::class, 'getEventManager')) {
+    // DBAL < 4
+    class StaticConnection extends AbstractConnectionMiddleware
     {
-        parent::__construct($connection);
-        $this->connection = $connection;
-        $this->platform = $platform;
-    }
+        use StaticConnectionTrait;
 
-    public function beginTransaction(): bool
-    {
-        if ($this->nested) {
-            throw new \BadMethodCallException(sprintf('Bad call to "%s". A savepoint is already in use for a nested transaction.', __METHOD__));
+        public function beginTransaction(): bool
+        {
+            $this->doBeginTransaction();
+
+            return true;
         }
 
-        $this->exec($this->platform->createSavePoint(self::SAVEPOINT_NAME));
+        public function commit(): bool
+        {
+            $this->doCommit();
 
-        $this->nested = true;
-
-        return true;
-    }
-
-    public function commit(): bool
-    {
-        if (!$this->nested) {
-            throw new \BadMethodCallException(sprintf('Bad call to "%s". There is no savepoint for a nested transaction.', __METHOD__));
+            return true;
         }
 
-        if ($this->platform->supportsReleaseSavepoints()) {
-            $this->exec($this->platform->releaseSavePoint(self::SAVEPOINT_NAME));
+        public function rollBack(): bool
+        {
+            $this->doRollBack();
+
+            return true;
+        }
+    }
+} else {
+    // DBAL >= 4
+    class StaticConnection extends AbstractConnectionMiddleware
+    {
+        use StaticConnectionTrait;
+
+        public function beginTransaction(): void
+        {
+            $this->doBeginTransaction();
         }
 
-        $this->nested = false;
-
-        return true;
-    }
-
-    public function rollBack(): bool
-    {
-        if (!$this->nested) {
-            throw new \BadMethodCallException(sprintf('Bad call to "%s". There is no savepoint for a nested transaction.', __METHOD__));
+        public function commit(): void
+        {
+            $this->doCommit();
         }
 
-        $this->exec($this->platform->rollbackSavePoint(self::SAVEPOINT_NAME));
-
-        $this->nested = false;
-
-        return true;
-    }
-
-    public function getWrappedConnection(): Connection
-    {
-        return $this->connection;
+        public function rollBack(): void
+        {
+            $this->doRollBack();
+        }
     }
 }
