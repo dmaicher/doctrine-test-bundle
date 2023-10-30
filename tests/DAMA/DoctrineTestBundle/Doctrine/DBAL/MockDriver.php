@@ -4,60 +4,30 @@ namespace Tests\DAMA\DoctrineTestBundle\Doctrine\DBAL;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
-use Doctrine\DBAL\Driver\API\ExceptionConverter;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\MySQL80Platform;
-use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\DBAL\ServerVersionProvider;
 
-class MockDriver implements Driver
-{
-    private $connection;
-    private $schemaManager;
-    private $exceptionConverter;
-
-    /**
-     * @param Driver\Connection     $connection
-     * @param AbstractSchemaManager $schemaManager
-     * @param ExceptionConverter    $exceptionConverter
-     */
-    public function __construct(
-        $connection,
-        $schemaManager,
-        $exceptionConverter
-    ) {
-        $this->connection = $connection;
-        $this->schemaManager = $schemaManager;
-        $this->exceptionConverter = $exceptionConverter;
-    }
-
-    public function connect(array $params): Driver\Connection
+if (method_exists(Connection::class, 'getEventManager')) {
+    // DBAL < 4
+    class MockDriver implements Driver
     {
-        return clone $this->connection;
-    }
+        use MockDriverTrait;
 
-    public function getDatabasePlatform(ServerVersionProvider $versionProvider): AbstractPlatform
-    {
-        return new MySQL80Platform();
+        public function getDatabasePlatform(): AbstractPlatform
+        {
+            return new MySQL80Platform();
+        }
     }
-
-    public function getSchemaManager(Connection $conn, AbstractPlatform $platform): AbstractSchemaManager
+} else {
+    // DBAL >= 4
+    class MockDriver implements Driver
     {
-        return $this->schemaManager;
-    }
+        use MockDriverTrait;
 
-    public function getName(): string
-    {
-        return 'mock';
-    }
-
-    public function getDatabase(Connection $conn): string
-    {
-        return 'mock';
-    }
-
-    public function getExceptionConverter(): ExceptionConverter
-    {
-        return $this->exceptionConverter;
+        public function getDatabasePlatform(ServerVersionProvider $versionProvider): AbstractPlatform
+        {
+            return new MySQL80Platform();
+        }
     }
 }
