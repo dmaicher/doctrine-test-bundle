@@ -5,9 +5,7 @@ namespace Tests\DAMA\DoctrineTestBundle\DependencyInjection;
 use DAMA\DoctrineTestBundle\DependencyInjection\DAMADoctrineTestExtension;
 use DAMA\DoctrineTestBundle\DependencyInjection\DoctrineTestCompilerPass;
 use DAMA\DoctrineTestBundle\Doctrine\Cache\Psr6StaticArrayCache;
-use DAMA\DoctrineTestBundle\Doctrine\Cache\StaticArrayCache;
 use Doctrine\Bundle\DoctrineBundle\ConnectionFactory;
-use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\Connection;
 use PHPUnit\Framework\TestCase;
@@ -212,24 +210,6 @@ class DoctrineTestCompilerPassTest extends TestCase
             function (TestCase $testCase): void {
                 $testCase->expectException(\InvalidArgumentException::class);
                 $testCase->expectExceptionMessage('Unknown doctrine dbal connection name(s): foo, bar.');
-            },
-        ];
-
-        yield 'legacy doctrine/cache ORM services' => [
-            $defaultConfig,
-            function (ContainerBuilder $containerBuilder): void {
-                foreach (self::CACHE_SERVICE_IDS as $id) {
-                    self::assertFalse($containerBuilder->hasAlias($id));
-                    self::assertEquals(
-                        (new Definition(StaticArrayCache::class))->addMethodCall('setNamespace', [sha1($id)]),
-                        $containerBuilder->getDefinition($id)
-                    );
-                }
-            },
-            function (self $testCase, ContainerBuilder $containerBuilder): void {
-                foreach (self::CACHE_SERVICE_IDS as $id) {
-                    $containerBuilder->register($id, ArrayCache::class);
-                }
             },
         ];
 
