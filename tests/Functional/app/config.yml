@@ -13,7 +13,7 @@ doctrine:
                 
             replica:
                 url: '%database.url%'
-                server_version: 8.0
+                server_version: 8.0.31
                 use_savepoints: true
                 replicas:
                     replica_one:
