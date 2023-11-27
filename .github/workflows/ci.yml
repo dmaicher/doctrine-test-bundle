@@ -32,10 +32,10 @@ jobs:
                         test_make_target: test_phpunit_legacy
                     -   php: 8.1
                         test_make_target: test
-                    -   php: 8.1
-                        symfony_require: 6.2.*
-                        test_make_target: test
                     -   php: 8.2
+                        symfony_require: 6.3.*
+                        test_make_target: test
+                    -   php: 8.3
                         symfony_require: 6.3.*
                         test_make_target: test
                     -   php: 8.2
