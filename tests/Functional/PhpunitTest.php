@@ -10,6 +10,16 @@ class PhpunitTest extends TestCase
 {
     use FunctionalTestTrait;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->init();
+        /** @phpstan-ignore-next-line */
+        if ((method_exists($this, 'name') ? $this->name() : $this->getName()) === 'testSkippedTestDuringSetup') {
+            $this->markTestSkipped();
+        }
+    }
+
     public function testChangeDbState(): void
     {
         $this->assertRowCount(0);
@@ -121,6 +131,21 @@ class PhpunitTest extends TestCase
     public function testPreviousChangesAreRolledBackAfterUsingSavePoint(): void
     {
         $this->assertRowCount(0);
+    }
+
+    public function testSkippedTest(): void
+    {
+        $this->markTestSkipped();
+    }
+
+    public function testSkippedTestDuringSetup(): void
+    {
+        $this->assertTrue(true);
+    }
+
+    public function testMarkIncomplete(): void
+    {
+        $this->markTestIncomplete();
     }
 
     public function testRollBackChangesWithReOpenedConnection(): void
