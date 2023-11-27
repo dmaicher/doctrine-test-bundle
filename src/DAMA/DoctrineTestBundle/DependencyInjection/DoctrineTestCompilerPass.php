@@ -110,6 +110,10 @@ class DoctrineTestCompilerPass implements CompilerPassInterface
             $cache->setClass(Psr6StaticArrayCache::class);
             $cache->setArgument(0, $namespace); // make sure we have no key collisions
         } elseif (is_a($originalCacheServiceDefinition->getClass(), Cache::class, true)) {
+            @trigger_error(
+                sprintf('Configuring "%s" cache instances is deprecated since dama/doctrine-test-bundle v7.3.0 and will not be supported in 8.0. Upgrade to PSR-6 caches instead.', Cache::class),
+                E_USER_DEPRECATED
+            );
             $cache->setClass(StaticArrayCache::class);
             $cache->addMethodCall('setNamespace', [$namespace]); // make sure we have no key collisions
         } else {

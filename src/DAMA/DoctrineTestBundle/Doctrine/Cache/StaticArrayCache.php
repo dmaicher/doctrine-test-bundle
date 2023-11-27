@@ -4,6 +4,9 @@ namespace DAMA\DoctrineTestBundle\Doctrine\Cache;
 
 use Doctrine\Common\Cache\CacheProvider;
 
+/**
+ * @deprecated since dama/doctrine-test-bundle v7.3.0 and will be removed in v8.0.0. Use Psr6StaticArrayCache instead.
+ */
 class StaticArrayCache extends CacheProvider
 {
     /**
