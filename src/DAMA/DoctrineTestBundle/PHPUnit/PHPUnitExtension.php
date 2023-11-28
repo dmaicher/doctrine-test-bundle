@@ -3,14 +3,8 @@
 namespace DAMA\DoctrineTestBundle\PHPUnit;
 
 use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticDriver;
-use PHPUnit\Event\Test\Errored;
-use PHPUnit\Event\Test\ErroredSubscriber;
-use PHPUnit\Event\Test\Failed;
-use PHPUnit\Event\Test\FailedSubscriber;
-use PHPUnit\Event\Test\MarkedIncomplete;
-use PHPUnit\Event\Test\MarkedIncompleteSubscriber;
-use PHPUnit\Event\Test\Passed;
-use PHPUnit\Event\Test\PassedSubscriber;
+use PHPUnit\Event\Test\Finished as TestFinishedEvent;
+use PHPUnit\Event\Test\FinishedSubscriber as TestFinishedSubscriber;
 use PHPUnit\Event\Test\PreparationStarted as TestStartedEvent;
 use PHPUnit\Event\Test\PreparationStartedSubscriber as TestStartedSubscriber;
 use PHPUnit\Event\Test\Skipped;
@@ -34,6 +28,8 @@ if (class_exists(TestRunnerStartedEvent::class)) {
      */
     class PHPUnitExtension implements Extension
     {
+        public static $rolledBack = false;
+
         public function bootstrap(Configuration $configuration, Facade $facade, ParameterCollection $parameters): void
         {
             $facade->registerSubscriber(new class() implements TestRunnerStartedSubscriber {
@@ -46,6 +42,7 @@ if (class_exists(TestRunnerStartedEvent::class)) {
             $facade->registerSubscriber(new class() implements TestStartedSubscriber {
                 public function notify(TestStartedEvent $event): void
                 {
+                    PHPUnitExtension::$rolledBack = false;
                     StaticDriver::beginTransaction();
                 }
             });
@@ -53,35 +50,20 @@ if (class_exists(TestRunnerStartedEvent::class)) {
             $facade->registerSubscriber(new class() implements SkippedSubscriber {
                 public function notify(Skipped $event): void
                 {
+                    // this is a workaround to allow skipping tests within the setUp() method
+                    // as for those cases there is no Finished event
+                    PHPUnitExtension::$rolledBack = true;
                     StaticDriver::rollBack();
                 }
             });
 
-            $facade->registerSubscriber(new class() implements PassedSubscriber {
-                public function notify(Passed $event): void
+            $facade->registerSubscriber(new class() implements TestFinishedSubscriber {
+                public function notify(TestFinishedEvent $event): void
                 {
-                    StaticDriver::rollBack();
-                }
-            });
-
-            $facade->registerSubscriber(new class() implements FailedSubscriber {
-                public function notify(Failed $event): void
-                {
-                    StaticDriver::rollBack();
-                }
-            });
-
-            $facade->registerSubscriber(new class() implements ErroredSubscriber {
-                public function notify(Errored $event): void
-                {
-                    StaticDriver::rollBack();
-                }
-            });
-
-            $facade->registerSubscriber(new class() implements MarkedIncompleteSubscriber {
-                public function notify(MarkedIncomplete $event): void
-                {
-                    StaticDriver::rollBack();
+                    // we only roll back if we did not already do it in the SkippedSubscriber
+                    if (!PHPUnitExtension::$rolledBack) {
+                        StaticDriver::rollBack();
+                    }
                 }
             });
 
