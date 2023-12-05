@@ -36,10 +36,12 @@ jobs:
                         symfony_require: 6.3.*
                         test_make_target: test
                     -   php: 8.3
-                        symfony_require: 6.3.*
+                        symfony_require: 6.4.*
                         test_make_target: test
                     -   php: 8.2
                         symfony_require: 7.0.*
+                        test_make_target: test
+                    -   php: 8.3
                         stability: dev
                         test_make_target: test
 

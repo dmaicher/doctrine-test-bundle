@@ -3,6 +3,8 @@
 namespace DAMA\DoctrineTestBundle\PHPUnit;
 
 use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticDriver;
+use PHPUnit\Event\Test\Errored;
+use PHPUnit\Event\Test\ErroredSubscriber;
 use PHPUnit\Event\Test\Finished as TestFinishedEvent;
 use PHPUnit\Event\Test\FinishedSubscriber as TestFinishedSubscriber;
 use PHPUnit\Event\Test\PreparationStarted as TestStartedEvent;
@@ -28,7 +30,17 @@ if (class_exists(TestRunnerStartedEvent::class)) {
      */
     class PHPUnitExtension implements Extension
     {
-        public static $rolledBack = false;
+        public static $transactionStarted = false;
+
+        public static function rollBack(): void
+        {
+            if (!self::$transactionStarted) {
+                return;
+            }
+
+            StaticDriver::rollBack();
+            self::$transactionStarted = false;
+        }
 
         public function bootstrap(Configuration $configuration, Facade $facade, ParameterCollection $parameters): void
         {
@@ -42,8 +54,8 @@ if (class_exists(TestRunnerStartedEvent::class)) {
             $facade->registerSubscriber(new class() implements TestStartedSubscriber {
                 public function notify(TestStartedEvent $event): void
                 {
-                    PHPUnitExtension::$rolledBack = false;
                     StaticDriver::beginTransaction();
+                    PHPUnitExtension::$transactionStarted = true;
                 }
             });
 
@@ -52,18 +64,22 @@ if (class_exists(TestRunnerStartedEvent::class)) {
                 {
                     // this is a workaround to allow skipping tests within the setUp() method
                     // as for those cases there is no Finished event
-                    PHPUnitExtension::$rolledBack = true;
-                    StaticDriver::rollBack();
+                    PHPUnitExtension::rollBack();
                 }
             });
 
             $facade->registerSubscriber(new class() implements TestFinishedSubscriber {
                 public function notify(TestFinishedEvent $event): void
                 {
-                    // we only roll back if we did not already do it in the SkippedSubscriber
-                    if (!PHPUnitExtension::$rolledBack) {
-                        StaticDriver::rollBack();
-                    }
+                    PHPUnitExtension::rollBack();
+                }
+            });
+
+            $facade->registerSubscriber(new class() implements ErroredSubscriber {
+                public function notify(Errored $event): void
+                {
+                    // needed as for errored tests the "Finished" event is not triggered
+                    PHPUnitExtension::rollBack();
                 }
             });
 
