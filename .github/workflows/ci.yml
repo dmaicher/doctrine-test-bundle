@@ -72,7 +72,6 @@ jobs:
                 run: make ${{ matrix.test_make_target }}
 
             -   name: Behat
-                if: matrix.symfony_require != '7.0.*'
                 run: make behat
 
     php-stan:
