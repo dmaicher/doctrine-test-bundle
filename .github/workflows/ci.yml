@@ -40,6 +40,7 @@ jobs:
                         test_make_target: test
                     -   php: 8.2
                         symfony_require: 7.0.*
+                        stability: dev
                         test_make_target: test
                     -   php: 8.3
                         stability: dev
@@ -57,10 +58,6 @@ jobs:
             -   name: Configure Composer minimum stability
                 if: matrix.stability
                 run: composer config minimum-stability ${{ matrix.stability }}
-
-            -   name: Remove behat/behat
-                if: matrix.symfony_require == '7.0.*'
-                run: composer remove behat/behat --no-update --dev
 
             -   name: Remove CS fixer
                 run: composer remove friendsofphp/php-cs-fixer --no-update --dev
