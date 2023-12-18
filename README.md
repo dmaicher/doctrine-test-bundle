@@ -29,8 +29,18 @@ It also includes a `Psr6StaticArrayCache` that will be automatically configured 
         }
     }
     ```
-    
-    Note: if you are using symfony flex and you are allowing contrib recipes (`extra.symfony.allow-contrib=true`) then the bundle will be automatically enabled for the `'test'` environment. See https://github.com/symfony/recipes-contrib/tree/master/dama/doctrine-test-bundle
+
+   Note: if you are using symfony flex and you are allowing contrib recipes (`extra.symfony.allow-contrib=true`) then the bundle will be automatically enabled for the `'test'` environment. See https://github.com/symfony/recipes-contrib/tree/master/dama/doctrine-test-bundle
+
+3. Starting from version 8 you need to make sure you have `use_savepoints` enabled on your doctrine DBAL configuration for all relevant connections:
+
+   ```yaml
+   doctrine:
+       dbal:
+           connections:
+               default:
+                   use_savepoints: true
+    ``` 
     
 #### Using the Bundle with PHPUnit
 
