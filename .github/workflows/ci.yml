@@ -58,10 +58,6 @@ jobs:
                 if: matrix.stability
                 run: composer config minimum-stability ${{ matrix.stability }}
 
-            -   name: Remove behat/behat
-                if: matrix.symfony_require == '7.0.*'
-                run: composer remove behat/behat --no-update --dev
-
             -   name: Remove CS fixer
                 run: composer remove friendsofphp/php-cs-fixer --no-update --dev
 
@@ -75,7 +71,6 @@ jobs:
                 run: make ${{ matrix.test_make_target }}
 
             -   name: Behat
-                if: matrix.symfony_require != '7.0.*'
                 run: make behat
 
     php-stan:
