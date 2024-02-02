@@ -29,7 +29,7 @@ class DoctrineTestCompilerPassTest extends TestCase
     /**
      * @dataProvider processDataProvider
      */
-    public function testProcess(array $config, callable $assertCallback, callable $expectationCallback = null): void
+    public function testProcess(array $config, callable $assertCallback, ?callable $expectationCallback = null): void
     {
         $containerBuilder = new ContainerBuilder();
         $extension = new DAMADoctrineTestExtension();
