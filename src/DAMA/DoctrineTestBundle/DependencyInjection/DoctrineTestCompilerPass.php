@@ -5,6 +5,7 @@ namespace DAMA\DoctrineTestBundle\DependencyInjection;
 use DAMA\DoctrineTestBundle\Doctrine\Cache\Psr6StaticArrayCache;
 use DAMA\DoctrineTestBundle\Doctrine\DBAL\Middleware;
 use Doctrine\Common\Cache\Cache;
+use Doctrine\DBAL\Connection;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
@@ -179,6 +180,11 @@ class DoctrineTestCompilerPass implements CompilerPassInterface
 
     private function hasSavepointsEnabled(Definition $connectionDefinition): bool
     {
+        // DBAL 4 implicitly always enables savepoints
+        if (!method_exists(Connection::class, 'getEventManager')) {
+            return true;
+        }
+
         foreach ($connectionDefinition->getMethodCalls() as $call) {
             if ($call[0] === 'setNestTransactionsWithSavepoints' && isset($call[1][0]) && $call[1][0]) {
                 return true;
