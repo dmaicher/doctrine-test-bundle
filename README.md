@@ -31,7 +31,7 @@ return [
 ];
 ```
 
-3. Starting from version 8 you need to make sure you have `use_savepoints` enabled on your doctrine DBAL configuration for all relevant connections:
+3. Starting from version 8 **and only when using DBAL < 4** you need to make sure you have `use_savepoints` enabled on your doctrine DBAL configuration for all relevant connections:
 
 ```yaml
 doctrine:
