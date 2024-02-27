@@ -30,7 +30,7 @@
         "behat/behat": "^3.0",
         "friendsofphp/php-cs-fixer": "^3.27",
         "phpstan/phpstan": "^1.2",
-        "phpunit/phpunit": "^8.0 || ^9.0 || ^10.0",
+        "phpunit/phpunit": "^8.0 || ^9.0 || ^10.0 || ^11.0",
         "symfony/phpunit-bridge": "^6.3",
         "symfony/process": "^5.4 || ^6.3 || ^7.0",
         "symfony/yaml": "^5.4 || ^6.3 || ^7.0"
