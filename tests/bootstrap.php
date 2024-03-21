@@ -17,6 +17,7 @@ function bootstrap(): void
     $kernel->boot();
 
     $application = new Application($kernel);
+    $application->setCatchExceptions(false);
     $application->setAutoExit(false);
 
     $application->run(new ArrayInput([
