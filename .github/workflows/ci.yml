@@ -44,6 +44,9 @@ jobs:
                     -   php: 8.3
                         stability: dev
                         test_make_target: test
+                    -   php: 8.4
+                        stability: dev
+                        test_make_target: test
 
         steps:
             -   uses: actions/checkout@v4
