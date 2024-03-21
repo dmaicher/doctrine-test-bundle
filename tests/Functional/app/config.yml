@@ -9,11 +9,11 @@ doctrine:
         connections:
             default:
                 url: '%database.url%'
+                server_version: 8.0.31
                 use_savepoints: true
                 
             replica:
                 url: '%database.url%'
-                server_version: 8.0.31
                 use_savepoints: true
                 replicas:
                     replica_one:
