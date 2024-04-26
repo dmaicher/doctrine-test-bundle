@@ -20,8 +20,6 @@ jobs:
             fail-fast: false
             matrix:
                 include:
-                    -   php: 7.3
-                        test_make_target: test_phpunit_legacy
                     -   php: 7.4
                         composer_flags: --prefer-lowest
                         test_make_target: test_phpunit_legacy
