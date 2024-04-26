@@ -10,7 +10,7 @@ jobs:
             SYMFONY_REQUIRE: "${{ matrix.symfony_require }}"
         services:
             mysql:
-                image: mysql:5.7
+                image: mysql:8.0
                 env:
                     MYSQL_ALLOW_EMPTY_PASSWORD: true
                 ports:
