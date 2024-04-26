@@ -18,7 +18,7 @@
         }
     ],
     "require": {
-        "php": "^7.3 || ^8.0",
+        "php": "^7.4 || ^8.0",
         "ext-json": "*",
         "doctrine/dbal": "^3.3 || ^4.0",
         "doctrine/doctrine-bundle": "^2.2.2",
