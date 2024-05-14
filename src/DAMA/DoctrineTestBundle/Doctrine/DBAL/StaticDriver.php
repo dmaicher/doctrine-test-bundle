@@ -10,7 +10,7 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 class StaticDriver extends Driver\Middleware\AbstractDriverMiddleware
 {
     /**
-     * @var Connection[]
+     * @var array<string, Connection>
      */
     private static $connections = [];
 
@@ -21,14 +21,12 @@ class StaticDriver extends Driver\Middleware\AbstractDriverMiddleware
 
     public function connect(array $params): Connection
     {
-        if (!self::isKeepStaticConnections()
-            || !isset($params['dama.keep_static'])
-            || !$params['dama.keep_static']
-        ) {
+        if (!self::isKeepStaticConnections() || !isset($params['dama.connection_key'])) {
             return parent::connect($params);
         }
 
-        $key = sha1(json_encode($params));
+        /** @var string $key */
+        $key = $params['dama.connection_key'];
 
         if (!isset(self::$connections[$key])) {
             self::$connections[$key] = parent::connect($params);

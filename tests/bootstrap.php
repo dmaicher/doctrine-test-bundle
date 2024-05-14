@@ -1,6 +1,8 @@
 <?php
 
+use Doctrine\DBAL\Connection;
 use Doctrine\Deprecations\Deprecation;
+use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
 use Tests\Functional\app\AppKernel;
@@ -30,7 +32,13 @@ function bootstrap(): void
         'command' => 'doctrine:database:create',
     ]));
 
-    $kernel->getContainer()->get('doctrine')->getConnection()->executeQuery('CREATE TABLE test (test VARCHAR(10))');
+    /** @var ManagerRegistry $registry */
+    $registry = $kernel->getContainer()->get('doctrine');
+
+    /** @var Connection $connection */
+    $connection = $registry->getConnection();
+    $connection->executeQuery('CREATE TABLE test (test VARCHAR(10))');
+
     $kernel->shutdown();
 }
 

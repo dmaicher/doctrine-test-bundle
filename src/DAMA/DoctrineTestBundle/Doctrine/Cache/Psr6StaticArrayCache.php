@@ -39,6 +39,9 @@ final class Psr6StaticArrayCache implements CacheItemPoolInterface
         return $this->adapter->getItem($key);
     }
 
+    /**
+     * @return iterable<CacheItemInterface>
+     */
     public function getItems(array $keys = []): iterable
     {
         return $this->adapter->getItems($keys);

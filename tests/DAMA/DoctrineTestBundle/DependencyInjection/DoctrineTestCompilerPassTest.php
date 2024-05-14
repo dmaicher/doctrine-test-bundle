@@ -95,8 +95,7 @@ class DoctrineTestCompilerPassTest extends TestCase
                 }
 
                 self::assertSame([
-                    'dama.keep_static' => true,
-                    'dama.connection_name' => 'a',
+                    'dama.connection_key' => 'a',
                 ], $containerBuilder->getDefinition('doctrine.dbal.a_connection')->getArgument(0));
 
                 self::assertEquals(
@@ -166,8 +165,7 @@ class DoctrineTestCompilerPassTest extends TestCase
             ],
             function (ContainerBuilder $containerBuilder): void {
                 self::assertSame([
-                    'dama.keep_static' => true,
-                    'dama.connection_name' => 'a',
+                    'dama.connection_key' => 'a',
                 ], $containerBuilder->getDefinition('doctrine.dbal.a_connection')->getArgument(0));
 
                 self::assertSame([], $containerBuilder->getDefinition('doctrine.dbal.b_connection')->getArgument(0));
@@ -175,21 +173,17 @@ class DoctrineTestCompilerPassTest extends TestCase
                 self::assertSame(
                     [
                         'primary' => [
-                            'dama.keep_static' => true,
-                            'dama.connection_name' => 'c',
+                            'dama.connection_key' => 'c',
                         ],
                         'replica' => [
                             'one' => [
-                                'dama.keep_static' => true,
-                                'dama.connection_name' => 'c.one',
+                                'dama.connection_key' => 'c',
                             ],
                             'two' => [
-                                'dama.keep_static' => true,
-                                'dama.connection_name' => 'c.two',
+                                'dama.connection_key' => 'c',
                             ],
                         ],
-                        'dama.keep_static' => true,
-                        'dama.connection_name' => 'c',
+                        'dama.connection_key' => 'c',
                     ],
                     $containerBuilder->getDefinition('doctrine.dbal.c_connection')->getArgument(0)
                 );
@@ -210,6 +204,79 @@ class DoctrineTestCompilerPassTest extends TestCase
             function (TestCase $testCase): void {
                 $testCase->expectException(\InvalidArgumentException::class);
                 $testCase->expectExceptionMessage('Unknown doctrine dbal connection name(s): foo, bar.');
+            },
+        ];
+
+        yield 'Custom keys' => [
+            [
+                'connection_keys' => [
+                    'a' => 'key_1',
+                    'b' => 'key_2',
+                    'c' => 'key_3',
+                ],
+            ],
+            function (ContainerBuilder $containerBuilder): void {
+                self::assertSame([
+                    'dama.connection_key' => 'key_1',
+                ], $containerBuilder->getDefinition('doctrine.dbal.a_connection')->getArgument(0));
+
+                self::assertSame([
+                    'dama.connection_key' => 'key_2',
+                ], $containerBuilder->getDefinition('doctrine.dbal.b_connection')->getArgument(0));
+
+                self::assertSame(
+                    [
+                        'primary' => [
+                            'dama.connection_key' => 'key_3',
+                        ],
+                        'replica' => [
+                            'one' => [
+                                'dama.connection_key' => 'key_3',
+                            ],
+                            'two' => [
+                                'dama.connection_key' => 'key_3',
+                            ],
+                        ],
+                        'dama.connection_key' => 'key_3',
+                    ],
+                    $containerBuilder->getDefinition('doctrine.dbal.c_connection')->getArgument(0)
+                );
+            },
+        ];
+
+        yield 'Custom keys for primary/replica' => [
+            [
+                'connection_keys' => [
+                    'c' => [
+                        'primary' => 'key_3',
+                        'replicas' => [
+                            'one' => 'key_4',
+                        ],
+                    ],
+                ],
+            ],
+            function (ContainerBuilder $containerBuilder): void {
+                self::assertSame([
+                    'dama.connection_key' => 'a',
+                ], $containerBuilder->getDefinition('doctrine.dbal.a_connection')->getArgument(0));
+
+                self::assertSame(
+                    [
+                        'primary' => [
+                            'dama.connection_key' => 'key_3',
+                        ],
+                        'replica' => [
+                            'one' => [
+                                'dama.connection_key' => 'key_4',
+                            ],
+                            'two' => [
+                                'dama.connection_key' => 'key_3',
+                            ],
+                        ],
+                        'dama.connection_key' => 'key_3',
+                    ],
+                    $containerBuilder->getDefinition('doctrine.dbal.c_connection')->getArgument(0)
+                );
             },
         ];
 

@@ -17,7 +17,6 @@ class DoctrineTestCompilerPass implements CompilerPassInterface
 {
     public function process(ContainerBuilder $container): void
     {
-        $transactionalBehaviorEnabledConnections = $this->getTransactionEnabledConnectionNames($container);
         $container->register('dama.doctrine.dbal.middleware', Middleware::class);
         $cacheNames = [];
 
@@ -29,11 +28,15 @@ class DoctrineTestCompilerPass implements CompilerPassInterface
             $cacheNames[] = 'doctrine.orm.%s_query_cache';
         }
 
-        $connectionNames = array_keys($container->getParameter('doctrine.connections'));
+        /** @var array<string, mixed> $connections */
+        $connections = $container->getParameter('doctrine.connections');
+        $connectionNames = array_keys($connections);
+        $transactionalBehaviorEnabledConnections = $this->getTransactionEnabledConnectionNames($container, $connectionNames);
+        $connectionKeys = $this->getConnectionKeys($container, $connectionNames);
 
         foreach ($connectionNames as $name) {
             if (in_array($name, $transactionalBehaviorEnabledConnections, true)) {
-                $this->modifyConnectionService($container, $name);
+                $this->modifyConnectionService($container, $connectionKeys[$name] ?? null, $name);
             }
 
             foreach ($cacheNames as $cacheName) {
@@ -56,9 +59,13 @@ class DoctrineTestCompilerPass implements CompilerPassInterface
         $container->getParameterBag()->remove('dama.'.Configuration::ENABLE_STATIC_CONNECTION);
         $container->getParameterBag()->remove('dama.'.Configuration::STATIC_META_CACHE);
         $container->getParameterBag()->remove('dama.'.Configuration::STATIC_QUERY_CACHE);
+        $container->getParameterBag()->remove('dama.'.Configuration::CONNECTION_KEYS);
     }
 
-    private function modifyConnectionService(ContainerBuilder $container, string $name): void
+    /**
+     * @param string|array{primary: string, replicas: array<string, string>}|null $connectionKey
+     */
+    private function modifyConnectionService(ContainerBuilder $container, $connectionKey, string $name): void
     {
         $connectionDefinition = $container->getDefinition(sprintf('doctrine.dbal.%s_connection', $name));
 
@@ -66,9 +73,11 @@ class DoctrineTestCompilerPass implements CompilerPassInterface
             throw new \LogicException(sprintf('This bundle relies on savepoints for nested database transactions. You need to enable "use_savepoints" on the Doctrine DBAL config for connection "%s".', $name));
         }
 
+        /** @var array<string, mixed> $connectionOptions */
+        $connectionOptions = $connectionDefinition->getArgument(0);
         $connectionDefinition->replaceArgument(
             0,
-            $this->getModifiedConnectionOptions($connectionDefinition->getArgument(0), $name),
+            $this->getModifiedConnectionOptions($connectionOptions, $connectionKey, $name),
         );
 
         $connectionConfig = $container->getDefinition(sprintf('doctrine.dbal.%s_connection.configuration', $name));
@@ -90,27 +99,44 @@ class DoctrineTestCompilerPass implements CompilerPassInterface
         $connectionConfig->setMethodCalls($methodCalls);
     }
 
-    private function getModifiedConnectionOptions(array $options, string $name): array
-    {
-        $connectionOptions = array_merge($options, [
-            'dama.keep_static' => true,
-            'dama.connection_name' => $name,
-        ]);
+    /**
+     * @param array<string, mixed>                                                $connectionOptions
+     * @param string|array{primary: string, replicas: array<string, string>}|null $connectionKey
+     *
+     * @return array<string, mixed>
+     */
+    private function getModifiedConnectionOptions(
+        array $connectionOptions,
+        $connectionKey,
+        string $name
+    ): array {
+        if (!isset($connectionOptions['primary'])) {
+            if (is_array($connectionKey)) {
+                throw new \InvalidArgumentException(sprintf('Connection key for connection "%s" must be a string', $name));
+            }
 
-        if (isset($connectionOptions['primary'])) {
-            $connectionOptions['primary'] = array_merge($connectionOptions['primary'], [
-                'dama.keep_static' => true,
-                'dama.connection_name' => $name,
-            ]);
+            $connectionOptions['dama.connection_key'] = $connectionKey ?? $name;
+
+            return $connectionOptions;
         }
 
-        if (isset($connectionOptions['replica']) && is_array($connectionOptions['replica'])) {
-            foreach ($connectionOptions['replica'] as $replicaName => &$replica) {
-                $replica = array_merge($replica, [
-                    'dama.keep_static' => true,
-                    'dama.connection_name' => sprintf('%s.%s', $name, $replicaName),
-                ]);
-            }
+        $connectionOptions['dama.connection_key'] = $connectionKey['primary'] ?? $connectionKey ?? $name;
+        $connectionOptions['primary']['dama.connection_key'] = $connectionOptions['dama.connection_key'];
+
+        if (!is_array($connectionOptions['replica'] ?? null)) {
+            return $connectionOptions;
+        }
+
+        $replicaKeys = [];
+        if (isset($connectionKey['replicas'])) {
+            /** @var array<string> $definedReplicaNames */
+            $definedReplicaNames = array_keys($connectionOptions['replica']);
+            $this->validateConnectionNames(array_keys($connectionKey['replicas']), $definedReplicaNames);
+            $replicaKeys = $connectionKey['replicas'];
+        }
+
+        foreach ($connectionOptions['replica'] as $replicaName => &$replicaOptions) {
+            $replicaOptions['dama.connection_key'] = $replicaKeys[$replicaName] ?? $connectionOptions['dama.connection_key'];
         }
 
         return $connectionOptions;
@@ -123,11 +149,12 @@ class DoctrineTestCompilerPass implements CompilerPassInterface
     ): void {
         $cache = new Definition();
         $namespace = sha1($cacheServiceId);
+        $originalServiceClass = $originalCacheServiceDefinition->getClass();
 
-        if (is_a($originalCacheServiceDefinition->getClass(), CacheItemPoolInterface::class, true)) {
+        if ($originalServiceClass !== null && is_a($originalServiceClass, CacheItemPoolInterface::class, true)) {
             $cache->setClass(Psr6StaticArrayCache::class);
             $cache->setArgument(0, $namespace); // make sure we have no key collisions
-        } elseif (is_a($originalCacheServiceDefinition->getClass(), Cache::class, true)) {
+        } elseif ($originalServiceClass !== null && is_a($originalServiceClass, Cache::class, true)) {
             throw new \InvalidArgumentException(sprintf('Configuring "%s" caches is not supported anymore. Upgrade to PSR-6 caches instead.', Cache::class));
         } else {
             throw new \InvalidArgumentException(sprintf('Unsupported cache class "%s" found on service "%s".', $originalCacheServiceDefinition->getClass(), $cacheServiceId));
@@ -140,14 +167,15 @@ class DoctrineTestCompilerPass implements CompilerPassInterface
     }
 
     /**
+     * @param string[] $connectionNames
+     *
      * @return string[]
      */
-    private function getTransactionEnabledConnectionNames(ContainerBuilder $container): array
+    private function getTransactionEnabledConnectionNames(ContainerBuilder $container, array $connectionNames): array
     {
-        /** @var bool|array $enableStaticConnectionsConfig */
+        /** @var bool|array<string, bool> $enableStaticConnectionsConfig */
         $enableStaticConnectionsConfig = $container->getParameter('dama.'.Configuration::ENABLE_STATIC_CONNECTION);
 
-        $connectionNames = array_keys($container->getParameter('doctrine.connections'));
         if (is_array($enableStaticConnectionsConfig)) {
             $this->validateConnectionNames(array_keys($enableStaticConnectionsConfig), $connectionNames);
         }
@@ -192,5 +220,19 @@ class DoctrineTestCompilerPass implements CompilerPassInterface
         }
 
         return false;
+    }
+
+    /**
+     * @param string[] $connectionNames
+     *
+     * @return array<string, string|array{primary: string, replicas: array<string, string>}>
+     */
+    private function getConnectionKeys(ContainerBuilder $container, array $connectionNames): array
+    {
+        /** @var array<string, string> $connectionKeys */
+        $connectionKeys = $container->getParameter('dama.'.Configuration::CONNECTION_KEYS);
+        $this->validateConnectionNames(array_keys($connectionKeys), $connectionNames);
+
+        return $connectionKeys;
     }
 }
