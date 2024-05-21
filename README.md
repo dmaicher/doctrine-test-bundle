@@ -108,6 +108,51 @@ dama_doctrine_test:
         connection_a: true
 ```
 
+#### Controlling how connections are kept statically in the current php process
+
+By default, every configured doctrine DBAL connection will have its own driver connection that is managed in the current php process.
+In case you need to customize this behavior you can choose different "connection keys" that are used to select driver connections.
+
+Example for 2 connections that will re-use the same driver connection instance:
+
+```yaml
+doctrine:
+    dbal:
+        connections:
+            default:
+                url: '%database.url1%'
+
+            foo:
+                url: '%database.url2%'
+
+dama_doctrine_test:
+    connection_keys:
+        # assigning the same key will result in the same internal driver connection being re-used for both DBAL connections
+        default: custom_key
+        foo: custom_key
+```
+
+**Since v8.1.0**: For connections with read/write replicas the bundle will use the **same** underlying driver connection by default for the primary and also for replicas. This addresses an [issue](https://github.com/dmaicher/doctrine-test-bundle/issues/289) where inconsistencies happened when reading/writing to different connections. This can also be customized as follows:
+
+```yaml
+doctrine:
+    dbal:
+        connections:
+            default:
+                url: '%database.url%'
+                replicas:
+                    replica_one:
+                        url: '%database.url_replica%'
+
+dama_doctrine_test:
+    connection_keys:
+        # assigning different keys will result in separate internal driver connection being used for primary and replica
+        default:
+            primary: custom_key_primary
+            replicas:
+                replica_one: custom_key_primary_replica
+```
+
 ### Example
 
 An example usage can be seen within the functional tests included in this bundle: https://github.com/dmaicher/doctrine-test-bundle/tree/master/tests
