@@ -58,6 +58,10 @@ class PhpunitTest extends TestCase
         $this->assertRowCount(0);
         $this->insertRow();
         $this->assertRowCount(1);
+
+        // this will make sure the next select uses the read replica
+        $this->connection->close();
+        $this->assertRowCount(1);
     }
 
     /**

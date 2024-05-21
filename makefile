@@ -8,7 +8,8 @@ test_phpunit_legacy: tests/Functional/app/parameters.yml
 	vendor/bin/phpunit -c tests/phpunit.9.xml tests/
 
 phpstan:
-	vendor/bin/phpstan analyse -c phpstan.neon -a vendor/autoload.php -l 5 src tests
+	vendor/bin/phpstan analyse -c phpstan.neon -a vendor/autoload.php -l 8 src
+	vendor/bin/phpstan analyse -c phpstan.neon -a vendor/autoload.php -l 5 tests
 
 behat:
 	vendor/bin/behat -c tests/behat.yml -fprogress

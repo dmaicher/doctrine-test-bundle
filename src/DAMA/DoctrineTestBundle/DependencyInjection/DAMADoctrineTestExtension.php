@@ -24,5 +24,9 @@ class DAMADoctrineTestExtension extends Extension
             'dama.'.Configuration::ENABLE_STATIC_CONNECTION,
             $config[Configuration::ENABLE_STATIC_CONNECTION]
         );
+        $container->setParameter(
+            'dama.'.Configuration::CONNECTION_KEYS,
+            $config[Configuration::CONNECTION_KEYS] ?? [],
+        );
     }
 }

@@ -39,7 +39,7 @@ trait FunctionalTestTrait
      * @Then there are :count rows
      * @Then there is :count row
      */
-    public function assertRowCount($count): void
+    public function assertRowCount(int $count): void
     {
         Assert::assertEquals([$count], $this->connection->fetchFirstColumn('SELECT COUNT(*) FROM test'));
     }
