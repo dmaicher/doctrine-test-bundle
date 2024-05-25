@@ -146,11 +146,11 @@ doctrine:
 
 dama_doctrine_test:
     connection_keys:
-        # assigning different keys will result in separate internal driver connection being used for primary and replica
+        # assigning different keys will result in separate internal driver connections being used for primary and replica
         default:
             primary: custom_key_primary
             replicas:
-                replica_one: custom_key_primary_replica
+                replica_one: custom_key_replica
 ```
 
 ### Example
