@@ -20,7 +20,7 @@
     "require": {
         "php": "^7.4 || ^8.0",
         "doctrine/dbal": "^3.3 || ^4.0",
-        "doctrine/doctrine-bundle": "^2.2.2",
+        "doctrine/doctrine-bundle": "^2.11.0",
         "psr/cache": "^1.0 || ^2.0 || ^3.0",
         "symfony/cache": "^5.4 || ^6.3 || ^7.0",
         "symfony/framework-bundle": "^5.4 || ^6.3 || ^7.0"

@@ -3,7 +3,6 @@
 namespace DAMA\DoctrineTestBundle\DependencyInjection;
 
 use DAMA\DoctrineTestBundle\Doctrine\Cache\Psr6StaticArrayCache;
-use DAMA\DoctrineTestBundle\Doctrine\DBAL\Middleware;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\DBAL\Connection;
 use Psr\Cache\CacheItemPoolInterface;
@@ -11,13 +10,11 @@ use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
-use Symfony\Component\DependencyInjection\Reference;
 
-class DoctrineTestCompilerPass implements CompilerPassInterface
+final class ModifyDoctrineConfigCompilerPass implements CompilerPassInterface
 {
     public function process(ContainerBuilder $container): void
     {
-        $container->register('dama.doctrine.dbal.middleware', Middleware::class);
         $cacheNames = [];
 
         if ($container->getParameter('dama.'.Configuration::STATIC_META_CACHE)) {
@@ -31,7 +28,11 @@ class DoctrineTestCompilerPass implements CompilerPassInterface
         /** @var array<string, mixed> $connections */
         $connections = $container->getParameter('doctrine.connections');
         $connectionNames = array_keys($connections);
-        $transactionalBehaviorEnabledConnections = $this->getTransactionEnabledConnectionNames($container, $connectionNames);
+
+        /** @var string[] $transactionalBehaviorEnabledConnections */
+        $transactionalBehaviorEnabledConnections = $container->getParameter(
+            AddMiddlewaresCompilerPass::TRANSACTIONAL_BEHAVIOR_ENABLED_CONNECTIONS,
+        );
         $connectionKeys = $this->getConnectionKeys($container, $connectionNames);
 
         foreach ($connectionNames as $name) {
@@ -56,10 +57,10 @@ class DoctrineTestCompilerPass implements CompilerPassInterface
             }
         }
 
-        $container->getParameterBag()->remove('dama.'.Configuration::ENABLE_STATIC_CONNECTION);
         $container->getParameterBag()->remove('dama.'.Configuration::STATIC_META_CACHE);
         $container->getParameterBag()->remove('dama.'.Configuration::STATIC_QUERY_CACHE);
         $container->getParameterBag()->remove('dama.'.Configuration::CONNECTION_KEYS);
+        $container->getParameterBag()->remove(AddMiddlewaresCompilerPass::TRANSACTIONAL_BEHAVIOR_ENABLED_CONNECTIONS);
     }
 
     /**
@@ -79,24 +80,6 @@ class DoctrineTestCompilerPass implements CompilerPassInterface
             0,
             $this->getModifiedConnectionOptions($connectionOptions, $connectionKey, $name),
         );
-
-        $connectionConfig = $container->getDefinition(sprintf('doctrine.dbal.%s_connection.configuration', $name));
-        $methodCalls = $connectionConfig->getMethodCalls();
-        $middlewareRef = new Reference('dama.doctrine.dbal.middleware');
-        $hasMiddlewaresMethodCall = false;
-        foreach ($methodCalls as &$methodCall) {
-            if ($methodCall[0] === 'setMiddlewares') {
-                $hasMiddlewaresMethodCall = true;
-                // our middleware needs to be the first one here so we wrap the "native" driver
-                $methodCall[1][0] = array_merge([$middlewareRef], $methodCall[1][0]);
-            }
-        }
-
-        if (!$hasMiddlewaresMethodCall) {
-            $methodCalls[] = ['setMiddlewares', [[$middlewareRef]]];
-        }
-
-        $connectionConfig->setMethodCalls($methodCalls);
     }
 
     /**
@@ -164,33 +147,6 @@ class DoctrineTestCompilerPass implements CompilerPassInterface
             $container->removeAlias($cacheServiceId);
         }
         $container->setDefinition($cacheServiceId, $cache);
-    }
-
-    /**
-     * @param string[] $connectionNames
-     *
-     * @return string[]
-     */
-    private function getTransactionEnabledConnectionNames(ContainerBuilder $container, array $connectionNames): array
-    {
-        /** @var bool|array<string, bool> $enableStaticConnectionsConfig */
-        $enableStaticConnectionsConfig = $container->getParameter('dama.'.Configuration::ENABLE_STATIC_CONNECTION);
-
-        if (is_array($enableStaticConnectionsConfig)) {
-            $this->validateConnectionNames(array_keys($enableStaticConnectionsConfig), $connectionNames);
-        }
-
-        $enabledConnections = [];
-
-        foreach ($connectionNames as $name) {
-            if ($enableStaticConnectionsConfig === true
-                || isset($enableStaticConnectionsConfig[$name]) && $enableStaticConnectionsConfig[$name] === true
-            ) {
-                $enabledConnections[] = $name;
-            }
-        }
-
-        return $enabledConnections;
     }
 
     /**

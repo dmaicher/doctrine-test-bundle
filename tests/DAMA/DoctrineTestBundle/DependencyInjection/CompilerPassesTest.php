@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\DAMA\DoctrineTestBundle\DependencyInjection;
 
+use DAMA\DoctrineTestBundle\DependencyInjection\AddMiddlewaresCompilerPass;
 use DAMA\DoctrineTestBundle\DependencyInjection\DAMADoctrineTestExtension;
-use DAMA\DoctrineTestBundle\DependencyInjection\DoctrineTestCompilerPass;
+use DAMA\DoctrineTestBundle\DependencyInjection\ModifyDoctrineConfigCompilerPass;
 use DAMA\DoctrineTestBundle\Doctrine\Cache\Psr6StaticArrayCache;
 use Doctrine\Bundle\DoctrineBundle\ConnectionFactory;
 use Doctrine\DBAL\Configuration;
@@ -13,9 +16,8 @@ use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
-use Symfony\Component\DependencyInjection\Reference;
 
-class DoctrineTestCompilerPassTest extends TestCase
+class CompilerPassesTest extends TestCase
 {
     private const CACHE_SERVICE_IDS = [
         'doctrine.orm.a_metadata_cache',
@@ -55,11 +57,6 @@ class DoctrineTestCompilerPassTest extends TestCase
             ;
         }
 
-        $containerBuilder->setDefinition(
-            'doctrine.dbal.a_connection.configuration',
-            (new Definition(Configuration::class))
-                ->setMethodCalls([['setMiddlewares', [[new Reference('foo')]]]])
-        );
         $containerBuilder->setDefinition('doctrine.dbal.b_connection.configuration', new Definition(Configuration::class));
         $containerBuilder->setDefinition('doctrine.dbal.c_connection.configuration', new Definition(Configuration::class));
 
@@ -69,7 +66,8 @@ class DoctrineTestCompilerPassTest extends TestCase
             $expectationCallback($this, $containerBuilder);
         }
 
-        (new DoctrineTestCompilerPass())->process($containerBuilder);
+        (new AddMiddlewaresCompilerPass())->process($containerBuilder);
+        (new ModifyDoctrineConfigCompilerPass())->process($containerBuilder);
 
         foreach (array_keys($containerBuilder->getParameterBag()->all()) as $parameterName) {
             $this->assertStringStartsNotWith('dama.', $parameterName);
@@ -97,35 +95,6 @@ class DoctrineTestCompilerPassTest extends TestCase
                 self::assertSame([
                     'dama.connection_key' => 'a',
                 ], $containerBuilder->getDefinition('doctrine.dbal.a_connection')->getArgument(0));
-
-                self::assertEquals(
-                    [
-                        [
-                            'setMiddlewares',
-                            [
-                                [
-                                    new Reference('dama.doctrine.dbal.middleware'),
-                                    new Reference('foo'),
-                                ],
-                            ],
-                        ],
-                    ],
-                    $containerBuilder->getDefinition('doctrine.dbal.a_connection.configuration')->getMethodCalls()
-                );
-
-                self::assertEquals(
-                    [
-                        [
-                            'setMiddlewares',
-                            [
-                                [
-                                    new Reference('dama.doctrine.dbal.middleware'),
-                                ],
-                            ],
-                        ],
-                    ],
-                    $containerBuilder->getDefinition('doctrine.dbal.b_connection.configuration')->getMethodCalls()
-                );
             },
         ];
 
@@ -137,20 +106,6 @@ class DoctrineTestCompilerPassTest extends TestCase
             ],
             function (ContainerBuilder $containerBuilder): void {
                 self::assertFalse($containerBuilder->hasDefinition('doctrine.orm.a_metadata_cache'));
-
-                self::assertEquals(
-                    [
-                        [
-                            'setMiddlewares',
-                            [
-                                [
-                                    new Reference('foo'),
-                                ],
-                            ],
-                        ],
-                    ],
-                    $containerBuilder->getDefinition('doctrine.dbal.a_connection.configuration')->getMethodCalls()
-                );
             },
         ];
 
@@ -167,8 +122,14 @@ class DoctrineTestCompilerPassTest extends TestCase
                 self::assertSame([
                     'dama.connection_key' => 'a',
                 ], $containerBuilder->getDefinition('doctrine.dbal.a_connection')->getArgument(0));
+                self::assertTrue($containerBuilder->hasDefinition('dama.doctrine.dbal.middleware.a'));
+                self::assertSame([
+                    'connection' => 'a',
+                    'priority' => 100,
+                ], $containerBuilder->getDefinition('dama.doctrine.dbal.middleware.a')->getTag('doctrine.middleware')[0]);
 
                 self::assertSame([], $containerBuilder->getDefinition('doctrine.dbal.b_connection')->getArgument(0));
+                self::assertFalse($containerBuilder->hasDefinition('dama.doctrine.dbal.middleware.b'));
 
                 self::assertSame(
                     [
@@ -187,6 +148,7 @@ class DoctrineTestCompilerPassTest extends TestCase
                     ],
                     $containerBuilder->getDefinition('doctrine.dbal.c_connection')->getArgument(0)
                 );
+                self::assertTrue($containerBuilder->hasDefinition('dama.doctrine.dbal.middleware.c'));
             },
         ];
 
