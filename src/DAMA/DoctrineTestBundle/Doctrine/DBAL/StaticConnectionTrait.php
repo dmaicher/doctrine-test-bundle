@@ -7,6 +7,8 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 
 /**
  * @internal
+ *
+ * @phpstan-ignore trait.unused
  */
 trait StaticConnectionTrait
 {

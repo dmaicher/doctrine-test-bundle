@@ -18,5 +18,6 @@ return (new PhpCsFixer\Config())
         ],
         'phpdoc_var_annotation_correct_order' => true,
         'void_return' => true,
+        'trailing_comma_in_multiline' => false,
     ])
 ;
