@@ -8,6 +8,9 @@ use Doctrine\DBAL\Driver\API\ExceptionConverter;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 
+/**
+ * @phpstan-ignore trait.unused
+ */
 trait MockDriverTrait
 {
     private $connection;

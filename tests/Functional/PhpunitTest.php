@@ -144,7 +144,7 @@ class PhpunitTest extends TestCase
 
     public function testSkippedTestDuringSetup(): void
     {
-        $this->assertTrue(true);
+        $this->expectNotToPerformAssertions();
     }
 
     public function testMarkIncomplete(): void
