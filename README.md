@@ -188,3 +188,18 @@ Doctrine\DBAL\Driver\PDOException: SQLSTATE[42000]: Syntax error or access viola
 Currently there is no way for this bundle to work with those queries as they simply cannot be rolled back after the test case finished.
 
 See also https://github.com/dmaicher/doctrine-test-bundle/issues/58
+
+If see error like this:
+```
+SQLSTATE[25P01]: No active sql transaction: 7 ERROR:  SAVEPOINT can only be used in transaction blocks
+```
+
+You could try to disable auto commit:
+
+```yaml
+doctrine:
+    dbal:
+        connections:
+            default:
+                auto_commit: false
+```
