@@ -3,6 +3,8 @@
 namespace DAMA\DoctrineTestBundle\PHPUnit;
 
 use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticDriver;
+use PHPUnit\Event\Test\BeforeTestMethodErrored;
+use PHPUnit\Event\Test\BeforeTestMethodErroredSubscriber;
 use PHPUnit\Event\Test\Errored;
 use PHPUnit\Event\Test\ErroredSubscriber;
 use PHPUnit\Event\Test\Finished as TestFinishedEvent;
@@ -71,6 +73,14 @@ if (class_exists(TestRunnerStartedEvent::class)) {
             $facade->registerSubscriber(new class implements TestFinishedSubscriber {
                 public function notify(TestFinishedEvent $event): void
                 {
+                    PHPUnitExtension::rollBack();
+                }
+            });
+
+            $facade->registerSubscriber(new class implements BeforeTestMethodErroredSubscriber {
+                public function notify(BeforeTestMethodErrored $event): void
+                {
+                    // needed for tests marked incomplete during setUp()
                     PHPUnitExtension::rollBack();
                 }
             });
