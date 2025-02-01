@@ -18,6 +18,11 @@ class PhpunitTest extends TestCase
         if ((method_exists($this, 'name') ? $this->name() : $this->getName()) === 'testSkippedTestDuringSetup') {
             $this->markTestSkipped();
         }
+
+        /** @phpstan-ignore-next-line */
+        if ((method_exists($this, 'name') ? $this->name() : $this->getName()) === 'testIncompleteTestDuringSetup') {
+            $this->markTestIncomplete();
+        }
     }
 
     public function testChangeDbState(): void
@@ -143,6 +148,11 @@ class PhpunitTest extends TestCase
     }
 
     public function testSkippedTestDuringSetup(): void
+    {
+        $this->expectNotToPerformAssertions();
+    }
+
+    public function testIncompleteTestDuringSetup(): void
     {
         $this->expectNotToPerformAssertions();
     }
