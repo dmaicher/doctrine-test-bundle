@@ -77,13 +77,15 @@ if (class_exists(TestRunnerStartedEvent::class)) {
                 }
             });
 
-            $facade->registerSubscriber(new class implements BeforeTestMethodErroredSubscriber {
-                public function notify(BeforeTestMethodErrored $event): void
-                {
-                    // needed for tests marked incomplete during setUp()
-                    PHPUnitExtension::rollBack();
-                }
-            });
+            if (interface_exists(BeforeTestMethodErroredSubscriber::class)) {
+                $facade->registerSubscriber(new class implements BeforeTestMethodErroredSubscriber {
+                    public function notify(BeforeTestMethodErrored $event): void
+                    {
+                        // needed for tests marked incomplete during setUp()
+                        PHPUnitExtension::rollBack();
+                    }
+                });
+            }
 
             $facade->registerSubscriber(new class implements ErroredSubscriber {
                 public function notify(Errored $event): void

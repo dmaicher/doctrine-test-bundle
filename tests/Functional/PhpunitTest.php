@@ -4,6 +4,7 @@ namespace Tests\Functional;
 
 use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticDriver;
 use Doctrine\DBAL\Exception\TableNotFoundException;
+use PHPUnit\Event\Test\BeforeTestMethodErroredSubscriber;
 use PHPUnit\Framework\TestCase;
 
 class PhpunitTest extends TestCase
@@ -14,13 +15,15 @@ class PhpunitTest extends TestCase
     {
         parent::setUp();
         $this->init();
-        /** @phpstan-ignore-next-line */
+        /** @phpstan-ignore method.notFound,function.alreadyNarrowedType */
         if ((method_exists($this, 'name') ? $this->name() : $this->getName()) === 'testSkippedTestDuringSetup') {
             $this->markTestSkipped();
         }
 
-        /** @phpstan-ignore-next-line */
-        if ((method_exists($this, 'name') ? $this->name() : $this->getName()) === 'testIncompleteTestDuringSetup') {
+        if (interface_exists(BeforeTestMethodErroredSubscriber::class)
+            /** @phpstan-ignore method.notFound,function.alreadyNarrowedType */
+            && (method_exists($this, 'name') ? $this->name() : $this->getName()) === 'testIncompleteTestDuringSetup'
+        ) {
             $this->markTestIncomplete();
         }
     }
