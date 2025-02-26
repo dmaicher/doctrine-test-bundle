@@ -3,14 +3,13 @@
 namespace Tests\DAMA\DoctrineTestBundle\DependencyInjection;
 
 use DAMA\DoctrineTestBundle\DependencyInjection\DAMADoctrineTestExtension;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 class DAMADoctrineTestExtensionTest extends TestCase
 {
-    /**
-     * @dataProvider loadDataProvider
-     */
+    #[DataProvider('loadDataProvider')]
     public function testLoad(array $configs, array $expectedParameters): void
     {
         $extension = new DAMADoctrineTestExtension();

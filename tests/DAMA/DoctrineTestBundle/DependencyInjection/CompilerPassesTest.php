@@ -11,6 +11,7 @@ use DAMA\DoctrineTestBundle\Doctrine\Cache\Psr6StaticArrayCache;
 use Doctrine\Bundle\DoctrineBundle\ConnectionFactory;
 use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\Connection;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\DependencyInjection\ChildDefinition;
@@ -28,9 +29,7 @@ class CompilerPassesTest extends TestCase
         'doctrine.orm.c_query_cache',
     ];
 
-    /**
-     * @dataProvider processDataProvider
-     */
+    #[DataProvider('processDataProvider')]
     public function testProcess(array $config, callable $assertCallback, ?callable $expectationCallback = null): void
     {
         $containerBuilder = new ContainerBuilder();

@@ -45,18 +45,6 @@ doctrine:
 
 1. Add the Extension to your PHPUnit XML config
 
-   - PHPUnit 8 or 9:
-
-       ```xml
-       <phpunit>
-           ...
-           <extensions>
-               <extension class="DAMA\DoctrineTestBundle\PHPUnit\PHPUnitExtension" />
-           </extensions>
-       </phpunit>
-       ```
-   - PHPUnit 10+:
-
       ```xml
       <phpunit>
           ...
@@ -66,9 +54,9 @@ doctrine:
       </phpunit>
       ```
     
-2. Make sure you also have `phpunit/phpunit` available as a `dev` dependency (**versions 8, 9 and 10 are supported with the built-in extension**) to run your tests. 
+2. Make sure you also have `phpunit/phpunit` available as a `dev` dependency (**versions 10,11 and 12 are supported with the built-in extension**) to run your tests. 
    Alternatively this bundle is also compatible with `symfony/phpunit-bridge` and its `simple-phpunit` script. 
-   (Note: you may need to make sure the phpunit-bridge requires the correct PHPUnit 8+ Version using the environment variable `SYMFONY_PHPUNIT_VERSION`). 
+   (Note: you may need to make sure the phpunit-bridge requires the correct PHPUnit 10+ Version using the environment variable `SYMFONY_PHPUNIT_VERSION`). 
 
 3. That's it! From now on whatever changes you do to the database within each single testcase (be it a `WebTestCase` or a `KernelTestCase` or any custom test) are automatically rolled back for you :blush:
 

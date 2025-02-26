@@ -18,21 +18,20 @@
         }
     ],
     "require": {
-        "php": "^7.4 || ^8.0",
+        "php": ">= 8.1",
         "doctrine/dbal": "^3.3 || ^4.0",
         "doctrine/doctrine-bundle": "^2.11.0",
-        "psr/cache": "^1.0 || ^2.0 || ^3.0",
-        "symfony/cache": "^5.4 || ^6.3 || ^7.0",
-        "symfony/framework-bundle": "^5.4 || ^6.3 || ^7.0"
+        "psr/cache": "^2.0 || ^3.0",
+        "symfony/cache": "^6.4 || ^7.2",
+        "symfony/framework-bundle": "^6.4 || ^7.2"
     },
     "require-dev": {
         "behat/behat": "^3.0",
         "friendsofphp/php-cs-fixer": "^3.27",
         "phpstan/phpstan": "^2.0",
-        "phpunit/phpunit": "^8.0 || ^9.0 || ^10.0 || ^11.0",
-        "symfony/phpunit-bridge": "^7.2",
-        "symfony/process": "^5.4 || ^6.3 || ^7.0",
-        "symfony/yaml": "^5.4 || ^6.3 || ^7.0"
+        "phpunit/phpunit": "^10.0 || ^11.0 || ^12.0",
+        "symfony/process": "^6.4 || ^7.2",
+        "symfony/yaml": "^6.4 || ^7.2"
     },
     "autoload": {
         "psr-4": {
@@ -51,5 +50,8 @@
     },
     "config": {
         "sort-packages": true
+    },
+    "conflict": {
+        "phpunit/phpunit": "<10.0"
     }
 }
