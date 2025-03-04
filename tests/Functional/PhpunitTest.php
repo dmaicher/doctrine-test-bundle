@@ -5,6 +5,8 @@ namespace Tests\Functional;
 use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticDriver;
 use Doctrine\DBAL\Exception\TableNotFoundException;
 use PHPUnit\Event\Test\BeforeTestMethodErroredSubscriber;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Depends;
 use PHPUnit\Framework\TestCase;
 
 class PhpunitTest extends TestCase
@@ -35,17 +37,13 @@ class PhpunitTest extends TestCase
         $this->assertRowCount(1);
     }
 
-    /**
-     * @depends testChangeDbState
-     */
+    #[Depends('testChangeDbState')]
     public function testPreviousChangesAreRolledBack(): void
     {
         $this->assertRowCount(0);
     }
 
-    /**
-     * @dataProvider someDataProvider
-     */
+    #[DataProvider('someDataProvider')]
     public function testWithDataProvider(int $expectedRowCount): void
     {
         $this->assertRowCount($expectedRowCount);
@@ -72,9 +70,7 @@ class PhpunitTest extends TestCase
         $this->assertRowCount(1);
     }
 
-    /**
-     * @depends testChangeDbStateForReplicaConnection
-     */
+    #[Depends('testChangeDbStateForReplicaConnection')]
     public function testChangeDbStateForReplicaConnectionRolledBack(): void
     {
         $this->connection = $this->kernel->getContainer()->get('doctrine.dbal.replica_connection');
@@ -118,9 +114,7 @@ class PhpunitTest extends TestCase
         $this->assertRowCount(2);
     }
 
-    /**
-     * @depends testChangeDbStateWithinTransaction
-     */
+    #[Depends('testChangeDbStateWithinTransaction')]
     public function testPreviousChangesAreRolledBackAfterTransaction(): void
     {
         $this->assertRowCount(0);
@@ -137,9 +131,7 @@ class PhpunitTest extends TestCase
         $this->insertRow();
     }
 
-    /**
-     * @depends testChangeDbStateWithSavePoint
-     */
+    #[Depends('testChangeDbStateWithSavePoint')]
     public function testPreviousChangesAreRolledBackAfterUsingSavePoint(): void
     {
         $this->assertRowCount(0);
@@ -192,9 +184,7 @@ class PhpunitTest extends TestCase
         StaticDriver::setKeepStaticConnections(true);
     }
 
-    /**
-     * @depends testTransactionalBehaviorCanBeDisabledDuringRuntime
-     */
+    #[Depends('testTransactionalBehaviorCanBeDisabledDuringRuntime')]
     public function testChangesFromPreviousTestAreVisibleWhenDisabledDuringRuntime(): void
     {
         StaticDriver::setKeepStaticConnections(false);

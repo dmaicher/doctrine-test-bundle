@@ -17,116 +17,81 @@ use PHPUnit\Event\TestRunner\Finished as TestRunnerFinishedEvent;
 use PHPUnit\Event\TestRunner\FinishedSubscriber as TestRunnerFinishedSubscriber;
 use PHPUnit\Event\TestRunner\Started as TestRunnerStartedEvent;
 use PHPUnit\Event\TestRunner\StartedSubscriber as TestRunnerStartedSubscriber;
-use PHPUnit\Runner\AfterLastTestHook;
-use PHPUnit\Runner\AfterTestHook;
-use PHPUnit\Runner\BeforeFirstTestHook;
-use PHPUnit\Runner\BeforeTestHook;
 use PHPUnit\Runner\Extension\Extension;
 use PHPUnit\Runner\Extension\Facade;
 use PHPUnit\Runner\Extension\ParameterCollection;
 use PHPUnit\TextUI\Configuration\Configuration;
 
-if (class_exists(TestRunnerStartedEvent::class)) {
-    /**
-     * PHPUnit >= 10.
-     */
-    class PHPUnitExtension implements Extension
+class PHPUnitExtension implements Extension
+{
+    public static bool $transactionStarted = false;
+
+    public static function rollBack(): void
     {
-        public static $transactionStarted = false;
-
-        public static function rollBack(): void
-        {
-            if (!self::$transactionStarted) {
-                return;
-            }
-
-            StaticDriver::rollBack();
-            self::$transactionStarted = false;
+        if (!self::$transactionStarted) {
+            return;
         }
 
-        public function bootstrap(Configuration $configuration, Facade $facade, ParameterCollection $parameters): void
-        {
-            $facade->registerSubscriber(new class implements TestRunnerStartedSubscriber {
-                public function notify(TestRunnerStartedEvent $event): void
-                {
-                    StaticDriver::setKeepStaticConnections(true);
-                }
-            });
-
-            $facade->registerSubscriber(new class implements TestStartedSubscriber {
-                public function notify(TestStartedEvent $event): void
-                {
-                    StaticDriver::beginTransaction();
-                    PHPUnitExtension::$transactionStarted = true;
-                }
-            });
-
-            $facade->registerSubscriber(new class implements SkippedSubscriber {
-                public function notify(Skipped $event): void
-                {
-                    // this is a workaround to allow skipping tests within the setUp() method
-                    // as for those cases there is no Finished event
-                    PHPUnitExtension::rollBack();
-                }
-            });
-
-            $facade->registerSubscriber(new class implements TestFinishedSubscriber {
-                public function notify(TestFinishedEvent $event): void
-                {
-                    PHPUnitExtension::rollBack();
-                }
-            });
-
-            if (interface_exists(BeforeTestMethodErroredSubscriber::class)) {
-                $facade->registerSubscriber(new class implements BeforeTestMethodErroredSubscriber {
-                    public function notify(BeforeTestMethodErrored $event): void
-                    {
-                        // needed for tests marked incomplete during setUp()
-                        PHPUnitExtension::rollBack();
-                    }
-                });
-            }
-
-            $facade->registerSubscriber(new class implements ErroredSubscriber {
-                public function notify(Errored $event): void
-                {
-                    // needed as for errored tests the "Finished" event is not triggered
-                    PHPUnitExtension::rollBack();
-                }
-            });
-
-            $facade->registerSubscriber(new class implements TestRunnerFinishedSubscriber {
-                public function notify(TestRunnerFinishedEvent $event): void
-                {
-                    StaticDriver::setKeepStaticConnections(false);
-                }
-            });
-        }
+        StaticDriver::rollBack();
+        self::$transactionStarted = false;
     }
-} else {
-    /**
-     * PHPUnit < 10.
-     */
-    class PHPUnitExtension implements BeforeFirstTestHook, AfterLastTestHook, BeforeTestHook, AfterTestHook
+
+    public function bootstrap(Configuration $configuration, Facade $facade, ParameterCollection $parameters): void
     {
-        public function executeBeforeFirstTest(): void
-        {
-            StaticDriver::setKeepStaticConnections(true);
+        $facade->registerSubscriber(new class implements TestRunnerStartedSubscriber {
+            public function notify(TestRunnerStartedEvent $event): void
+            {
+                StaticDriver::setKeepStaticConnections(true);
+            }
+        });
+
+        $facade->registerSubscriber(new class implements TestStartedSubscriber {
+            public function notify(TestStartedEvent $event): void
+            {
+                StaticDriver::beginTransaction();
+                PHPUnitExtension::$transactionStarted = true;
+            }
+        });
+
+        $facade->registerSubscriber(new class implements SkippedSubscriber {
+            public function notify(Skipped $event): void
+            {
+                // this is a workaround to allow skipping tests within the setUp() method
+                // as for those cases there is no Finished event
+                PHPUnitExtension::rollBack();
+            }
+        });
+
+        $facade->registerSubscriber(new class implements TestFinishedSubscriber {
+            public function notify(TestFinishedEvent $event): void
+            {
+                PHPUnitExtension::rollBack();
+            }
+        });
+
+        if (interface_exists(BeforeTestMethodErroredSubscriber::class)) {
+            $facade->registerSubscriber(new class implements BeforeTestMethodErroredSubscriber {
+                public function notify(BeforeTestMethodErrored $event): void
+                {
+                    // needed for tests marked incomplete during setUp()
+                    PHPUnitExtension::rollBack();
+                }
+            });
         }
 
-        public function executeBeforeTest(string $test): void
-        {
-            StaticDriver::beginTransaction();
-        }
+        $facade->registerSubscriber(new class implements ErroredSubscriber {
+            public function notify(Errored $event): void
+            {
+                // needed as for errored tests the "Finished" event is not triggered
+                PHPUnitExtension::rollBack();
+            }
+        });
 
-        public function executeAfterTest(string $test, float $time): void
-        {
-            StaticDriver::rollBack();
-        }
-
-        public function executeAfterLastTest(): void
-        {
-            StaticDriver::setKeepStaticConnections(false);
-        }
+        $facade->registerSubscriber(new class implements TestRunnerFinishedSubscriber {
+            public function notify(TestRunnerFinishedEvent $event): void
+            {
+                StaticDriver::setKeepStaticConnections(false);
+            }
+        });
     }
 }
