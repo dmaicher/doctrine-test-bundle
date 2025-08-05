@@ -2,7 +2,7 @@ tests/Functional/app/parameters.yml:
 	cp tests/Functional/app/parameters.yml.dist tests/Functional/app/parameters.yml
 
 test: tests/Functional/app/parameters.yml
-	vendor/bin/phpunit -c tests/ tests/
+	vendor/bin/phpunit
 
 phpstan:
 	vendor/bin/phpstan analyse -c phpstan.neon -a vendor/autoload.php -l 8 src
