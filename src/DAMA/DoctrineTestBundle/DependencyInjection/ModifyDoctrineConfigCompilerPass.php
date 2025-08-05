@@ -3,7 +3,6 @@
 namespace DAMA\DoctrineTestBundle\DependencyInjection;
 
 use DAMA\DoctrineTestBundle\Doctrine\Cache\Psr6StaticArrayCache;
-use Doctrine\Common\Cache\Cache;
 use Doctrine\DBAL\Connection;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\DependencyInjection\ChildDefinition;
@@ -137,10 +136,8 @@ final class ModifyDoctrineConfigCompilerPass implements CompilerPassInterface
         if ($originalServiceClass !== null && is_a($originalServiceClass, CacheItemPoolInterface::class, true)) {
             $cache->setClass(Psr6StaticArrayCache::class);
             $cache->setArgument(0, $namespace); // make sure we have no key collisions
-        } elseif ($originalServiceClass !== null && is_a($originalServiceClass, Cache::class, true)) {
-            throw new \InvalidArgumentException(sprintf('Configuring "%s" caches is not supported anymore. Upgrade to PSR-6 caches instead.', Cache::class));
         } else {
-            throw new \InvalidArgumentException(sprintf('Unsupported cache class "%s" found on service "%s".', $originalCacheServiceDefinition->getClass(), $cacheServiceId));
+            throw new \InvalidArgumentException(sprintf('Unsupported cache class "%s" found on service "%s". Only PSR-6 caches are supported.', $originalCacheServiceDefinition->getClass(), $cacheServiceId));
         }
 
         if ($container->hasAlias($cacheServiceId)) {
