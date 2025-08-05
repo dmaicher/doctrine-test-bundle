@@ -1,10 +1,10 @@
 parameters:
     treatPhpDocTypesAsCertain: false
     excludePaths:
-        - %currentWorkingDirectory%/src/DAMA/DoctrineTestBundle/DependencyInjection/Configuration.php
-        - %currentWorkingDirectory%/src/DAMA/DoctrineTestBundle/PHPUnit/PHPUnitExtension.php
-        - %currentWorkingDirectory%/src/DAMA/DoctrineTestBundle/Doctrine/DBAL/StaticDriver.php
-        - %currentWorkingDirectory%/src/DAMA/DoctrineTestBundle/Doctrine/DBAL/StaticConnection.php
-        - %currentWorkingDirectory%/tests/DAMA/DoctrineTestBundle/Doctrine/DBAL/MockDriver.php
+        - %currentWorkingDirectory%/src/DependencyInjection/Configuration.php
+        - %currentWorkingDirectory%/src/PHPUnit/PHPUnitExtension.php
+        - %currentWorkingDirectory%/src/Doctrine/DBAL/StaticDriver.php
+        - %currentWorkingDirectory%/src/Doctrine/DBAL/StaticConnection.php
+        - %currentWorkingDirectory%/tests/Doctrine/DBAL/MockDriver.php
 
 

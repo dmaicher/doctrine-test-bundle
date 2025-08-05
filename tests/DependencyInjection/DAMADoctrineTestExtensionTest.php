@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\DAMA\DoctrineTestBundle\DependencyInjection;
+namespace Tests\DependencyInjection;
 
 use DAMA\DoctrineTestBundle\DependencyInjection\DAMADoctrineTestExtension;
 use PHPUnit\Framework\Attributes\DataProvider;

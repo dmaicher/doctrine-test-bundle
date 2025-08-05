@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\DAMA\DoctrineTestBundle\Doctrine\DBAL;
+namespace Tests\Doctrine\DBAL;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
