@@ -5,8 +5,9 @@
          colors="true"
          processIsolation="false"
          stderr="true"
-         bootstrap="./bootstrap.php"
+         bootstrap="tests/bootstrap.php"
          cacheDirectory=".phpunit.cache"
+
          backupStaticProperties="false">
     <php>
         <env name="SYMFONY_DEPRECATIONS_HELPER" value="max[direct]=2"/>
@@ -16,7 +17,7 @@
     </extensions>
     <testsuites>
         <testsuite name="DAMADoctrineTestBundle test suite">
-            <directory>../tests</directory>
+            <directory>tests</directory>
         </testsuite>
     </testsuites>
 </phpunit>
