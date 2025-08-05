@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\DAMA\DoctrineTestBundle\DependencyInjection;
+namespace Tests\DependencyInjection;
 
 use DAMA\DoctrineTestBundle\DependencyInjection\AddMiddlewaresCompilerPass;
 use DAMA\DoctrineTestBundle\DependencyInjection\DAMADoctrineTestExtension;

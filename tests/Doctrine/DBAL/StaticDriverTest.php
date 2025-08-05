@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\DAMA\DoctrineTestBundle\Doctrine\DBAL;
+namespace Tests\Doctrine\DBAL;
 
 use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticConnection;
 use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticDriver;

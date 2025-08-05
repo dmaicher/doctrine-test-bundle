@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\DAMA\DoctrineTestBundle\Doctrine\Cache;
+namespace Tests\Doctrine\Cache;
 
 use DAMA\DoctrineTestBundle\Doctrine\Cache\Psr6StaticArrayCache;
 use PHPUnit\Framework\TestCase;
