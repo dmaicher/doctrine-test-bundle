@@ -25,6 +25,8 @@ jobs:
                     -   php: 8.2
                     -   php: 8.3
                     -   php: 8.4
+                    -   php: 8.4
+                        stability: dev
 
         steps:
             -   uses: actions/checkout@v4
