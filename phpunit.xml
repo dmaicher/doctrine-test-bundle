@@ -1,23 +1,29 @@
 <?xml version="1.0"?>
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.0/phpunit.xsd"
-         backupGlobals="false"
          colors="true"
-         processIsolation="false"
-         stderr="true"
+         failOnWarning="true"
+         failOnRisky="true"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         displayDetailsOnAllIssues="true"
          bootstrap="tests/bootstrap.php"
-         cacheDirectory=".phpunit.cache"
-
-         backupStaticProperties="false">
-    <php>
-        <env name="SYMFONY_DEPRECATIONS_HELPER" value="max[direct]=2"/>
-    </php>
-    <extensions>
-        <bootstrap class="DAMA\DoctrineTestBundle\PHPUnit\PHPUnitExtension" />
-    </extensions>
+>
     <testsuites>
-        <testsuite name="DAMADoctrineTestBundle test suite">
-            <directory>tests</directory>
+        <testsuite name="DAMADoctrineTestBundle Test Suite">
+            <directory>./tests/</directory>
         </testsuite>
     </testsuites>
+
+    <source ignoreSuppressionOfDeprecations="true">
+        <include>
+            <directory>src</directory>
+        </include>
+    </source>
+
+    <extensions>
+        <bootstrap class="DAMA\DoctrineTestBundle\PHPUnit\PHPUnitExtension"/>
+    </extensions>
+
+    <php>
+        <env name="DOCTRINE_DEPRECATIONS" value="trigger"/>
+    </php>
 </phpunit>
