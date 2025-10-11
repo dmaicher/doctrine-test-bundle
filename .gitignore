@@ -9,3 +9,4 @@ php-cs-fixer.phar
 .phpunit.result.cache
 .idea
 .phpunit.cache
+.env.local

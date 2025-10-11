@@ -29,7 +29,53 @@ class AppKernel extends Kernel
 
     public function registerContainerConfiguration(LoaderInterface $loader): void
     {
-        $loader->load(__DIR__.'/config.yml');
+        $loader->load(function (ContainerBuilder $builder): void {
+            $builder->setParameter('kernel.secret', 'foo');
+
+            $builder->loadFromExtension('framework', [
+                'http_method_override' => false,
+            ]);
+
+            $builder->loadFromExtension('doctrine', [
+                'dbal' => [
+                    'connections' => [
+                        'default' => [
+                            'url' => '%env(DATABASE_URL)%',
+                            'server_version' => '8.4.0',
+                        ],
+                        'replica' => [
+                            'url' => '%env(DATABASE_URL)%',
+                            'replicas' => [
+                                'replica_one' => [
+                                    'url' => '%env(DATABASE_URL)%',
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ]);
+
+            // TODO remove once we drop support for DoctrineBundle < 3
+            if (class_exists('Doctrine\Bundle\DoctrineBundle\Command\ImportMappingDoctrineCommand')) {
+                $builder->loadFromExtension('doctrine', [
+                    'dbal' => [
+                        'connections' => [
+                            'default' => ['use_savepoints' => true],
+                            'replica' => ['use_savepoints' => true],
+                        ],
+                    ],
+                ]);
+            }
+
+            $builder->loadFromExtension('dama_doctrine_test', [
+                'enable_static_connection' => true,
+                'enable_static_meta_data_cache' => true,
+                'enable_static_query_cache' => true,
+                'connection_keys' => [
+                    'default' => 'custom_key',
+                ],
+            ]);
+        });
     }
 
     protected function build(ContainerBuilder $container): void

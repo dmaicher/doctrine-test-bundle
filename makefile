@@ -1,7 +1,4 @@
-tests/Functional/app/parameters.yml:
-	cp tests/Functional/app/parameters.yml.dist tests/Functional/app/parameters.yml
-
-test: tests/Functional/app/parameters.yml
+test:
 	vendor/bin/phpunit
 
 phpstan:
