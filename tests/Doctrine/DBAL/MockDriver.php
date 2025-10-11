@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Doctrine\DBAL;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\DBAL\Platforms\MySQL80Platform;
+use Doctrine\DBAL\Platforms\MySQLPlatform;
 use Doctrine\DBAL\ServerVersionProvider;
 
 if (method_exists(Connection::class, 'getEventManager')) {
@@ -16,7 +18,7 @@ if (method_exists(Connection::class, 'getEventManager')) {
 
         public function getDatabasePlatform(): AbstractPlatform
         {
-            return new MySQL80Platform();
+            return new MySQLPlatform();
         }
     }
 } else {
@@ -27,7 +29,7 @@ if (method_exists(Connection::class, 'getEventManager')) {
 
         public function getDatabasePlatform(ServerVersionProvider $versionProvider): AbstractPlatform
         {
-            return new MySQL80Platform();
+            return new MySQLPlatform();
         }
     }
 }

@@ -1,25 +1,27 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Doctrine\DBAL;
 
 use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticConnection;
 use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticDriver;
+use Doctrine\DBAL\Driver\API\ExceptionConverter;
+use Doctrine\DBAL\Driver\Connection;
+use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use PHPUnit\Framework\TestCase;
 
 class StaticDriverTest extends TestCase
 {
-    /**
-     * @var MockDriver
-     */
-    private $driver;
+    private MockDriver $driver;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->driver = new MockDriver(
-            $this->createMock('Doctrine\DBAL\Driver\Connection'),
-            $this->createMock('Doctrine\DBAL\Schema\AbstractSchemaManager'),
-            $this->createMock('Doctrine\DBAL\Driver\API\ExceptionConverter')
+            $this->createStub(Connection::class),
+            $this->createStub(AbstractSchemaManager::class),
+            $this->createStub(ExceptionConverter::class),
         );
     }
 
