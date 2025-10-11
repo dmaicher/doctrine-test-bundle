@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Functional;
 
 use Doctrine\DBAL\Connection;
@@ -9,15 +11,8 @@ use Tests\Functional\app\AppKernel;
 
 trait FunctionalTestTrait
 {
-    /**
-     * @var KernelInterface
-     */
-    private $kernel;
-
-    /**
-     * @var Connection
-     */
-    protected $connection;
+    private KernelInterface $kernel;
+    protected Connection $connection;
 
     /**
      * @BeforeScenario

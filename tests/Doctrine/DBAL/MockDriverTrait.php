@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Doctrine\DBAL;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Driver\API\ExceptionConverter;
+use Doctrine\DBAL\Driver\Connection as DriverConnection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 
@@ -13,26 +15,14 @@ use Doctrine\DBAL\Schema\AbstractSchemaManager;
  */
 trait MockDriverTrait
 {
-    private $connection;
-    private $schemaManager;
-    private $exceptionConverter;
-
-    /**
-     * @param Driver\Connection     $connection
-     * @param AbstractSchemaManager $schemaManager
-     * @param ExceptionConverter    $exceptionConverter
-     */
     public function __construct(
-        $connection,
-        $schemaManager,
-        $exceptionConverter
+        private DriverConnection $connection,
+        private AbstractSchemaManager $schemaManager,
+        private ExceptionConverter $exceptionConverter
     ) {
-        $this->connection = $connection;
-        $this->schemaManager = $schemaManager;
-        $this->exceptionConverter = $exceptionConverter;
     }
 
-    public function connect(array $params): Driver\Connection
+    public function connect(array $params): DriverConnection
     {
         return clone $this->connection;
     }

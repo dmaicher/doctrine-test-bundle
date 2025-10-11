@@ -6,5 +6,3 @@ parameters:
         - %currentWorkingDirectory%/src/Doctrine/DBAL/StaticDriver.php
         - %currentWorkingDirectory%/src/Doctrine/DBAL/StaticConnection.php
         - %currentWorkingDirectory%/tests/Doctrine/DBAL/MockDriver.php
-
-
