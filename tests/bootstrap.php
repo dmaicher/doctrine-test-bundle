@@ -4,9 +4,12 @@ use Doctrine\DBAL\Connection;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Dotenv\Dotenv;
 use Tests\Functional\app\AppKernel;
 
 require_once __DIR__.'/../vendor/autoload.php';
+
+(new Dotenv())->loadEnv(path: __DIR__.'/../.env');
 
 function bootstrap(): void
 {

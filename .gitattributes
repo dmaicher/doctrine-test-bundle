@@ -6,3 +6,4 @@ README.md           export-ignore
 tests/              export-ignore
 .php-cs-fixer.php   export-ignore
 phpstan.neon        export-ignore
+.env
