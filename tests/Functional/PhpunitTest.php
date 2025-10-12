@@ -9,6 +9,7 @@ use Doctrine\DBAL\Exception\TableNotFoundException;
 use PHPUnit\Event\Test\BeforeTestMethodErroredSubscriber;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Depends;
+use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 use PHPUnit\Framework\TestCase;
 
 class PhpunitTest extends TestCase
@@ -60,6 +61,7 @@ class PhpunitTest extends TestCase
         yield [0];
     }
 
+    #[IgnoreDeprecations(/* 'Support for MySQL < 8 is deprecated and will be removed' */)]
     public function testChangeDbStateForReplicaConnection(): void
     {
         $this->connection = $this->kernel->getContainer()->get('doctrine.dbal.replica_connection');
