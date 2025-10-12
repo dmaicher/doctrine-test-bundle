@@ -38,6 +38,7 @@ function bootstrap(): void
     $connection->executeQuery('CREATE TABLE test (test VARCHAR(10))');
 
     $kernel->shutdown();
+    restore_error_handler();
 }
 
 bootstrap();
