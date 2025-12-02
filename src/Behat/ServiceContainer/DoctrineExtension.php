@@ -20,6 +20,9 @@ class DoctrineExtension implements Extension
     {
     }
 
+    /**
+     * @param ArrayNodeDefinition<null> $builder
+     */
     public function configure(ArrayNodeDefinition $builder): void
     {
     }
