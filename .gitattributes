@@ -7,3 +7,4 @@ tests/              export-ignore
 .php-cs-fixer.php    export-ignore
 phpstan.neon        export-ignore
 .env                export-ignore
+phpunit.xml         export-ignore
