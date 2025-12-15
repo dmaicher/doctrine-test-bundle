@@ -20,7 +20,7 @@ class StaticConnectionFactory extends ConnectionFactory
         $this->decoratedFactory = $decoratedFactory;
     }
 
-    public function createConnection(array $params, Configuration $config = null, EventManager $eventManager = null, array $mappingTypes = []): Connection
+    public function createConnection(array $params, ?Configuration $config = null, ?EventManager $eventManager = null, array $mappingTypes = []): Connection
     {
         $connection = $this->decoratedFactory->createConnection($params, $config, $eventManager, $mappingTypes);
 
