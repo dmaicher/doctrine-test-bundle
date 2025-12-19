@@ -12,26 +12,11 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
  */
 trait StaticConnectionTrait
 {
-    /**
-     * @var Connection
-     */
-    private $connection;
+    private bool $nested = false;
 
-    /**
-     * @var AbstractPlatform
-     */
-    private $platform;
-
-    /**
-     * @var bool
-     */
-    private $nested = false;
-
-    public function __construct(Connection $connection, AbstractPlatform $platform)
+    public function __construct(private Connection $connection, private AbstractPlatform $platform)
     {
         parent::__construct($connection);
-        $this->connection = $connection;
-        $this->platform = $platform;
     }
 
     private function doBeginTransaction(): void

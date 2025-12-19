@@ -12,12 +12,9 @@ class StaticDriver extends Driver\Middleware\AbstractDriverMiddleware
     /**
      * @var array<string, Connection>
      */
-    private static $connections = [];
+    private static array $connections = [];
 
-    /**
-     * @var bool
-     */
-    private static $keepStaticConnections = false;
+    private static bool $keepStaticConnections = false;
 
     public function connect(array $params): Connection
     {

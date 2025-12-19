@@ -11,12 +11,9 @@ final class Psr6StaticArrayCache implements CacheItemPoolInterface
     /**
      * @var array<string, ArrayAdapter>
      */
-    private static $adaptersByNamespace;
+    private static array $adaptersByNamespace;
 
-    /**
-     * @var ArrayAdapter
-     */
-    private $adapter;
+    private ArrayAdapter $adapter;
 
     public function __construct(string $namespace)
     {

@@ -2,7 +2,7 @@ test:
 	vendor/bin/phpunit
 
 phpstan:
-	vendor/bin/phpstan analyse -c phpstan.neon -a vendor/autoload.php -l 8 src
+	vendor/bin/phpstan analyse -c phpstan.neon -a vendor/autoload.php -l 9 src
 	vendor/bin/phpstan analyse -c phpstan.neon -a vendor/autoload.php -l 5 tests
 
 behat:

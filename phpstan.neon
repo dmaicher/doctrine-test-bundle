@@ -1,5 +1,4 @@
 parameters:
-    treatPhpDocTypesAsCertain: false
     excludePaths:
         - %currentWorkingDirectory%/src/DependencyInjection/Configuration.php
         - %currentWorkingDirectory%/src/PHPUnit/PHPUnitExtension.php
