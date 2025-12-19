@@ -54,7 +54,7 @@ doctrine:
       </phpunit>
       ```
     
-2. Make sure you also have `phpunit/phpunit` available as a `dev` dependency (**versions 10,11 and 12 are supported with the built-in extension**) to run your tests. 
+2. Make sure you also have `phpunit/phpunit` available as a `dev` dependency (**versions 11 and 12 are supported with the built-in extension**) to run your tests. 
    Alternatively this bundle is also compatible with `symfony/phpunit-bridge` and its `simple-phpunit` script. 
    (Note: you may need to make sure the phpunit-bridge requires the correct PHPUnit 10+ Version using the environment variable `SYMFONY_PHPUNIT_VERSION`). 
 

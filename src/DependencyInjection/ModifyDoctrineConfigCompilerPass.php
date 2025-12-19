@@ -83,13 +83,13 @@ final class ModifyDoctrineConfigCompilerPass implements CompilerPassInterface
 
     /**
      * @param array<string, mixed>                                                $connectionOptions
-     * @param string|array{primary: string, replicas: array<string, string>}|null $connectionKey
+     * @param array{primary: string, replicas: array<string, string>}|string|null $connectionKey
      *
      * @return array<string, mixed>
      */
     private function getModifiedConnectionOptions(
         array $connectionOptions,
-        $connectionKey,
+        array|string|null $connectionKey,
         string $name
     ): array {
         if (!isset($connectionOptions['primary'])) {
@@ -103,6 +103,7 @@ final class ModifyDoctrineConfigCompilerPass implements CompilerPassInterface
         }
 
         $connectionOptions['dama.connection_key'] = $connectionKey['primary'] ?? $connectionKey ?? $name;
+        /** @phpstan-ignore offsetAccess.nonOffsetAccessible */
         $connectionOptions['primary']['dama.connection_key'] = $connectionOptions['dama.connection_key'];
 
         if (!is_array($connectionOptions['replica'] ?? null)) {
@@ -118,6 +119,7 @@ final class ModifyDoctrineConfigCompilerPass implements CompilerPassInterface
         }
 
         foreach ($connectionOptions['replica'] as $replicaName => &$replicaOptions) {
+            /** @phpstan-ignore offsetAccess.nonOffsetAccessible */
             $replicaOptions['dama.connection_key'] = $replicaKeys[$replicaName] ?? $connectionOptions['dama.connection_key'];
         }
 
