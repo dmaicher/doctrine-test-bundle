@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace DAMA\DoctrineTestBundle\Behat;
 
 use Behat\Behat\EventDispatcher\Event\ExampleTested;
@@ -8,6 +10,9 @@ use Behat\Testwork\EventDispatcher\Event\ExerciseCompleted;
 use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticDriver;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
+/**
+ * @final
+ */
 class BehatListener implements EventSubscriberInterface
 {
     public static function getSubscribedEvents(): array

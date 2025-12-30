@@ -10,6 +10,9 @@ use Doctrine\DBAL\Driver\Middleware\AbstractConnectionMiddleware;
  */
 if (method_exists(Connection::class, 'getEventManager')) {
     // DBAL < 4
+    /**
+     * @final
+     */
     class StaticConnection extends AbstractConnectionMiddleware
     {
         use StaticConnectionTrait;
@@ -37,6 +40,9 @@ if (method_exists(Connection::class, 'getEventManager')) {
     }
 } else {
     // DBAL >= 4
+    /**
+     * @final
+     */
     class StaticConnection extends AbstractConnectionMiddleware
     {
         use StaticConnectionTrait;

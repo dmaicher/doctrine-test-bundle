@@ -60,6 +60,18 @@ doctrine:
 
 3. That's it! From now on whatever changes you do to the database within each single testcase (be it a `WebTestCase` or a `KernelTestCase` or any custom test) are automatically rolled back for you :blush:
 
+##### Skipping the transactional database connection handling for specific tests
+
+With PHPUnit you can skip this bundle's transactional database connection handling for specific tests if needed:
+
+```php
+#[SkipStaticDatabaseConnection] // this will skip it for all tests in a class
+public class MyTest extends \PHPUnit\Framework\TestCase
+
+#[SkipStaticDatabaseConnection] // this will skip it for only one test method
+public function MyTest()
+```
+
 #### Using the Bundle with Behat
 
 Enable the extension in your Behat config (e.g. `behat.yml`)

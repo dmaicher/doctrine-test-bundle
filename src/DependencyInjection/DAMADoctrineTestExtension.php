@@ -5,6 +5,9 @@ namespace DAMA\DoctrineTestBundle\DependencyInjection;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 
+/**
+ * @final
+ */
 class DAMADoctrineTestExtension extends Extension
 {
     public function load(array $configs, ContainerBuilder $container): void
