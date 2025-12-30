@@ -1,20 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace DAMA\DoctrineTestBundle\PHPUnit;
 
 use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticDriver;
-use PHPUnit\Event\Test\BeforeTestMethodErrored;
-use PHPUnit\Event\Test\BeforeTestMethodErroredSubscriber;
-use PHPUnit\Event\Test\BeforeTestMethodFailed;
-use PHPUnit\Event\Test\BeforeTestMethodFailedSubscriber;
-use PHPUnit\Event\Test\Errored;
-use PHPUnit\Event\Test\ErroredSubscriber;
-use PHPUnit\Event\Test\Finished as TestFinishedEvent;
-use PHPUnit\Event\Test\FinishedSubscriber as TestFinishedSubscriber;
+use PHPUnit\Event\Code\Test;
+use PHPUnit\Event\Code\TestMethod;
 use PHPUnit\Event\Test\PreparationStarted as TestStartedEvent;
 use PHPUnit\Event\Test\PreparationStartedSubscriber as TestStartedSubscriber;
-use PHPUnit\Event\Test\Skipped;
-use PHPUnit\Event\Test\SkippedSubscriber;
 use PHPUnit\Event\TestRunner\Finished as TestRunnerFinishedEvent;
 use PHPUnit\Event\TestRunner\FinishedSubscriber as TestRunnerFinishedSubscriber;
 use PHPUnit\Event\TestRunner\Started as TestRunnerStartedEvent;
@@ -24,10 +18,33 @@ use PHPUnit\Runner\Extension\Facade;
 use PHPUnit\Runner\Extension\ParameterCollection;
 use PHPUnit\TextUI\Configuration\Configuration;
 
+/**
+ * @final
+ */
 class PHPUnitExtension implements Extension
 {
+    /**
+     * @internal
+     */
     public static bool $transactionStarted = false;
+    private static bool $transactionSkipped = false;
 
+    /**
+     * @internal
+     */
+    public static function beginTransaction(): void
+    {
+        if (self::$transactionStarted) {
+            return;
+        }
+
+        StaticDriver::beginTransaction();
+        self::$transactionStarted = true;
+    }
+
+    /**
+     * @internal
+     */
     public static function rollBack(): void
     {
         if (!self::$transactionStarted) {
@@ -36,6 +53,48 @@ class PHPUnitExtension implements Extension
 
         StaticDriver::rollBack();
         self::$transactionStarted = false;
+    }
+
+    /**
+     * @internal
+     */
+    public static function skipTransaction(): void
+    {
+        self::$transactionSkipped = true;
+        StaticDriver::setKeepStaticConnections(false);
+    }
+
+    /**
+     * @internal
+     */
+    public static function unskipTransaction(): void
+    {
+        if (!self::$transactionSkipped) {
+            // we only do it if it was skipped due to an attribute on the test
+            // otherwise we keep skipping transactions as it was manually done during a test (like in setUpBeforeClass)
+            return;
+        }
+
+        self::$transactionSkipped = false;
+        StaticDriver::setKeepStaticConnections(true);
+    }
+
+    /**
+     * @internal
+     */
+    public static function hasSkipAttribute(Test $test): bool
+    {
+        if (!$test instanceof TestMethod) {
+            return false;
+        }
+
+        $reflectionClass = new \ReflectionClass($test->className());
+        if ($reflectionClass->getAttributes(SkipStaticDatabaseConnection::class)) {
+            return true;
+        }
+
+        return $reflectionClass->hasMethod($methodName = $test->methodName())
+            && $reflectionClass->getMethod($methodName)->getAttributes(SkipStaticDatabaseConnection::class);
     }
 
     public function bootstrap(Configuration $configuration, Facade $facade, ParameterCollection $parameters): void
@@ -50,58 +109,23 @@ class PHPUnitExtension implements Extension
         $facade->registerSubscriber(new class implements TestStartedSubscriber {
             public function notify(TestStartedEvent $event): void
             {
-                StaticDriver::beginTransaction();
-                PHPUnitExtension::$transactionStarted = true;
-            }
-        });
-
-        $facade->registerSubscriber(new class implements SkippedSubscriber {
-            public function notify(Skipped $event): void
-            {
-                // this is a workaround to allow skipping tests within the setUp() method
-                // as for those cases there is no Finished event
                 PHPUnitExtension::rollBack();
-            }
-        });
 
-        $facade->registerSubscriber(new class implements TestFinishedSubscriber {
-            public function notify(TestFinishedEvent $event): void
-            {
-                PHPUnitExtension::rollBack();
-            }
-        });
+                if (PHPUnitExtension::hasSkipAttribute($event->test())) {
+                    PHPUnitExtension::skipTransaction();
 
-        if (interface_exists(BeforeTestMethodErroredSubscriber::class)) {
-            $facade->registerSubscriber(new class implements BeforeTestMethodErroredSubscriber {
-                public function notify(BeforeTestMethodErrored $event): void
-                {
-                    // needed for tests that error (or marked incomplete for PHPUnit < 12.2.0) during setUp()
-                    PHPUnitExtension::rollBack();
+                    return;
                 }
-            });
-        }
 
-        if (interface_exists(BeforeTestMethodFailedSubscriber::class)) {
-            $facade->registerSubscriber(new class implements BeforeTestMethodFailedSubscriber {
-                public function notify(BeforeTestMethodFailed $event): void
-                {
-                    // needed for tests that fail (or marked incomplete for PHPUnit >= 12.2.0) during setUp()
-                    PHPUnitExtension::rollBack();
-                }
-            });
-        }
-
-        $facade->registerSubscriber(new class implements ErroredSubscriber {
-            public function notify(Errored $event): void
-            {
-                // needed as for errored tests the "Finished" event is not triggered
-                PHPUnitExtension::rollBack();
+                PHPUnitExtension::unskipTransaction();
+                PHPUnitExtension::beginTransaction();
             }
         });
 
         $facade->registerSubscriber(new class implements TestRunnerFinishedSubscriber {
             public function notify(TestRunnerFinishedEvent $event): void
             {
+                PHPUnitExtension::rollBack();
                 StaticDriver::setKeepStaticConnections(false);
             }
         });
