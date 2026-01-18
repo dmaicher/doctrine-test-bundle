@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\Functional;
 
 use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticDriver;
-use DAMA\DoctrineTestBundle\PHPUnit\SkipStaticDatabaseConnection;
+use DAMA\DoctrineTestBundle\PHPUnit\SkipDatabaseRollback;
 use Doctrine\DBAL\Exception\TableNotFoundException;
 use PHPUnit\Event\Test\BeforeTestMethodErroredSubscriber;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -207,14 +207,14 @@ class PhpunitTest extends TestCase
         StaticDriver::setKeepStaticConnections(true);
     }
 
-    #[SkipStaticDatabaseConnection]
+    #[SkipDatabaseRollback]
     public function testTransactionalBehaviorDisabledWithAttribute(): void
     {
         $this->insertRow();
         $this->assertRowCount(1);
     }
 
-    #[SkipStaticDatabaseConnection]
+    #[SkipDatabaseRollback]
     #[Depends('testTransactionalBehaviorDisabledWithAttribute')]
     public function testChangesFromPreviousTestAreVisibleWhenDisabledWithAttribute(): void
     {

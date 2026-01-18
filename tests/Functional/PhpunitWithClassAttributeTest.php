@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Functional;
 
-use DAMA\DoctrineTestBundle\PHPUnit\SkipStaticDatabaseConnection;
+use DAMA\DoctrineTestBundle\PHPUnit\SkipDatabaseRollback;
 use PHPUnit\Framework\Attributes\Depends;
 use PHPUnit\Framework\TestCase;
 use Tests\Functional\FunctionalTestTrait;
 
-#[SkipStaticDatabaseConnection]
+#[SkipDatabaseRollback]
 class PhpunitWithClassAttributeTest extends TestCase
 {
     use FunctionalTestTrait;

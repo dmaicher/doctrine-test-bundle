@@ -89,12 +89,12 @@ class PHPUnitExtension implements Extension
         }
 
         $reflectionClass = new \ReflectionClass($test->className());
-        if ($reflectionClass->getAttributes(SkipStaticDatabaseConnection::class)) {
+        if ($reflectionClass->getAttributes(SkipDatabaseRollback::class)) {
             return true;
         }
 
         return $reflectionClass->hasMethod($methodName = $test->methodName())
-            && $reflectionClass->getMethod($methodName)->getAttributes(SkipStaticDatabaseConnection::class);
+            && $reflectionClass->getMethod($methodName)->getAttributes(SkipDatabaseRollback::class);
     }
 
     public function bootstrap(Configuration $configuration, Facade $facade, ParameterCollection $parameters): void
