@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace DAMA\DoctrineTestBundle\Behat\ServiceContainer;
 
 use Behat\Testwork\EventDispatcher\ServiceContainer\EventDispatcherExtension;
@@ -9,6 +11,9 @@ use DAMA\DoctrineTestBundle\Behat\BehatListener;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
+/**
+ * @final
+ */
 class DoctrineExtension implements Extension
 {
     public function getConfigKey(): string

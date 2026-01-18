@@ -5,6 +5,9 @@ namespace DAMA\DoctrineTestBundle\DependencyInjection;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
+/**
+ * @final
+ */
 class Configuration implements ConfigurationInterface
 {
     public const ENABLE_STATIC_CONNECTION = 'enable_static_connection';

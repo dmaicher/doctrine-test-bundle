@@ -7,6 +7,9 @@ use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Driver\Connection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 
+/**
+ * @final
+ */
 class StaticDriver extends Driver\Middleware\AbstractDriverMiddleware
 {
     /**

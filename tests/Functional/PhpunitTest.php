@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Functional;
 
 use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticDriver;
+use DAMA\DoctrineTestBundle\PHPUnit\SkipStaticDatabaseConnection;
 use Doctrine\DBAL\Exception\TableNotFoundException;
 use PHPUnit\Event\Test\BeforeTestMethodErroredSubscriber;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -204,5 +205,22 @@ class PhpunitTest extends TestCase
         $this->assertRowCount(0);
 
         StaticDriver::setKeepStaticConnections(true);
+    }
+
+    #[SkipStaticDatabaseConnection]
+    public function testTransactionalBehaviorDisabledWithAttribute(): void
+    {
+        $this->insertRow();
+        $this->assertRowCount(1);
+    }
+
+    #[SkipStaticDatabaseConnection]
+    #[Depends('testTransactionalBehaviorDisabledWithAttribute')]
+    public function testChangesFromPreviousTestAreVisibleWhenDisabledWithAttribute(): void
+    {
+        $this->assertRowCount(1);
+
+        // cleanup persisted row to not affect any other tests afterwards
+        $this->connection->executeQuery('DELETE FROM test');
     }
 }
