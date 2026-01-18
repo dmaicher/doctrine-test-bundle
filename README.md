@@ -62,13 +62,13 @@ doctrine:
 
 ##### Skipping the transactional database connection handling for specific tests
 
-With PHPUnit you can skip this bundle's transactional database connection handling for specific tests if needed:
+With PHPUnit you can skip this bundle's database rollback handling for specific tests if needed:
 
 ```php
-#[SkipStaticDatabaseConnection] // this will skip it for all tests in a class
+#[SkipDatabaseRollback] // this will skip it for all tests in a class
 public class MyTest extends \PHPUnit\Framework\TestCase {}
 
-#[SkipStaticDatabaseConnection] // this will skip it for only one test method
+#[SkipDatabaseRollback] // this will skip it for only one test method
 public function MyTest() {}
 ```
 
