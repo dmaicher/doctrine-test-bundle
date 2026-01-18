@@ -66,10 +66,10 @@ With PHPUnit you can skip this bundle's transactional database connection handli
 
 ```php
 #[SkipStaticDatabaseConnection] // this will skip it for all tests in a class
-public class MyTest extends \PHPUnit\Framework\TestCase
+public class MyTest extends \PHPUnit\Framework\TestCase {}
 
 #[SkipStaticDatabaseConnection] // this will skip it for only one test method
-public function MyTest()
+public function MyTest() {}
 ```
 
 #### Using the Bundle with Behat
