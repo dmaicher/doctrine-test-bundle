@@ -68,6 +68,9 @@ With PHPUnit you can skip this bundle's database rollback handling for specific 
 #[SkipDatabaseRollback] // this will skip it for all tests in a class
 public class MyTest extends \PHPUnit\Framework\TestCase {}
 
+#[SkipDatabaseRollback] // also supported on (abstract) parent classes. So all tests in child classes will skip the rollback logic.
+abstract class MyAbstractTest extends \PHPUnit\Framework\TestCase {}
+
 #[SkipDatabaseRollback] // this will skip it for only one test method
 public function MyTest() {}
 ```
