@@ -13,6 +13,7 @@ use PHPUnit\Event\TestRunner\Finished as TestRunnerFinishedEvent;
 use PHPUnit\Event\TestRunner\FinishedSubscriber as TestRunnerFinishedSubscriber;
 use PHPUnit\Event\TestRunner\Started as TestRunnerStartedEvent;
 use PHPUnit\Event\TestRunner\StartedSubscriber as TestRunnerStartedSubscriber;
+use PHPUnit\Framework\TestCase;
 use PHPUnit\Runner\Extension\Extension;
 use PHPUnit\Runner\Extension\Facade;
 use PHPUnit\Runner\Extension\ParameterCollection;
@@ -93,8 +94,21 @@ class PHPUnitExtension implements Extension
             return true;
         }
 
-        return $reflectionClass->hasMethod($methodName = $test->methodName())
-            && $reflectionClass->getMethod($methodName)->getAttributes(SkipDatabaseRollback::class);
+        if ($reflectionClass->hasMethod($methodName = $test->methodName())
+            && $reflectionClass->getMethod($methodName)->getAttributes(SkipDatabaseRollback::class)
+        ) {
+            return true;
+        }
+
+        while (($reflectionClass = $reflectionClass->getParentClass())
+            && $reflectionClass->name !== TestCase::class
+        ) {
+            if ($reflectionClass->getAttributes(SkipDatabaseRollback::class)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function bootstrap(Configuration $configuration, Facade $facade, ParameterCollection $parameters): void
