@@ -22,7 +22,8 @@ final class AddMiddlewaresCompilerPass implements CompilerPassInterface
 
         foreach ($transactionalBehaviorEnabledConnections as $name) {
             $middlewareDefinition = $container->register(sprintf('dama.doctrine.dbal.middleware.%s', $name), Middleware::class);
-            $middlewareDefinition->addTag('doctrine.middleware', ['connection' => $name, 'priority' => 100]);
+            // lower priority - wraps any other middlewares
+            $middlewareDefinition->addTag('doctrine.middleware', ['connection' => $name, 'priority' => -100]);
         }
 
         $container->getParameterBag()->remove('dama.'.Configuration::ENABLE_STATIC_CONNECTION);
