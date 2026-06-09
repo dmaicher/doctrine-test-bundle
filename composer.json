@@ -27,7 +27,7 @@
     },
     "require-dev": {
         "behat/behat": "^3.0",
-        "friendsofphp/php-cs-fixer": "^3.27",
+        "php-cs-fixer/shim": "^3.95",
         "phpstan/phpstan": "^2.0",
         "phpunit/phpunit": "^11.5.41 || ^12.3.14 || ^13.0",
         "symfony/dotenv": "^6.4 || ^7.3 || ^8.0",
