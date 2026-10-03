@@ -6,7 +6,7 @@ phpstan:
 	vendor/bin/phpstan analyse -c phpstan.neon -a vendor/autoload.php -l 5 tests
 
 behat:
-	vendor/bin/behat -c tests/behat.yml -fprogress
+	vendor/bin/behat -c tests/behat.php -fprogress
 
 build: test phpstan php_cs_fixer_check
 

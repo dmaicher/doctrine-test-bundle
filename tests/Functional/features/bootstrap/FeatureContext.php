@@ -1,6 +1,7 @@
 <?php
 
 use Behat\Behat\Context\Context;
+use Behat\Hook\BeforeSuite;
 use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\Process\PhpExecutableFinder;
 use Symfony\Component\Process\Process;
@@ -10,9 +11,7 @@ class FeatureContext implements Context
 {
     use FunctionalTestTrait;
 
-    /**
-     * @BeforeSuite
-     */
+    #[BeforeSuite]
     public static function bootstrap(): void
     {
         $executableFinder = new PhpExecutableFinder();
