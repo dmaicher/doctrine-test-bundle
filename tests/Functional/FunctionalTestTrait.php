@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Functional;
 
+use Behat\Hook\AfterScenario;
+use Behat\Hook\BeforeScenario;
+use Behat\Step\Then;
+use Behat\Step\When;
 use Doctrine\DBAL\Connection;
 use PHPUnit\Framework\Assert;
 use Symfony\Component\HttpKernel\KernelInterface;
@@ -14,34 +18,26 @@ trait FunctionalTestTrait
     private KernelInterface $kernel;
     protected Connection $connection;
 
-    /**
-     * @BeforeScenario
-     */
+    #[BeforeScenario]
     public function setUp(): void
     {
         $this->init();
     }
 
-    /**
-     * @AfterScenario
-     */
+    #[AfterScenario]
     public function tearDown(): void
     {
         $this->kernel->shutdown();
     }
 
-    /**
-     * @Then there are :count rows
-     * @Then there is :count row
-     */
+    #[Then('there are :count rows')]
+    #[Then('there is :count row')]
     public function assertRowCount(int $count): void
     {
         Assert::assertEquals([$count], $this->connection->fetchFirstColumn('SELECT COUNT(*) FROM test'));
     }
 
-    /**
-     * @When I insert a new row
-     */
+    #[When('I insert a new row')]
     public function insertRow(): void
     {
         $this->connection->insert('test', [
@@ -49,41 +45,31 @@ trait FunctionalTestTrait
         ]);
     }
 
-    /**
-     * @When I begin a transaction
-     */
+    #[When('I begin a transaction')]
     public function beginTransaction(): void
     {
         $this->connection->beginTransaction();
     }
 
-    /**
-     * @When I rollback the transaction
-     */
+    #[When('I rollback the transaction')]
     public function rollbackTransaction(): void
     {
         $this->connection->rollBack();
     }
 
-    /**
-     * @When I commit the transaction
-     */
+    #[When('I commit the transaction')]
     public function commitTransaction(): void
     {
         $this->connection->commit();
     }
 
-    /**
-     * @When I create a savepoint named :name
-     */
+    #[When('I create a savepoint named :name')]
     public function createSavepoint(string $name): void
     {
         $this->connection->createSavepoint($name);
     }
 
-    /**
-     * @When I rollback the savepoint named :name
-     */
+    #[When('I rollback the savepoint named :name')]
     public function rollbackSavepoint(string $name): void
     {
         $this->connection->rollbackSavepoint($name);

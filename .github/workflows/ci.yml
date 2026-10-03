@@ -27,6 +27,7 @@ jobs:
                     -   php: 8.5
                     -   php: 8.6
                         stability: dev
+                        composer_flags: --ignore-platform-req=php+
 
         steps:
             -   uses: actions/checkout@v4

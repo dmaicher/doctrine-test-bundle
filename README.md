@@ -77,7 +77,23 @@ public function MyTest() {}
 
 #### Using the Bundle with Behat
 
-Enable the extension in your Behat config (e.g. `behat.yml`)
+Enable the extension in your Behat config (e.g. `behat.php`)
+
+```php
+use Behat\Config\Config;
+use Behat\Config\Extension;
+use Behat\Config\Profile;
+use DAMA\DoctrineTestBundle\Behat\ServiceContainer\DoctrineExtension;
+
+return (new Config())
+    ->withProfile(
+        (new Profile('default'))
+            // ...
+            ->withExtension(new Extension(DoctrineExtension::class))
+    );
+```
+
+Or when still using a YAML config with Behat 3 (e.g. `behat.yml`)
 
 ```yaml
 default:
