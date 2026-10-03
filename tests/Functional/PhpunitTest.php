@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Functional;
 
 use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticDriver;
+use DAMA\DoctrineTestBundle\PHPUnit\PHPUnitExtension;
 use DAMA\DoctrineTestBundle\PHPUnit\SkipDatabaseRollback;
 use Doctrine\DBAL\Exception\TableNotFoundException;
 use PHPUnit\Event\Test\BeforeTestMethodErroredSubscriber;
@@ -222,5 +223,71 @@ class PhpunitTest extends TestCase
 
         // cleanup persisted row to not affect any other tests afterwards
         $this->connection->executeQuery('DELETE FROM test');
+    }
+
+    public function testNoWarningForClosedTransactions(): void
+    {
+        $this->beginTransaction();
+        $this->insertRow();
+        $this->commitTransaction();
+
+        $this->beginTransaction();
+        $this->insertRow();
+        $this->rollbackTransaction();
+
+        $this->assertSame([], $this->collectOpenTransactionWarnings());
+    }
+
+    public function testWarningForOpenTransaction(): void
+    {
+        $this->beginTransaction();
+        $this->insertRow();
+
+        $this->assertSame([
+            'A transaction was started but never committed or rolled back on connection(s) "custom_key". Outside of tests its changes would be lost.',
+        ], $this->collectOpenTransactionWarnings());
+
+        $this->rollbackTransaction();
+
+        $this->assertSame([], $this->collectOpenTransactionWarnings());
+    }
+
+    public function testWarningForOpenTransactionAfterKernelReboot(): void
+    {
+        $this->beginTransaction();
+        $this->insertRow();
+
+        // the new kernel uses a new DBAL connection that has no transaction open itself
+        $this->kernel->shutdown();
+        $this->init();
+        $this->assertFalse($this->connection->isTransactionActive());
+
+        $this->assertCount(1, $this->collectOpenTransactionWarnings());
+
+        // the transaction of the previous kernel cannot be closed anymore, so start over to not trigger the warning for this test
+        PHPUnitExtension::rollBack();
+        PHPUnitExtension::beginTransaction();
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function collectOpenTransactionWarnings(): array
+    {
+        $warnings = [];
+
+        set_error_handler(static function (int $errno, string $errstr) use (&$warnings): bool {
+            $warnings[] = $errstr;
+
+            return true;
+        }, E_USER_WARNING);
+
+        try {
+            PHPUnitExtension::warnAboutOpenTransactions();
+        } finally {
+            restore_error_handler();
+        }
+
+        return $warnings;
     }
 }

@@ -7,6 +7,8 @@ namespace DAMA\DoctrineTestBundle\PHPUnit;
 use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticDriver;
 use PHPUnit\Event\Code\Test;
 use PHPUnit\Event\Code\TestMethod;
+use PHPUnit\Event\Test\AfterTestMethodFinished;
+use PHPUnit\Event\Test\AfterTestMethodFinishedSubscriber;
 use PHPUnit\Event\Test\PreparationStarted as TestStartedEvent;
 use PHPUnit\Event\Test\PreparationStartedSubscriber as TestStartedSubscriber;
 use PHPUnit\Event\TestRunner\Finished as TestRunnerFinishedEvent;
@@ -111,6 +113,27 @@ class PHPUnitExtension implements Extension
         return false;
     }
 
+    /**
+     * @internal
+     */
+    public static function warnAboutOpenTransactions(): void
+    {
+        if (!self::$transactionStarted) {
+            return;
+        }
+
+        $keys = StaticDriver::getConnectionKeysWithOpenTransactions();
+
+        if ($keys === []) {
+            return;
+        }
+
+        trigger_error(sprintf(
+            'A transaction was started but never committed or rolled back on connection(s) "%s". Outside of tests its changes would be lost.',
+            implode('", "', $keys),
+        ), E_USER_WARNING);
+    }
+
     public function bootstrap(Configuration $configuration, Facade $facade, ParameterCollection $parameters): void
     {
         $facade->registerSubscriber(new class implements TestRunnerStartedSubscriber {
@@ -135,6 +158,18 @@ class PHPUnitExtension implements Extension
                 PHPUnitExtension::beginTransaction();
             }
         });
+
+        if (!$parameters->has('warnAboutOpenTransactions') || $parameters->get('warnAboutOpenTransactions') !== 'false') {
+            // PHPUnit only attributes a triggered warning to the test while its error handler is active, which is not the case anymore
+            // once the test finished. This event is the last one within that window but is only emitted for tests with an after-hook
+            // like tearDown(), which KernelTestCase and WebTestCase both have.
+            $facade->registerSubscriber(new class implements AfterTestMethodFinishedSubscriber {
+                public function notify(AfterTestMethodFinished $event): void
+                {
+                    PHPUnitExtension::warnAboutOpenTransactions();
+                }
+            });
+        }
 
         $facade->registerSubscriber(new class implements TestRunnerFinishedSubscriber {
             public function notify(TestRunnerFinishedEvent $event): void
