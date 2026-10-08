@@ -75,6 +75,20 @@ abstract class MyAbstractTest extends \PHPUnit\Framework\TestCase {}
 public function MyTest() {}
 ```
 
+##### Warning about transactions that were never closed
+
+As all connections share one static connection and everything is rolled back at the end of the test, a transaction your code started but never committed or rolled back goes unnoticed: its changes stay visible for the rest of the test, even across kernel reboots between requests. Outside of tests those changes would be lost.
+
+The PHPUnit extension triggers a warning for such tests, so they fail when using `failOnWarning="true"`. This only works for tests with an after-hook like `tearDown()`, which `KernelTestCase` and `WebTestCase` both have. To disable the warning:
+
+```xml
+<extensions>
+    <bootstrap class="DAMA\DoctrineTestBundle\PHPUnit\PHPUnitExtension">
+        <parameter name="warnAboutOpenTransactions" value="false"/>
+    </bootstrap>
+</extensions>
+```
+
 #### Using the Bundle with Behat
 
 Enable the extension in your Behat config (e.g. `behat.php`)

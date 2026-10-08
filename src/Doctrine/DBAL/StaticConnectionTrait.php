@@ -14,7 +14,7 @@ trait StaticConnectionTrait
 {
     private bool $nested = false;
 
-    public function __construct(private Connection $connection, private AbstractPlatform $platform)
+    public function __construct(private Connection $connection, private AbstractPlatform $platform, private string $key)
     {
         parent::__construct($connection);
     }
@@ -28,6 +28,7 @@ trait StaticConnectionTrait
         $this->exec($this->platform->createSavePoint('DAMA_TEST'));
 
         $this->nested = true;
+        StaticDriver::transactionStarted($this->key);
     }
 
     private function doCommit(): void
@@ -41,6 +42,7 @@ trait StaticConnectionTrait
         }
 
         $this->nested = false;
+        StaticDriver::transactionEnded($this->key);
     }
 
     private function doRollBack(): void
@@ -52,6 +54,7 @@ trait StaticConnectionTrait
         $this->exec($this->platform->rollbackSavePoint('DAMA_TEST'));
 
         $this->nested = false;
+        StaticDriver::transactionEnded($this->key);
     }
 
     public function getWrappedConnection(): Connection
