@@ -87,12 +87,17 @@ class PHPUnitExtension implements Extension
 
     /**
      * Rolls back what the previous test left, then begins a new static transaction or disables static connections.
+     * With $keepSavepointLevel, rolls back only to the innermost savepoint level when there is one.
      *
      * @internal
      */
-    public static function restartTransaction(bool $skip): void
+    public static function restartTransaction(bool $skip, bool $keepSavepointLevel = false): void
     {
-        self::rollBack();
+        if ($keepSavepointLevel && StaticDriver::getSavepointLevel() > 0) {
+            StaticDriver::rollBackToSavepoint();
+        } else {
+            self::rollBack();
+        }
 
         if ($skip) {
             self::skipTransaction();
@@ -190,7 +195,7 @@ class PHPUnitExtension implements Extension
         $facade->registerSubscriber(new class implements TestStartedSubscriber {
             public function notify(TestStartedEvent $event): void
             {
-                PHPUnitExtension::restartTransaction(PHPUnitExtension::hasSkipAttribute($event->test()));
+                PHPUnitExtension::restartTransaction(PHPUnitExtension::hasSkipAttribute($event->test()), keepSavepointLevel: true);
             }
         });
 

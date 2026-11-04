@@ -43,6 +43,10 @@ class AppKernel extends Kernel
                             'url' => '%env(DATABASE_URL)%',
                             'server_version' => '8.4.0',
                         ],
+                        'secondary' => [
+                            'url' => '%env(DATABASE_URL)%',
+                            'server_version' => '8.4.0',
+                        ],
                         'replica' => [
                             'url' => '%env(DATABASE_URL)%',
                             'server_version' => '8.4.0',
@@ -62,6 +66,7 @@ class AppKernel extends Kernel
                     'dbal' => [
                         'connections' => [
                             'default' => ['use_savepoints' => true],
+                            'secondary' => ['use_savepoints' => true],
                             'replica' => ['use_savepoints' => true],
                         ],
                     ],

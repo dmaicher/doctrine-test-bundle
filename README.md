@@ -91,6 +91,26 @@ The PHPUnit extension triggers a warning for such tests, so they fail when using
 </extensions>
 ```
 
+##### Sharing database state between the tests of a class
+
+To share the changes made in `setUpBeforeClass()` with all tests of the class, create a savepoint level once they are made: before each test, the PHPUnit extension then only rolls back to this level instead of rolling back everything. The level is dropped when the next test class starts.
+
+```php
+use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticDriver;
+
+class MyTest extends KernelTestCase
+{
+    public static function setUpBeforeClass(): void
+    {
+        // ... insert the rows shared by all tests of this class
+
+        StaticDriver::createSavepoint();
+    }
+}
+```
+
+Levels can be nested: `StaticDriver::releaseSavepoint()` rolls back to the innermost level and removes it, and `StaticDriver::getSavepointLevel()` returns the current one. Keep in mind that the shared rows stay locked by their connection for the whole class: another connection writing to the same rows or tables might have to wait for them.
+
 #### Using the Bundle with Behat
 
 Enable the extension in your Behat config (e.g. `behat.php`)

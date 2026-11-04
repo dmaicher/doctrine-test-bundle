@@ -26,6 +26,16 @@ class StaticDriver extends Driver\Middleware\AbstractDriverMiddleware
      */
     private static array $openTransactions = [];
 
+    /**
+     * @var array<string, AbstractPlatform>
+     */
+    private static array $platforms = [];
+
+    /**
+     * Number of savepoint levels created with createSavepoint() within the current static transaction.
+     */
+    private static int $savepointLevel = 0;
+
     public function connect(array $params): Connection
     {
         if (!self::isKeepStaticConnections() || !isset($params['dama.connection_key'])) {
@@ -36,19 +46,26 @@ class StaticDriver extends Driver\Middleware\AbstractDriverMiddleware
         $key = $params['dama.connection_key'];
 
         if (!isset(self::$connections[$key])) {
-            self::$connections[$key] = parent::connect($params);
-            self::$connections[$key]->beginTransaction();
+            $connection = parent::connect($params);
+            $platform = $this->getPlatform($connection, $params);
+
+            if (!$platform->supportsSavepoints()) {
+                throw new \RuntimeException('This bundle only works for database platforms that support savepoints.');
+            }
+
+            $connection->beginTransaction();
+
+            // connections are opened lazily, on first use: one opened after savepoint levels were
+            // created (e.g. a second connection first used by a test) must get them as well
+            for ($level = 1; $level <= self::$savepointLevel; ++$level) {
+                $connection->exec($platform->createSavePoint(self::savepointName($level)));
+            }
+
+            self::$connections[$key] = $connection;
+            self::$platforms[$key] = $platform;
         }
 
-        $connection = self::$connections[$key];
-
-        $platform = $this->getPlatform($connection, $params);
-
-        if (!$platform->supportsSavepoints()) {
-            throw new \RuntimeException('This bundle only works for database platforms that support savepoints.');
-        }
-
-        return new StaticConnection($connection, $platform, $key);
+        return new StaticConnection(self::$connections[$key], self::$platforms[$key], $key);
     }
 
     public static function setKeepStaticConnections(bool $keepStaticConnections): void
@@ -64,6 +81,7 @@ class StaticDriver extends Driver\Middleware\AbstractDriverMiddleware
     public static function beginTransaction(): void
     {
         self::$openTransactions = [];
+        self::$savepointLevel = 0;
 
         foreach (self::$connections as $connection) {
             $connection->beginTransaction();
@@ -73,6 +91,7 @@ class StaticDriver extends Driver\Middleware\AbstractDriverMiddleware
     public static function rollBack(): void
     {
         self::$openTransactions = [];
+        self::$savepointLevel = 0;
 
         foreach (self::$connections as $connection) {
             $connection->rollBack();
@@ -82,10 +101,62 @@ class StaticDriver extends Driver\Middleware\AbstractDriverMiddleware
     public static function commit(): void
     {
         self::$openTransactions = [];
+        self::$savepointLevel = 0;
 
         foreach (self::$connections as $connection) {
             $connection->commit();
         }
+    }
+
+    /**
+     * Creates a new savepoint level on all static connections: the PHPUnit extension then rolls back to this level
+     * before each test instead of rolling back the whole static transaction.
+     */
+    public static function createSavepoint(): void
+    {
+        $name = self::savepointName(++self::$savepointLevel);
+
+        foreach (self::$connections as $key => $connection) {
+            $connection->exec(self::$platforms[$key]->createSavePoint($name));
+        }
+    }
+
+    /**
+     * Rolls back to the innermost savepoint level, which is kept.
+     */
+    public static function rollBackToSavepoint(): void
+    {
+        if (self::$savepointLevel === 0) {
+            throw new \LogicException('There is no savepoint level.');
+        }
+
+        self::$openTransactions = [];
+        $name = self::savepointName(self::$savepointLevel);
+
+        foreach (self::$connections as $key => $connection) {
+            $connection->exec(self::$platforms[$key]->rollbackSavePoint($name));
+        }
+    }
+
+    /**
+     * Rolls back to the innermost savepoint level and removes it.
+     */
+    public static function releaseSavepoint(): void
+    {
+        self::rollBackToSavepoint();
+
+        $name = self::savepointName(self::$savepointLevel--);
+
+        foreach (self::$connections as $key => $connection) {
+            if (self::$platforms[$key]->supportsReleaseSavepoints()) {
+                $connection->exec(self::$platforms[$key]->releaseSavePoint($name));
+            }
+        }
+    }
+
+    public static function getSavepointLevel(): int
+    {
+        return self::$savepointLevel;
     }
 
     /**
@@ -119,6 +190,11 @@ class StaticDriver extends Driver\Middleware\AbstractDriverMiddleware
     public static function getConnectionKeysWithOpenTransactions(): array
     {
         return array_keys(self::$openTransactions);
+    }
+
+    private static function savepointName(int $level): string
+    {
+        return 'DAMA_LEVEL_'.$level;
     }
 
     private function getPlatform(Connection $connection, array $params): AbstractPlatform
