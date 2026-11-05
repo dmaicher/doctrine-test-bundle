@@ -45,6 +45,7 @@ class AppKernel extends Kernel
                         ],
                         'replica' => [
                             'url' => '%env(DATABASE_URL)%',
+                            'server_version' => '8.4.0',
                             'replicas' => [
                                 'replica_one' => [
                                     'url' => '%env(DATABASE_URL)%',
