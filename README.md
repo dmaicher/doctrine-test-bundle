@@ -109,7 +109,7 @@ class MyTest extends KernelTestCase
 }
 ```
 
-Levels can be nested: `StaticDriver::releaseSavepoint()` rolls back to the innermost level and removes it, and `StaticDriver::getSavepointLevel()` returns the current one. Keep in mind that the shared rows stay locked by their connection for the whole class: another connection writing to the same rows or tables might have to wait for them.
+Levels can be nested: `StaticDriver::releaseSavepoint()` rolls back to the innermost level and removes it, and `StaticDriver::getSavepointLevel()` returns the current one. Keep in mind that the shared rows stay locked by their connection for the whole class: another connection writing to the same rows or tables might have to wait for them. This includes a test of the class using `#[SkipDatabaseRollback]`: it runs on its own connection, which does not see the shared rows and might wait for their locks.
 
 #### Using the Bundle with Behat
 
