@@ -15,6 +15,9 @@ use PHPUnit\Event\TestRunner\Finished as TestRunnerFinishedEvent;
 use PHPUnit\Event\TestRunner\FinishedSubscriber as TestRunnerFinishedSubscriber;
 use PHPUnit\Event\TestRunner\Started as TestRunnerStartedEvent;
 use PHPUnit\Event\TestRunner\StartedSubscriber as TestRunnerStartedSubscriber;
+use PHPUnit\Event\TestSuite\Started as TestSuiteStartedEvent;
+use PHPUnit\Event\TestSuite\StartedSubscriber as TestSuiteStartedSubscriber;
+use PHPUnit\Event\TestSuite\TestSuiteForTestClass;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Runner\Extension\Extension;
 use PHPUnit\Runner\Extension\Facade;
@@ -83,6 +86,25 @@ class PHPUnitExtension implements Extension
     }
 
     /**
+     * Rolls back what the previous test left, then begins a new static transaction or disables static connections.
+     *
+     * @internal
+     */
+    public static function restartTransaction(bool $skip): void
+    {
+        self::rollBack();
+
+        if ($skip) {
+            self::skipTransaction();
+
+            return;
+        }
+
+        self::unskipTransaction();
+        self::beginTransaction();
+    }
+
+    /**
      * @internal
      */
     public static function hasSkipAttribute(Test $test): bool
@@ -92,9 +114,6 @@ class PHPUnitExtension implements Extension
         }
 
         $reflectionClass = new \ReflectionClass($test->className());
-        if ($reflectionClass->getAttributes(SkipDatabaseRollback::class)) {
-            return true;
-        }
 
         if ($reflectionClass->hasMethod($methodName = $test->methodName())
             && $reflectionClass->getMethod($methodName)->getAttributes(SkipDatabaseRollback::class)
@@ -102,13 +121,25 @@ class PHPUnitExtension implements Extension
             return true;
         }
 
-        while (($reflectionClass = $reflectionClass->getParentClass())
-            && $reflectionClass->name !== TestCase::class
-        ) {
+        return self::hasClassSkipAttribute($test->className());
+    }
+
+    /**
+     * @internal
+     *
+     * @param class-string $className
+     */
+    public static function hasClassSkipAttribute(string $className): bool
+    {
+        $reflectionClass = new \ReflectionClass($className);
+
+        do {
             if ($reflectionClass->getAttributes(SkipDatabaseRollback::class)) {
                 return true;
             }
-        }
+        } while (($reflectionClass = $reflectionClass->getParentClass())
+            && $reflectionClass->name !== TestCase::class
+        );
 
         return false;
     }
@@ -143,19 +174,23 @@ class PHPUnitExtension implements Extension
             }
         });
 
+        // emitted before setUpBeforeClass(), whose changes then follow the attribute of their own class
+        // instead of depending on the previous test
+        $facade->registerSubscriber(new class implements TestSuiteStartedSubscriber {
+            public function notify(TestSuiteStartedEvent $event): void
+            {
+                $testSuite = $event->testSuite();
+
+                if ($testSuite instanceof TestSuiteForTestClass) {
+                    PHPUnitExtension::restartTransaction(PHPUnitExtension::hasClassSkipAttribute($testSuite->className()));
+                }
+            }
+        });
+
         $facade->registerSubscriber(new class implements TestStartedSubscriber {
             public function notify(TestStartedEvent $event): void
             {
-                PHPUnitExtension::rollBack();
-
-                if (PHPUnitExtension::hasSkipAttribute($event->test())) {
-                    PHPUnitExtension::skipTransaction();
-
-                    return;
-                }
-
-                PHPUnitExtension::unskipTransaction();
-                PHPUnitExtension::beginTransaction();
+                PHPUnitExtension::restartTransaction(PHPUnitExtension::hasSkipAttribute($event->test()));
             }
         });
 
