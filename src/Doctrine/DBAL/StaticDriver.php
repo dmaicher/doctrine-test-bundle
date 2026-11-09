@@ -114,11 +114,13 @@ class StaticDriver extends Driver\Middleware\AbstractDriverMiddleware
      */
     public static function createSavepoint(): void
     {
-        $name = self::savepointName(++self::$savepointLevel);
+        $name = self::savepointName(self::$savepointLevel + 1);
 
         foreach (self::$connections as $key => $connection) {
             $connection->exec(self::$platforms[$key]->createSavePoint($name));
         }
+
+        ++self::$savepointLevel;
     }
 
     /**
@@ -145,13 +147,15 @@ class StaticDriver extends Driver\Middleware\AbstractDriverMiddleware
     {
         self::rollBackToSavepoint();
 
-        $name = self::savepointName(self::$savepointLevel--);
+        $name = self::savepointName(self::$savepointLevel);
 
         foreach (self::$connections as $key => $connection) {
             if (self::$platforms[$key]->supportsReleaseSavepoints()) {
                 $connection->exec(self::$platforms[$key]->releaseSavePoint($name));
             }
         }
+
+        --self::$savepointLevel;
     }
 
     public static function getSavepointLevel(): int

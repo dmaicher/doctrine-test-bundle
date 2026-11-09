@@ -23,6 +23,11 @@ trait MockDriverTrait
      */
     public array $executedSql = [];
 
+    /**
+     * exec() throws for SQL starting with this prefix.
+     */
+    public ?string $failingSqlPrefix = null;
+
     public function __construct(
         private DriverConnection $connection,
         private AbstractSchemaManager $schemaManager,
@@ -40,6 +45,10 @@ trait MockDriverTrait
 
             public function exec(string $sql): int
             {
+                if ($this->driver->failingSqlPrefix !== null && str_starts_with($sql, $this->driver->failingSqlPrefix)) {
+                    throw new \RuntimeException('exec failed');
+                }
+
                 $this->driver->executedSql[] = $sql;
 
                 return 0;

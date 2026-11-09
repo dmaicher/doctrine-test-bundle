@@ -105,6 +105,34 @@ class StaticDriverTest extends TestCase
         $this->assertSame(0, StaticDriver::getSavepointLevel());
     }
 
+    public function testFailingCreateSavepointKeepsTheLevel(): void
+    {
+        $this->connectWithOneLevel();
+        $this->driver->failingSqlPrefix = 'SAVEPOINT';
+
+        try {
+            StaticDriver::createSavepoint();
+            $this->fail('createSavepoint() should have thrown');
+        } catch (\RuntimeException) {
+        }
+
+        $this->assertSame(1, StaticDriver::getSavepointLevel());
+    }
+
+    public function testFailingReleaseSavepointKeepsTheLevel(): void
+    {
+        $this->connectWithOneLevel();
+        $this->driver->failingSqlPrefix = 'RELEASE';
+
+        try {
+            StaticDriver::releaseSavepoint();
+            $this->fail('releaseSavepoint() should have thrown');
+        } catch (\RuntimeException) {
+        }
+
+        $this->assertSame(1, StaticDriver::getSavepointLevel());
+    }
+
     public function testRollBackToSavepointWithoutLevel(): void
     {
         $this->expectException(\LogicException::class);
@@ -117,6 +145,14 @@ class StaticDriverTest extends TestCase
         $this->expectException(\LogicException::class);
 
         StaticDriver::releaseSavepoint();
+    }
+
+    private function connectWithOneLevel(): void
+    {
+        $driver = new StaticDriver($this->driver);
+        $driver::setKeepStaticConnections(true);
+        $driver->connect(['dama.connection_key' => 'foo']);
+        StaticDriver::createSavepoint();
     }
 
     /**
