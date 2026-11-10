@@ -75,6 +75,8 @@ abstract class MyAbstractTest extends \PHPUnit\Framework\TestCase {}
 public function MyTest() {}
 ```
 
+Changes made in `setUpBeforeClass()` are rolled back before the first test of the class, so its tests do not see them. In a class using `#[SkipDatabaseRollback]`, they are committed like the changes of its tests.
+
 ##### Warning about transactions that were never closed
 
 As all connections share one static connection and everything is rolled back at the end of the test, a transaction your code started but never committed or rolled back goes unnoticed: its changes stay visible for the rest of the test, even across kernel reboots between requests. Outside of tests those changes would be lost.
