@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Tests\Functional;
 
 use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticDriver;
+use DAMA\DoctrineTestBundle\PHPUnit\PHPUnitExtension;
 use PHPUnit\Framework\Attributes\Depends;
 use PHPUnit\Framework\TestCase;
 use Tests\Functional\app\AppKernel;
 
 /**
  * Shares rows created in setUpBeforeClass() with all tests of the class, each test still being rolled back.
- * Runs right before PhpunitTest, whose first test makes sure nothing leaks into the following classes.
  */
 class PhpunitSavepointLevelTest extends TestCase
 {
@@ -25,6 +25,19 @@ class PhpunitSavepointLevelTest extends TestCase
         $kernel->shutdown();
 
         StaticDriver::createSavepoint();
+    }
+
+    public static function tearDownAfterClass(): void
+    {
+        // the shared rows must not leak into the following classes, whatever their order:
+        // the next class starts like this, which drops the level, and the rows were not committed
+        PHPUnitExtension::restartTransaction(false);
+        self::assertSame(0, StaticDriver::getSavepointLevel());
+
+        $kernel = new AppKernel('test', true);
+        $kernel->boot();
+        self::assertSame([0], $kernel->getContainer()->get('doctrine.dbal.default_connection')->fetchFirstColumn('SELECT COUNT(*) FROM test'));
+        $kernel->shutdown();
     }
 
     public function testRowsFromSetUpBeforeClassAreVisible(): void

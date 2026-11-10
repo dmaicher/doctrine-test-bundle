@@ -43,6 +43,7 @@ class AppKernel extends Kernel
                             'url' => '%env(DATABASE_URL)%',
                             'server_version' => '8.4.0',
                         ],
+                        // only used by PhpunitSavepointLevelTest, which needs a connection first opened after a savepoint level
                         'secondary' => [
                             'url' => '%env(DATABASE_URL)%',
                             'server_version' => '8.4.0',
