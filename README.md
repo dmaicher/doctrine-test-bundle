@@ -93,23 +93,24 @@ The PHPUnit extension triggers a warning for such tests, so they fail when using
 
 ##### Sharing database state between the tests of a class
 
-To share the changes made in `setUpBeforeClass()` with all tests of the class, create a savepoint level once they are made: before each test, the PHPUnit extension then only rolls back to this level instead of rolling back everything. The level is dropped when the next test class starts.
+To share the changes made in `setUpBeforeClass()` with all tests of the class, add the `#[ShareSetUpBeforeClassChanges]` attribute: once `setUpBeforeClass()` ran, the PHPUnit extension creates a savepoint level, and before each test it then only rolls back to this level instead of rolling back everything. The level is dropped when the next test class starts.
 
 ```php
-use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticDriver;
+use DAMA\DoctrineTestBundle\PHPUnit\ShareSetUpBeforeClassChanges;
 
+#[ShareSetUpBeforeClassChanges] // also supported on (abstract) parent classes
 class MyTest extends KernelTestCase
 {
     public static function setUpBeforeClass(): void
     {
         // ... insert the rows shared by all tests of this class
-
-        StaticDriver::createSavepoint();
     }
 }
 ```
 
-Levels can be nested: `StaticDriver::rollBackToSavepoint()` rolls back to the innermost level and keeps it, `StaticDriver::rollBackAndReleaseSavepoint()` rolls back to it and removes it, and `StaticDriver::getSavepointLevel()` returns the current one. A level created within a test is not removed when the test ends: remove it in the test, otherwise the following tests of the class keep the changes made before it was created. A level cannot be created while a transaction started by your code is open, nor without the static connections, like in a class using `#[SkipDatabaseRollback]`.
+The attribute does nothing in a class using `#[SkipDatabaseRollback]`, where the changes made in `setUpBeforeClass()` are committed.
+
+A level can also be created with `StaticDriver::createSavepoint()`, and levels can be nested: `StaticDriver::rollBackToSavepoint()` rolls back to the innermost level and keeps it, `StaticDriver::rollBackAndReleaseSavepoint()` rolls back to it and removes it, and `StaticDriver::getSavepointLevel()` returns the current one. A level created within a test is not removed when the test ends: remove it in the test, otherwise the following tests of the class keep the changes made before it was created. A level cannot be created while a transaction started by your code is open, nor without the static connections, like in a class using `#[SkipDatabaseRollback]`.
 
 Keep in mind that the shared rows stay locked by their connection for the whole class: another connection writing to the same rows or tables might have to wait for them. This includes a test of the class using `#[SkipDatabaseRollback]`: it runs on its own connection, which does not see the shared rows and might wait for their locks. The other tests of the class might not see the rows it commits either: the static transaction is not restarted between them, so with an isolation level like `REPEATABLE READ`, the default of MySQL, it keeps reading from the snapshot it took before.
 
