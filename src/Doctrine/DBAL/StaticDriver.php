@@ -114,6 +114,15 @@ class StaticDriver extends Driver\Middleware\AbstractDriverMiddleware
      */
     public static function createSavepoint(): void
     {
+        if (!self::$keepStaticConnections) {
+            throw new \LogicException('A savepoint level cannot be created without static connections, e.g. in a test using #[SkipDatabaseRollback].');
+        }
+
+        // closing this transaction would remove the savepoint of the level as well
+        if (self::$openTransactions !== []) {
+            throw new \LogicException(sprintf('A savepoint level cannot be created while a transaction is open on connection(s) "%s".', implode('", "', array_keys(self::$openTransactions))));
+        }
+
         $name = self::savepointName(self::$savepointLevel + 1);
 
         foreach (self::$connections as $key => $connection) {
@@ -143,7 +152,7 @@ class StaticDriver extends Driver\Middleware\AbstractDriverMiddleware
     /**
      * Rolls back to the innermost savepoint level and removes it.
      */
-    public static function releaseSavepoint(): void
+    public static function rollBackAndReleaseSavepoint(): void
     {
         self::rollBackToSavepoint();
 

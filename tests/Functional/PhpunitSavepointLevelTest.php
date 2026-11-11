@@ -87,4 +87,16 @@ class PhpunitSavepointLevelTest extends TestCase
     {
         $this->assertRowCount(1);
     }
+
+    public function testNestedLevel(): void
+    {
+        $this->insertRow();
+        StaticDriver::createSavepoint();
+        $this->insertRow();
+        $this->assertRowCount(3);
+
+        StaticDriver::rollBackAndReleaseSavepoint();
+        $this->assertRowCount(2);
+        $this->assertSame(1, StaticDriver::getSavepointLevel());
+    }
 }

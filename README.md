@@ -109,7 +109,9 @@ class MyTest extends KernelTestCase
 }
 ```
 
-Levels can be nested: `StaticDriver::releaseSavepoint()` rolls back to the innermost level and removes it, and `StaticDriver::getSavepointLevel()` returns the current one. Keep in mind that the shared rows stay locked by their connection for the whole class: another connection writing to the same rows or tables might have to wait for them. This includes a test of the class using `#[SkipDatabaseRollback]`: it runs on its own connection, which does not see the shared rows and might wait for their locks.
+Levels can be nested: `StaticDriver::rollBackToSavepoint()` rolls back to the innermost level and keeps it, `StaticDriver::rollBackAndReleaseSavepoint()` rolls back to it and removes it, and `StaticDriver::getSavepointLevel()` returns the current one. A level created within a test is not removed when the test ends: remove it in the test, otherwise the following tests of the class keep the changes made before it was created. A level cannot be created while a transaction started by your code is open, nor without the static connections, like in a class using `#[SkipDatabaseRollback]`.
+
+Keep in mind that the shared rows stay locked by their connection for the whole class: another connection writing to the same rows or tables might have to wait for them. This includes a test of the class using `#[SkipDatabaseRollback]`: it runs on its own connection, which does not see the shared rows and might wait for their locks. The other tests of the class might not see the rows it commits either: the static transaction is not restarted between them, so with an isolation level like `REPEATABLE READ`, the default of MySQL, it keeps reading from the snapshot it took before.
 
 #### Using the Bundle with Behat
 

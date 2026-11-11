@@ -97,7 +97,7 @@ class StaticDriverTest extends TestCase
         $this->assertSame(['ROLLBACK TO SAVEPOINT DAMA_LEVEL_2', 'ROLLBACK TO SAVEPOINT DAMA_LEVEL_2'], $this->driver->executedSql);
 
         $this->driver->executedSql = [];
-        StaticDriver::releaseSavepoint();
+        StaticDriver::rollBackAndReleaseSavepoint();
         $this->assertSame(['ROLLBACK TO SAVEPOINT DAMA_LEVEL_2', 'ROLLBACK TO SAVEPOINT DAMA_LEVEL_2', 'RELEASE SAVEPOINT DAMA_LEVEL_2', 'RELEASE SAVEPOINT DAMA_LEVEL_2'], $this->driver->executedSql);
         $this->assertSame(1, StaticDriver::getSavepointLevel());
 
@@ -119,18 +119,46 @@ class StaticDriverTest extends TestCase
         $this->assertSame(1, StaticDriver::getSavepointLevel());
     }
 
-    public function testFailingReleaseSavepointKeepsTheLevel(): void
+    public function testFailingRollBackAndReleaseSavepointKeepsTheLevel(): void
     {
         $this->connectWithOneLevel();
         $this->driver->failingSqlPrefix = 'RELEASE';
 
         try {
-            StaticDriver::releaseSavepoint();
-            $this->fail('releaseSavepoint() should have thrown');
+            StaticDriver::rollBackAndReleaseSavepoint();
+            $this->fail('rollBackAndReleaseSavepoint() should have thrown');
         } catch (\RuntimeException) {
         }
 
         $this->assertSame(1, StaticDriver::getSavepointLevel());
+    }
+
+    public function testCreateSavepointWithoutStaticConnections(): void
+    {
+        StaticDriver::setKeepStaticConnections(false);
+
+        try {
+            StaticDriver::createSavepoint();
+            $this->fail('createSavepoint() should have thrown');
+        } catch (\LogicException) {
+        } finally {
+            // the PHPUnit extension running this test suite needs them
+            StaticDriver::setKeepStaticConnections(true);
+        }
+
+        $this->assertSame(0, StaticDriver::getSavepointLevel());
+    }
+
+    public function testCreateSavepointWithOpenTransaction(): void
+    {
+        $driver = new StaticDriver($this->driver);
+        $driver::setKeepStaticConnections(true);
+        $driver->connect(['dama.connection_key' => 'foo'])->beginTransaction();
+
+        $this->expectException(\LogicException::class);
+        $this->expectExceptionMessage('while a transaction is open on connection(s) "foo"');
+
+        StaticDriver::createSavepoint();
     }
 
     public function testRollBackToSavepointWithoutLevel(): void
@@ -140,11 +168,11 @@ class StaticDriverTest extends TestCase
         StaticDriver::rollBackToSavepoint();
     }
 
-    public function testReleaseSavepointWithoutLevel(): void
+    public function testRollBackAndReleaseSavepointWithoutLevel(): void
     {
         $this->expectException(\LogicException::class);
 
-        StaticDriver::releaseSavepoint();
+        StaticDriver::rollBackAndReleaseSavepoint();
     }
 
     private function connectWithOneLevel(): void
