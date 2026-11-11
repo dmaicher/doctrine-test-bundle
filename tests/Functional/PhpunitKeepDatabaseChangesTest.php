@@ -8,6 +8,9 @@ use DAMA\DoctrineTestBundle\PHPUnit\KeepDatabaseChanges;
 use PHPUnit\Framework\Attributes\Depends;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * The tests run in the order they are declared.
+ */
 class PhpunitKeepDatabaseChangesTest extends TestCase
 {
     use FunctionalTestTrait;
@@ -26,19 +29,34 @@ class PhpunitKeepDatabaseChangesTest extends TestCase
         $this->insertRow();
     }
 
-    #[Depends('testKeptChangesAreVisible')]
-    #[KeepDatabaseChanges]
-    public function testChangesOfATestThatDidNotPassAreNotKept(): void
+    public function testKeptChangesAreVisibleUntilTheLastDependentTest(): void
     {
         $this->assertRowCount(1);
-        $this->insertRow();
-
-        $this->markTestIncomplete();
     }
 
     #[Depends('testKeptChangesAreVisible')]
-    public function testOnlyKeptChangesAreVisible(): void
+    #[KeepDatabaseChanges]
+    public function testKeptChangesAreVisibleForIndirectlyDependentTest(): void
     {
         $this->assertRowCount(1);
+        $this->insertRow();
+    }
+
+    #[Depends('testKeptChangesAreVisibleForIndirectlyDependentTest')]
+    public function testChangesKeptByTwoTestsAreVisible(): void
+    {
+        $this->assertRowCount(2);
+    }
+
+    #[KeepDatabaseChanges]
+    public function testKeptChangesAreRolledBackAfterTheLastDependentTest(): void
+    {
+        $this->assertRowCount(0);
+        $this->insertRow();
+    }
+
+    public function testChangesAreNotKeptWithoutDependentTest(): void
+    {
+        $this->assertRowCount(0);
     }
 }

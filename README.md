@@ -114,9 +114,9 @@ A level can also be created with `StaticDriver::createSavepoint()`, and levels c
 
 Keep in mind that the shared rows stay locked by their connection for the whole class: another connection writing to the same rows or tables might have to wait for them. This includes a test of the class using `#[SkipDatabaseRollback]`: it runs on its own connection, which does not see the shared rows and might wait for their locks. The other tests of the class might not see the rows it commits either: the static transaction is not restarted between them, so with an isolation level like `REPEATABLE READ`, the default of MySQL, it keeps reading from the snapshot it took before.
 
-##### Keeping the changes of a test for the following tests of its class
+##### Keeping the changes of a test for the tests depending on it
 
-To keep the changes made by a test, e.g. for the tests depending on it with `#[Depends]`, add the `#[KeepDatabaseChanges]` attribute to it: once the test passed, the PHPUnit extension creates a savepoint level, like described above. All following tests of the class then start from the state this test left, until the next test class starts. The changes of a test that did not pass are rolled back as usual.
+To keep the changes made by a test for the tests of its class depending on it with `#[Depends]`, add the `#[KeepDatabaseChanges]` attribute to it: once the test passed, the PHPUnit extension creates a savepoint level, like described above, and removes it once the last test depending on it, directly or not, has run. The changes of a test that did not pass, or that no test depends on, are rolled back as usual.
 
 ```php
 use DAMA\DoctrineTestBundle\PHPUnit\KeepDatabaseChanges;
@@ -134,8 +134,15 @@ class MyTest extends WebTestCase
     {
         // ... the post still exists
     }
+
+    public function testListPosts(): void
+    {
+        // ... the post does not exist anymore
+    }
 }
 ```
+
+Until the last test depending on it has run, all tests of the class see the kept changes, as they share the same transaction. As savepoint levels are nested, the changes kept for a test are also only rolled back once the changes kept for the tests that ran after it are.
 
 The attribute does nothing on a test using `#[SkipDatabaseRollback]`, whose changes are committed.
 
