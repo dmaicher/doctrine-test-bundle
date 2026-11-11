@@ -114,6 +114,31 @@ A level can also be created with `StaticDriver::createSavepoint()`, and levels c
 
 Keep in mind that the shared rows stay locked by their connection for the whole class: another connection writing to the same rows or tables might have to wait for them. This includes a test of the class using `#[SkipDatabaseRollback]`: it runs on its own connection, which does not see the shared rows and might wait for their locks. The other tests of the class might not see the rows it commits either: the static transaction is not restarted between them, so with an isolation level like `REPEATABLE READ`, the default of MySQL, it keeps reading from the snapshot it took before.
 
+##### Keeping the changes of a test for the following tests of its class
+
+To keep the changes made by a test, e.g. for the tests depending on it with `#[Depends]`, add the `#[KeepDatabaseChanges]` attribute to it: once the test passed, the PHPUnit extension creates a savepoint level, like described above. All following tests of the class then start from the state this test left, until the next test class starts. The changes of a test that did not pass are rolled back as usual.
+
+```php
+use DAMA\DoctrineTestBundle\PHPUnit\KeepDatabaseChanges;
+
+class MyTest extends WebTestCase
+{
+    #[KeepDatabaseChanges]
+    public function testCreatePost(): int
+    {
+        // ... POST /api/posts, returns the id of the post
+    }
+
+    #[Depends('testCreatePost')]
+    public function testUpdatePost(int $id): void
+    {
+        // ... the post still exists
+    }
+}
+```
+
+The attribute does nothing on a test using `#[SkipDatabaseRollback]`, whose changes are committed.
+
 #### Using the Bundle with Behat
 
 Enable the extension in your Behat config (e.g. `behat.php`)

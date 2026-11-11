@@ -11,6 +11,8 @@ use PHPUnit\Event\Test\AfterTestMethodFinished;
 use PHPUnit\Event\Test\AfterTestMethodFinishedSubscriber;
 use PHPUnit\Event\Test\BeforeFirstTestMethodFinished;
 use PHPUnit\Event\Test\BeforeFirstTestMethodFinishedSubscriber;
+use PHPUnit\Event\Test\Passed as TestPassedEvent;
+use PHPUnit\Event\Test\PassedSubscriber as TestPassedSubscriber;
 use PHPUnit\Event\Test\PreparationStarted as TestStartedEvent;
 use PHPUnit\Event\Test\PreparationStartedSubscriber as TestStartedSubscriber;
 use PHPUnit\Event\TestRunner\Finished as TestRunnerFinishedEvent;
@@ -120,15 +122,28 @@ class PHPUnitExtension implements Extension
             return false;
         }
 
-        $reflectionClass = new \ReflectionClass($test->className());
-
-        if ($reflectionClass->hasMethod($methodName = $test->methodName())
-            && $reflectionClass->getMethod($methodName)->getAttributes(SkipDatabaseRollback::class)
-        ) {
+        if (self::hasMethodAttribute($test, SkipDatabaseRollback::class)) {
             return true;
         }
 
         return self::hasClassAttribute($test->className(), SkipDatabaseRollback::class);
+    }
+
+    /**
+     * @internal
+     *
+     * @param class-string $attributeName
+     */
+    public static function hasMethodAttribute(Test $test, string $attributeName): bool
+    {
+        if (!$test instanceof TestMethod) {
+            return false;
+        }
+
+        $reflectionClass = new \ReflectionClass($test->className());
+
+        return $reflectionClass->hasMethod($methodName = $test->methodName())
+            && $reflectionClass->getMethod($methodName)->getAttributes($attributeName) !== [];
     }
 
     /**
@@ -212,6 +227,19 @@ class PHPUnitExtension implements Extension
             public function notify(TestStartedEvent $event): void
             {
                 PHPUnitExtension::restartTransaction(PHPUnitExtension::hasSkipAttribute($event->test()), keepSavepointLevel: true);
+            }
+        });
+
+        // emitted after tearDown(), and only for a test that passed: the changes of any other test are rolled back
+        $facade->registerSubscriber(new class implements TestPassedSubscriber {
+            public function notify(TestPassedEvent $event): void
+            {
+                // without static connections, like in a test using #[SkipDatabaseRollback], the changes are committed
+                if (StaticDriver::isKeepStaticConnections()
+                    && PHPUnitExtension::hasMethodAttribute($event->test(), KeepDatabaseChanges::class)
+                ) {
+                    StaticDriver::createSavepoint();
+                }
             }
         });
 
