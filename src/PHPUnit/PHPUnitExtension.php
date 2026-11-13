@@ -9,6 +9,8 @@ use PHPUnit\Event\Code\Test;
 use PHPUnit\Event\Code\TestMethod;
 use PHPUnit\Event\Test\AfterTestMethodFinished;
 use PHPUnit\Event\Test\AfterTestMethodFinishedSubscriber;
+use PHPUnit\Event\Test\BeforeFirstTestMethodFinished;
+use PHPUnit\Event\Test\BeforeFirstTestMethodFinishedSubscriber;
 use PHPUnit\Event\Test\PreparationStarted as TestStartedEvent;
 use PHPUnit\Event\Test\PreparationStartedSubscriber as TestStartedSubscriber;
 use PHPUnit\Event\TestRunner\Finished as TestRunnerFinishedEvent;
@@ -126,20 +128,21 @@ class PHPUnitExtension implements Extension
             return true;
         }
 
-        return self::hasClassSkipAttribute($test->className());
+        return self::hasClassAttribute($test->className(), SkipDatabaseRollback::class);
     }
 
     /**
      * @internal
      *
      * @param class-string $className
+     * @param class-string $attributeName
      */
-    public static function hasClassSkipAttribute(string $className): bool
+    public static function hasClassAttribute(string $className, string $attributeName): bool
     {
         $reflectionClass = new \ReflectionClass($className);
 
         do {
-            if ($reflectionClass->getAttributes(SkipDatabaseRollback::class)) {
+            if ($reflectionClass->getAttributes($attributeName)) {
                 return true;
             }
         } while (($reflectionClass = $reflectionClass->getParentClass())
@@ -187,7 +190,20 @@ class PHPUnitExtension implements Extension
                 $testSuite = $event->testSuite();
 
                 if ($testSuite instanceof TestSuiteForTestClass) {
-                    PHPUnitExtension::restartTransaction(PHPUnitExtension::hasClassSkipAttribute($testSuite->className()));
+                    PHPUnitExtension::restartTransaction(PHPUnitExtension::hasClassAttribute($testSuite->className(), SkipDatabaseRollback::class));
+                }
+            }
+        });
+
+        // emitted once setUpBeforeClass() and the other before-class methods ran
+        $facade->registerSubscriber(new class implements BeforeFirstTestMethodFinishedSubscriber {
+            public function notify(BeforeFirstTestMethodFinished $event): void
+            {
+                // without static connections, like in a class using #[SkipDatabaseRollback], the changes are committed
+                if (StaticDriver::isKeepStaticConnections()
+                    && PHPUnitExtension::hasClassAttribute($event->testClassName(), ShareSetUpBeforeClassChanges::class)
+                ) {
+                    StaticDriver::createSavepoint();
                 }
             }
         });
