@@ -114,6 +114,37 @@ A level can also be created with `StaticDriver::createSavepoint()`, and levels c
 
 Keep in mind that the shared rows stay locked by their connection for the whole class: another connection writing to the same rows or tables might have to wait for them. This includes a test of the class using `#[SkipDatabaseRollback]`: it runs on its own connection, which does not see the shared rows and might wait for their locks. The other tests of the class might not see the rows it commits either: the static transaction is not restarted between them, so with an isolation level like `REPEATABLE READ`, the default of MySQL, it keeps reading from the snapshot it took before.
 
+##### Keeping the changes of a test for the tests depending on it
+
+A savepoint level can also keep the changes of a test for the tests depending on it with `#[Depends]`: create it as the last statement of the test, and remove it in the last test depending on it.
+
+```php
+use DAMA\DoctrineTestBundle\Doctrine\DBAL\StaticDriver;
+
+class MyTest extends WebTestCase
+{
+    public function testCreatePost(): int
+    {
+        // ... POST /api/posts, assertions
+
+        StaticDriver::createSavepoint(); // last statement: the changes made after it are rolled back
+
+        return $id;
+    }
+
+    #[Depends('testCreatePost')]
+    public function testUpdatePost(int $id): void
+    {
+        // first statement: the post stays visible in this test, and is rolled back after it even if it fails
+        StaticDriver::rollBackAndReleaseSavepoint();
+
+        // ... the post still exists
+    }
+}
+```
+
+Until the level is removed, all tests of the class see the kept changes, not only the ones depending on it: declare the tests depending on another one right after it.
+
 #### Using the Bundle with Behat
 
 Enable the extension in your Behat config (e.g. `behat.php`)
