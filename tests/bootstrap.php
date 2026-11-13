@@ -36,6 +36,7 @@ function bootstrap(): void
     /** @var Connection $connection */
     $connection = $registry->getConnection();
     $connection->executeQuery('CREATE TABLE test (test VARCHAR(10))');
+    $connection->executeQuery('CREATE TABLE secondary_test (test VARCHAR(10))');
 
     $kernel->shutdown();
     restore_error_handler();
